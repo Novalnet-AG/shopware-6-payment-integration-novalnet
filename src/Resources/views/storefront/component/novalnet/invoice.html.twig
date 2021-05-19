@@ -1,0 +1,39 @@
+<div class="{{paymentMethod}}-payment"
+	 id="{{paymentMethod}}-payment"
+	 data-{{paymentMethod}}-payment
+	 data-{{paymentMethod}}-payment-config="{{
+	 {
+		'forceGuarantee': shopware.config.NovalnetPayment.settings.invoiceguarantee.forceGuarantee|abs,
+		'text' : {
+			'dobEmpty' : "NovalnetPayment.text.dobEmpty"|trans,
+			'dobInvalid' : "NovalnetPayment.text.dobInvalid"|trans,
+			'invalidIban' : "NovalnetPayment.text.invalidIban"|trans
+		}
+	 }|jsonEncode()|escape('html_attr')}}">
+	 
+	<div class="form-row" id="{{paymentMethod}}-payment-form" >
+		<div class="card">
+			<fieldset>
+				{% if paymentMethod == 'novalnetinvoiceguarantee' and invoiceGuaranteeAvailable == 'YES' %}
+					<div class="form-row-wide col-md-12 novalnet-input-field-container">
+						<div class="form-group col-md-12">
+							<div id="{{paymentMethod}}-error-container" style="display: none;">
+								<div role="alert" class="alert alert-danger alert-has-icon"">
+									{% sw_icon 'blocked' %}
+									<div class="alert-content-container">
+										<div class="alert-content"></div>
+									</div>
+								</div>
+							</div>
+							<label class="form-label" for="{{paymentMethod}}Dob">{{ "NovalnetPayment.text.dob" | trans }}</label>
+							<input class="form-control" id="{{paymentMethod}}Dob" name="{{paymentMethod}}FormData[dob]" placeholder="{{ "NovalnetPayment.text.dobPlaceholder" | trans }}" onkeydown="return NovalnetUtility.isNumericBirthdate( this, event );" autocomplete="OFF"/>
+						</div>
+					</div>				
+				{% endif %}
+			</fieldset>
+		</div>
+	</div>
+	<input type="hidden" value="{{paymentMethod}}" id="novalnetinvoice-payment-name"> 
+	<input type="hidden" value="{{ shopware.config.NovalnetPayment.settings.sepaguarantee.forceGuarantee }}" name="nnInvoiceForceGuarantee" id="nnInvoiceForceGuarantee">
+	<input type="hidden" value="0" name="doForceInvoicePayment" id="doForceInvoicePayment">
+</div>

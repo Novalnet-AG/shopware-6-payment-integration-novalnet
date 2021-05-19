@@ -1,0 +1,92 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-fields.html.twig' %}
+	{% block component_payment_method %}
+	
+		{% set invoiceGuaranteeEnabled = 'NO' %}
+		{% set sepaGuaranteeEnabled = 'NO' %}
+		{% for novalnetPayment in page.paymentMethods %}
+			{% set guaranteePaymentMethod = novalnetPayment|getPaymentMethodName() %}
+			{% if guaranteePaymentMethod is not empty and 'novalnetinvoiceguarantee' in guaranteePaymentMethod %}
+				{% set invoiceGuaranteeEnabled = 'YES' %}
+			{% elseif guaranteePaymentMethod is not empty and 'novalnetsepaguarantee' in guaranteePaymentMethod %}
+				{% set sepaGuaranteeEnabled = 'YES' %}
+			{% endif %}
+		{% endfor %}
+		
+		{% set paymentMethod = payment|getPaymentMethodName() %}
+		{% if paymentMethod is not empty and 'novalnet' in paymentMethod %}
+			<input type="hidden" value="{{ payment.id }}" name="{{paymentMethod}}Id" id="{{paymentMethod}}Id">
+			{% set hidePayment = 'NO' %}
+			{% if shopware.config.NovalnetPayment.settings.clientId is empty or shopware.config.NovalnetPayment.settings.tariff is empty %}
+				{% set hidePayment = 'YES' %}
+			{% elseif paymentMethod in ['novalnetsepaguarantee', 'novalnetsepa']|keys and sepaGuaranteeEnabled  == 'YES' %}
+				{% set sepaGuaranteeAvailable = context|isGuaranteeAvailable(page,shopware.config.NovalnetPayment.settings, 'novalnetsepaguarantee') %}
+				{% if paymentMethod == 'novalnetsepaguarantee' and sepaGuaranteeAvailable == 'NO' %}
+					{% set hidePayment = 'YES' %}
+				{% elseif paymentMethod == 'novalnetsepa' %}
+					{% if shopware.config.NovalnetPayment.settings.sepaguarantee.forceGuarantee != 1 and sepaGuaranteeAvailable == 'NO' %}
+						{% set hidePayment = 'YES' %}
+					{% elseif sepaGuaranteeAvailable != 'NO' %}
+						{% set hidePayment = 'YES' %}
+					{% endif %}
+				{% endif %}
+			{% endif %}
+			{% if paymentMethod in ['novalnetinvoiceguarantee', 'novalnetinvoice']|keys and invoiceGuaranteeEnabled  == 'YES' %}
+			
+				{% set invoiceGuaranteeAvailable = context|isGuaranteeAvailable(page,shopware.config.NovalnetPayment.settings, 'novalnetinvoiceguarantee') %}
+				{% if paymentMethod == 'novalnetinvoiceguarantee' and invoiceGuaranteeAvailable == 'NO' %}
+					{% set hidePayment = 'YES' %}
+				{% elseif paymentMethod == 'novalnetinvoice' %}
+					{% if shopware.config.NovalnetPayment.settings.invoiceguarantee.forceGuarantee != 1 and invoiceGuaranteeAvailable == 'NO' %}
+						{% set hidePayment = 'YES' %}
+					{% elseif invoiceGuaranteeAvailable != 'NO' %}
+						{% set hidePayment = 'YES' %}
+					{% endif %}
+				{% endif %}
+			{% endif %}
+			{% if hidePayment == 'NO' %}
+				{% set showTestModeNotification = paymentMethod|isTestModeEnabled(shopware.config.NovalnetPayment.settings) %}
+				{% if showTestModeNotification is not empty %}
+					<div class="novalnet-test-mode">{{"NovalnetPayment.text.testMode"|trans}}</div>
+				{% endif %}
+				{{ parent() }}
+			{% endif %}
+		{% else %}
+			{{ parent()}}
+		{% endif %}
+		
+	{% endblock %}
+    
+	{% block component_payment_fieldset_template %}
+		{{ parent() }}
+		{% if 'novalnet' in paymentMethod %}
+			<div id="novalnet-payment">
+				{% set paymentNotification = paymentMethod | getPaymentNotification(shopware.config.NovalnetPayment.settings) %}			
+				{% if paymentNotification is not empty %}
+					<div class="card">
+						<fieldset>
+							<div class="form-row-wide col-md-12 novalnet-input-field-container">
+								<div class="form-group col-md-12">
+									{{paymentNotification|escape('html')}}
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				{% endif %}
+				{% if paymentMethod == 'novalnetcreditcard' %}
+					{% include 'storefront/component/novalnet/creditcard.html.twig' %}
+				{% endif %}
+				{% if paymentMethod == 'novalnetinvoiceguarantee' %}
+					{% include 'storefront/component/novalnet/invoice.html.twig' %}
+				{% endif %}
+				{% if paymentMethod == 'novalnetsepaguarantee' %}
+					{% include 'storefront/component/novalnet/sepa.html.twig' %}
+				{% endif %}
+				{% if paymentMethod == 'novalnetsepa' %}
+					{% include 'storefront/component/novalnet/sepa.html.twig' %}
+				{% endif %}
+				{% if paymentMethod == 'novalnetpaypal' %}
+					{% include 'storefront/component/novalnet/paypal.html.twig' %}
+				{% endif %}
+			</div>
+		{% endif %}
+    {% endblock %}

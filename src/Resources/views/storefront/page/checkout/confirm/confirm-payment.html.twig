@@ -1,0 +1,12 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/confirm-payment.html.twig' %}
+
+{% block page_checkout_confirm_payment_inner %}
+    {{ parent() }}
+    {% if 'NovalnetCreditCard' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/creditcard-info.html.twig' %}
+    {% elseif 'NovalnetSepa' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/sepa-info.html.twig' %}
+    {% elseif 'NovalnetPaypal' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/paypal-info.html.twig' %}
+    {% endif %}
+{% endblock %}

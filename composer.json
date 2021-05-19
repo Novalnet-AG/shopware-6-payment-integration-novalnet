@@ -1,0 +1,33 @@
+{
+    "name": "novalnet/novalnet-payment",
+    "description": "PCI Compliant, seamless integration with the various types of payment and payment-related services integrated into one unique platform",
+    "version": "v12.0.0",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Novalnet AG",
+            "homepage": "https://www.novalnet.de"
+        }
+    ],
+    "extra": {
+        "shopware-plugin-class": "Novalnet\\NovalnetPayment\\NovalnetPayment",
+        "label": {
+            "de-DE": "Novalnet Zahlung",
+            "en-GB": "Novalnet Payments"
+        },
+        "description": {
+            "de-DE": "Das Novalnet Payment-Plugin für Shopware 6 ist eine Ende-zu-Ende-Lösung für die Full-Service-Abwicklung von internationalen und lokalen Zahlungen auf der ganzen Welt. Über die Abbindung an die Novalnet-Plattform sorgt es dafür, dass Ihre Zahlungen reibungslos abgewickelt werden, erstellt automatisch Ihre Rechnungen, verschickt pünktlich Mahnungen und verarbeitet auch On-hold-Transaktionen. Ihre Transaktionen sind durch ein Höchstmaß an Sicherheit geschützt. Dazu wird die Novalnet AG jedes Jahr in einem umfangreichen Sicherheits-Audit sowohl von der BaFin als auch nach dem Payment Card Industry Data Security Standard (PCI DSS) auf dem höchsten Level 1 geprüft und zertifiziert. Die vielfach automatisierten Abläufe sorgen dafür, dass Sie Kosten sparen und sich auf Ihren Verkaufserfolg konzentrieren können.Mehrere Verträge für die Zahlungsabwicklung mit verschiedenen Dienstleistern wie Banken, Kreditkarten-Acquirern, Anbietern von Betrugspräventionen, Inkassounternehmen etc. und mit unterschiedlichen Laufzeiten und Gebühren sind mit Nutzung des Novalnet-Plugins Vergangenheit.", 
+            "en-GB": "The Novalnet Payment Plugin for Shopware 6 is an end-to-end solution for the full service processing of international and local payments all over the world. By connecting to the Novalnet platform, it ensures that your payments are processed smoothly, automatically creates your invoices, sends reminders on time and also processes on-hold transactions. Your transactions are protected by the highest level of security. For this purpose, Novalnet AG is tested and certified every year in a comprehensive security audit both by BaFin and according to the Payment Card Industry Data Security Standard (PCI DSS) at the highest level 1.The multiple automated processes ensure that you save costs and concentrate on your sales success.Several contracts for payment processing with various service providers such as banks, credit card acquirers, fraud prevention providers, collection agencies etc. and with different terms and fees are a thing of the past with the use of the Novalnet plug-in."
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Novalnet\\NovalnetPayment\\": "src/"
+        }
+    },
+    "require": {
+    "shopware/core": "^6.1",
+    "shopware/storefront": "^6.1"
+    }
+}

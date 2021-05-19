@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-detail.html.twig' %}
+
+
+{% block page_account_order_item_detail_table_footer%}
+{{ parent() }}
+	{% for transaction in order.transactions %}
+		{% set paymentMethod = transaction.paymentMethod|getPaymentMethodName() %}
+        {% if 'novalnet' in paymentMethod and transaction.getCustomFields()['novalnet_comments'] != '' %}
+			{% block page_account_order_item_detail_comments%}
+				{% block page_account_order_item_detail_comments_label %}
+					<dt class="col-6 col-md-5">{{"NovalnetPayment.text.commentsHeader"|trans}}</dt>
+				{% endblock %}
+								
+				{% block page_account_order_item_detail_comments_value %}
+					<dd class="col-6 col-md-7 order-item-detail-labels-value">
+						{{ transaction.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+					</dd>
+				{% endblock %}
+			{% endblock %}
+		{% endif %}
+    {% endfor %}
+{% endblock %}

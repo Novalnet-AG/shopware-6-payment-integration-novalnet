@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm_errors %}
+    {{ parent() }}
+    {% set errorMessage = context|getNovalnetErrorMessage() %}
+    {% if errorMessage is not empty %}
+		<div
+			role="alert"
+			class="alert alert-danger alert-has-icon">
+			{% sw_icon 'blocked' %}
+			<div class="alert-content-container">
+				<div class="alert-content" id="novalnet-error">
+					{{errorMessage}}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+
+

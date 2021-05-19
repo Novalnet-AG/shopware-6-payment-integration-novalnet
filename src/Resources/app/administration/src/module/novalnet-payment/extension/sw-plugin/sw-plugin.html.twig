@@ -1,0 +1,11 @@
+{% block sw_plugin_list_grid_columns_actions_settings %}
+    <template v-if="item.composerName === 'novalnet/novalnet-payment'">
+        <sw-context-menu-item :routerLink="{ name: 'novalnet.payment.detail.credentials' }">
+            {{ $tc('sw-plugin.list.config') }}
+        </sw-context-menu-item>
+    </template>
+
+    <template v-else>
+        {% parent %}
+    </template>
+{% endblock %}

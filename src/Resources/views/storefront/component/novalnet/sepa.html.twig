@@ -1,0 +1,117 @@
+{% set sepaTokens = context|getTokens(paymentMethod) %}
+
+{% if paymentMethod == 'novalnetsepa' %}
+	{% set onclick = shopware.config.NovalnetPayment.settings.sepa.oneclick %}
+{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+	{% set onclick = shopware.config.NovalnetPayment.settings.sepaguarantee.oneclick %}
+{% endif %}
+
+<div class="{{paymentMethod}}-payment"
+	 id="{{paymentMethod}}-payment"
+	 data-{{paymentMethod}}-payment
+	 data-{{paymentMethod}}-payment-config="{{
+	 {
+		'forceGuarantee': shopware.config.NovalnetPayment.settings.sepaguarantee.forceGuarantee|abs,
+		'text' : {
+			'dobEmpty' : "NovalnetPayment.text.dobEmpty"|trans,
+			'dobInvalid' : "NovalnetPayment.text.dobInvalid"|trans,
+			'invalidIban' : "NovalnetPayment.text.invalidIban"|trans
+		}
+	 }|jsonEncode()|escape('html_attr')}}">
+	 {% if sepaTokens is not empty and onclick is not empty %}	
+		<div>
+			<ul class="{{paymentMethod}}-SavedPaymentMethods novalnet-SavedPaymentMethods" data-count="{{sepaTokens|length}}">
+				{% for token in sepaTokens %}
+					{% if token.token != '' %}
+						{% set isChecked = '' %}
+						{% if loop.index == '1' %}
+							{% set isChecked = 'checked' %}
+						{% endif %}
+						<li class="{{paymentMethod}}-SavedPaymentMethods-token novalnet-SavedPaymentMethods-token">
+							<div class="row">
+								<div class="col-sm-12 px-0">
+									<label for="{{paymentMethod}}-payment-token-{{ token.token }}" style="float:left;min-width: 275px;"><input id="{{paymentMethod}}-payment-token-{{ token.token }}" type="radio" name="{{paymentMethod}}FormData[paymentToken]" value="{{ token.token }}" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput" {{isChecked}}/> {{token.type}} {{ "NovalnetPayment.text.endingIn"|trans }} {{ token.accountData }}</label>
+									<div style="float:left;">
+										<a class="remove_card_details" data-value="{{ token.token }}" style="cursor:pointer;">{% sw_icon 'trash' style {'size': 'xs','color': 'danger'} %}</a>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endif %}
+				{% endfor %}
+				<li class="{{paymentMethod}}-SavedPaymentMethods-new novalnet-SavedPaymentMethods-new">
+					<div class="row">
+						<div class="col-sm-12 px-0">
+							<label for="{{paymentMethod}}-payment-new"><input id="{{paymentMethod}}-payment-new" type="radio" name="{{paymentMethod}}FormData[paymentToken]" value="new" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput"/>
+							{{ "NovalnetPayment.text.useOtherPayment"|trans }}</label>
+						</div>	
+					</div>	
+				</li>
+			</ul>
+		</div>
+	{% endif %}
+	<div class="form-row" id="{{paymentMethod}}-payment-form" >
+		<div class="card">
+			<fieldset>
+				<div class="form-row-wide col-md-12 novalnet-input-field-container">
+					<div class="form-group col-md-12">
+						<div id="{{paymentMethod}}-error-container" style="display: none;">
+							<div role="alert" class="alert alert-danger alert-has-icon"">
+								{% sw_icon 'blocked' %}
+								<div class="alert-content-container">
+									<div class="alert-content"></div>
+								</div>
+							</div>
+						</div>
+						<label class="form-label" for="{{paymentMethod}}AccountData">{{ "NovalnetPayment.text.sepaIban" | trans }}</label>
+						<input class="form-control" id="{{paymentMethod}}AccountData" name="{{paymentMethod}}FormData[accountData]" placeholder="DE00 0000 0000 0000 0000 00" onkeypress="return NovalnetUtility.formatIban(event);" onchange="return NovalnetUtility.formatIban(event);" autocomplete="OFF" style="text-transform:uppercase;"/>
+					</div>
+				</div>
+				<div class="form-row-wide col-md-12 novalnet-input-field-container">
+					<div class="form-group col-md-12">
+						<a id="novalnetSepaMandate" style="cursor:pointer" onclick="jQuery('#novalnetAboutMandate').toggle('slow')" href="#">{{ "NovalnetPayment.text.mandateNotification" | trans | sw_sanitize }}</a><br/><br/>
+						<div role="alert" class="alert alert-info alert-has-icon" id="novalnetAboutMandate" style="display: none;">
+							{% sw_icon 'info' %}
+							<div class="alert-content-container">
+								<div class="alert-content">
+									{{ "NovalnetPayment.text.aboutMandate" | trans | sw_sanitize }}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<input type="hidden" value="" name="{{paymentMethod}}FormData[guarantee]" id="{{paymentMethod}}-guarantee" value="{{sepaGuaranteeAvailable}}">
+				{% if onclick is not empty %}
+					<div class="form-row-wide col-md-12 novalnet-input-field-container">
+						<div class="form-group col-md-12 custom-control custom-checkbox" style="padding-left: 44px !important;">
+							<input class="custom-control-input" id="{{paymentMethod}}-save-data" name="{{paymentMethod}}FormData[saveData]" type="checkbox" checked="checked">
+							<label class="custom-control-label" for="{{paymentMethod}}-save-data">
+								{{ "NovalnetPayment.text.savePaymentData"|trans }}
+							</label>
+						</div>
+					</div>
+				{% endif %}
+			</fieldset>
+		</div>
+	</div>
+	<div class="form-row" id="{{paymentMethod}}-payment-form" >
+		<div class="card">
+			<fieldset>
+				{% if paymentMethod == 'novalnetsepaguarantee' and sepaGuaranteeAvailable == 'YES' %}
+					<div class="form-row-wide col-md-12 novalnet-input-field-container">
+						<div class="form-group col-md-12">
+							<label class="form-label" for="{{paymentMethod}}Dob">{{ "NovalnetPayment.text.dob" | trans }}</label>
+							<input class="form-control" id="{{paymentMethod}}Dob" name="{{paymentMethod}}FormData[dob]" placeholder="{{ "NovalnetPayment.text.dobPlaceholder" | trans }}" onkeydown="return NovalnetUtility.isNumericBirthdate( this, event );" autocomplete="OFF"/>
+						</div>
+					</div>				
+				{% endif %}
+			</fieldset>
+		</div>
+	</div>
+	<input type="hidden" value={{ path('frontend.checkout.removePaymentToken') }} id="cardRemoveUrl">
+	<input type="hidden" value="{{ "NovalnetPayment.text.removeConfirmMessage"|trans }}" id="removeConfirmMessage">
+	<input type="hidden" value="{{ payment.id }}" name="novalnetsepaFormId" id="novalnetsepaFormId" form="confirmOrderForm">
+	<input type="hidden" value="IBAN" name="{{paymentMethod}}FormData[type]">
+	<input type="hidden" value="{{paymentMethod}}" id="novalnet-payment-name"> 
+	<input type="hidden" value="0" name="doForceSepaPayment" id="doForceSepaPayment">
+</div>
