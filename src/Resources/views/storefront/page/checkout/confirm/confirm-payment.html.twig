@@ -1,0 +1,48 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/confirm-payment.html.twig' %}
+
+{% block page_checkout_confirm_payment_inner %}
+    {% set hidePayment = 'NO' %}
+    {% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+    {% set invoiceGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceguarantee') %}
+    {% set invoiceInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceinstalment') %}
+    {% set sepaGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepaguarantee') %}
+    {% set sepaInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepainstalment') %}
+
+    {{ parent() }}
+
+{% endblock %}
+
+{% block page_checkout_confirm_payment_current_text %}
+    {% if 'Novalnet' in context.paymentMethod.handlerIdentifier %}
+        {% if 'NovalnetInvoiceGuarantee' in context.paymentMethod.handlerIdentifier and invoiceGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaGuarantee' in context.paymentMethod.handlerIdentifier and sepaGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetInvoiceInstalment' in context.paymentMethod.handlerIdentifier and invoiceInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaInstalment' in context.paymentMethod.handlerIdentifier and sepaInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+    {% endif %}
+
+    {% if hidePayment == 'YES' %}
+        <strong>{{ "checkout.confirmCurrentPaymentShipping"|trans|sw_sanitize }}</strong>
+        {{ "checkout.confirmSelectionNone"|trans|sw_sanitize }}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+
+    {% if 'NovalnetCreditCard' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/creditcard-info.html.twig' %}
+    {% elseif 'NovalnetSepa' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/sepa-info.html.twig' %}
+    {% elseif 'NovalnetPaypal' in context.paymentMethod.handlerIdentifier %}
+        {% include 'storefront/component/novalnet/paypal-info.html.twig' %}
+    {% endif %}
+{% endblock %}

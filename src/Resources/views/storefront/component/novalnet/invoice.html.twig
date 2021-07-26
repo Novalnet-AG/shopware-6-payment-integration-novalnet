@@ -1,0 +1,113 @@
+{% set formName = nnShopVersion >= "6.4" ? "form = confirmOrderForm" : '' %}
+
+<div class="{{paymentMethod}}-payment"
+	 id="{{paymentMethod}}-payment"
+	 data-{{paymentMethod}}-payment
+	 data-{{paymentMethod}}-payment-config="{{
+	 {
+		'forceGuarantee': novalnetSettings['NovalnetPayment.settings.invoiceguarantee.forceGuarantee']|abs,
+		'allowB2B': novalnetSettings['NovalnetPayment.settings.invoiceguarantee.allowB2B']|abs,
+        'company': context.customer.activeBillingAddress.company,
+		'text' : {
+			'dobEmpty' : "NovalnetPayment.text.dobEmpty"|trans,
+			'dobInvalid' : "NovalnetPayment.text.dobInvalid"|trans,
+			'invalidIban' : "NovalnetPayment.text.invalidIban"|trans
+		}
+	 }|jsonEncode()|escape('html_attr')}}">
+	<div class="form-row" id="{{paymentMethod}}-payment-form" >
+		{% set invoiceCycles	= novalnetSettings['NovalnetPayment.settings.invoiceinstalment.cycles'] %}
+		<div class="card">
+			<fieldset>
+                {% if (paymentMethod == 'novalnetinvoiceguarantee' and invoiceGuaranteeAvailable == 'YES') or (paymentMethod == 'novalnetinvoiceinstalment' and invoiceInstalmentAvailable == 'YES') %}
+                    {% set block = "block" %}
+                {% else %}
+                    {% set block = "none" %}
+                {% endif %}
+
+
+					<div class="form-group col-md-12 novalnet-input-field-container" id="{{paymentMethod}}DobField" style="display:{{ block }}">
+						<div id="{{paymentMethod}}-error-container" style="display: none;">
+							<div role="alert" class="alert alert-danger alert-has-icon">
+								{% sw_icon 'blocked' %}
+								<div class="alert-content-container">
+									<div class="alert-content"></div>
+								</div>
+							</div>
+						</div>
+						<label class="form-label" for="{{paymentMethod}}Dob">{{ "NovalnetPayment.text.dob" | trans }}</label>
+						<input class="form-control" {{ formName }} id="{{paymentMethod}}Dob" name="{{paymentMethod}}FormData[dob]" placeholder="{{ "NovalnetPayment.text.dobPlaceholder" | trans }}" onkeydown="return NovalnetUtility.isNumericBirthdate( this, event );" value="{{context.customer.birthday ? context.customer.birthday|date('d.m.Y') : ''}}" autocomplete="OFF"/>
+					</div>
+
+				{% if paymentMethod == 'novalnetinvoiceinstalment' and ( invoiceInstalmentAvailable == 'YES' or invoiceInstalmentAvailable == 'HIDE_DOB' ) %}
+                    {% set totalPrice	= page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice %}
+					<div class="form-row-wide col-md-12 novalnet-input-field-container">
+						<div class="instalmentBannerTitle" style="border-bottom: 1px solid #dadae5; padding: .625rem .625rem .625rem .625rem;">
+							<strong>{{ "NovalnetPayment.text.instalmentBannerTitle" | trans ({
+                                    '%amount%':  totalPrice | currency()
+                                }) }}</strong>
+						</div>
+						<div class="instalmentBannerInfo" style="margin-left: .625rem; margin-top: 1rem;">
+							<p>{{ "NovalnetPayment.text.instalmentBannerInfo" | trans }}</p>
+						</div>
+						<select class="form-control" id="{{paymentMethod}}Duration" name="{{paymentMethod}}FormData[duration]" {{ formName }}>
+							{% for cycle in invoiceCycles|sort  %}
+								{% set cycleAmount	= (totalPrice / cycle) |round(2, 'common') %}
+									{% if cycleAmount >= '9.99' %}
+										<option value="{{ cycle }}" {% if loop.first %}selected{% endif %}>
+											{{ "NovalnetPayment.text.instalmentAmountDisplay" | trans({
+												'%cycle%': cycle,
+												'%amount%':  cycleAmount | currency()
+											}) }}
+										</option>
+									{% endif %}
+							{% endfor %}
+						</select>
+
+                        <div class="novalnetInstalmentInfo collapsed btn-link" id="{{paymentMethod}}Info">
+                            {{ "NovalnetPayment.text.instalmentSummary"|trans }}
+                        </div>
+                        <div id="{{paymentMethod}}Summary" class="{{paymentMethod}}InfoSummary">
+							{% for cycle in invoiceCycles %}
+                                {% set cycleAmount = (totalPrice / cycle) |round(2, 'common') %}
+                                
+                                {% if cycleAmount >= '9.99' %}
+									<div class="{{paymentMethod}}Detail" data-duration="{{ cycle }}" {% if not loop.first %}hidden="hidden"{% endif %}>
+										<table class="table table-striped novalnetinstalment-table">
+											<thead>
+												<tr>
+													<th>{{ "NovalnetPayment.text.instalmentHeading1"|trans }}</th>
+													<th>{{ "NovalnetPayment.text.instalmentHeading2"|trans }}</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for instalment in 1..cycle %}
+													<tr>
+														{% if instalment != cycle %}
+															<td>{{ loop.index }}</td>
+															<td>{{ cycleAmount | currency() }}</td>
+														{% else %}
+															{% set cycleAmount = totalPrice - (cycleAmount * (instalment-1))  %}
+                                                            <td>{{ loop.index }}</td>
+															<td>{{ cycleAmount | currency() }}</td>
+														{% endif %}
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								{% endif %}
+							{% endfor %}
+                        </div>
+					</div>
+				{% endif %}
+
+			</fieldset>
+		</div>
+	</div>
+	<input type="hidden" value="{{paymentMethod}}" class="novalnet-payment-name">
+	{% if paymentMethod == 'novalnetinvoiceinstalment' %}
+		<input type="hidden" value="{{paymentMethod}}" id="novalnetinvoice-instalment-name">
+	{% endif %}
+	<input type="hidden" value="0" name="doForceInvoicePayment" id="doForceInvoicePayment">
+	<input type="hidden" name="{{paymentMethod}}FormData[doForceInvoicePayment]" id="InvoiceForcePayment" {{ formName }}>
+</div>

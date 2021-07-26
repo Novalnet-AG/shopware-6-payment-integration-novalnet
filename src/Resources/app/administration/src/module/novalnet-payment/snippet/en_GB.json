@@ -1,0 +1,253 @@
+{
+  "novalnet-payment": {
+    "module": {
+      "title": "Novalnet",
+      "description": "PCI compliant and seamless integration with various payment types and payment processing services in one unique platform...",
+      "txid": "Novalnet Transaction ID",
+      "comments": "Comments",
+      "projectInfo": "Your project is in test mode",
+      "generalInfo": "Please read the Installation Guide before you start and login to the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a> using your merchant account. To get a merchant account, mail to <a href='mailto:sales@novalnet.de' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> sales@novalnet.de</a> or call +49 (089) 923068320",
+      "globalTitle": "Global Configuration",
+      "paymentTitle": "Payment Configuration"
+    },
+    "settingForm": {
+		    "title": "Novalnet",
+		    "statusTitle": "Status",
+		    "billingAddressHeadline": "Billing address",
+		    "shippingAddressHeadline": "Shpping address",
+            "buttons": {
+					"save": "Save"
+			},
+            "credentials": {
+                "cardTitle": "Novalnet API Configuration",
+                "activationKey": {
+                    "label": "Product activation key *",
+                    "tooltipText": "Your product activation key is a unique token for merchant authentication and payment processing. Get your Product activation key from the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a>: PROJECT > Choose your project > Shop Parameters > API Signature (Product activation key)"
+                },
+                "accessKey": {
+                    "label": "Payment access key *",
+                    "tooltipText": "Your secret key used to encrypt the data to avoid user manipulation and fraud. Get your Payment access key from the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a> PROJECT > Choose your project > Shop Parameters > Payment access key"
+                },
+                "tariff": {
+                    "label": "Select Tariff ID *",
+                    "tooltipText": "Select a Tariff ID to match the preferred tariff plan you created at the Novalnet Admin Portal for this project",
+                    "emptyText": "Select Tariff ID"
+                }
+            },
+            "merchantSettings": {
+				"cardTitle": "Notification / Webhook URL Setup",
+				"deactivateIp": {
+					"label": "Allow manual testing of the Notification / Webhook URL",
+					"tooltipText": "Enable this to test the Novalnet Notification / Webhook URL manually. Disable this before setting your shop live to block unauthorized calls from external parties"
+				},
+                "mailTo": {
+                    "label": "Send e-mail to",
+                    "tooltipText": "Notification / Webhook URL execution messages will be sent to this e-mail"
+                },
+                "callbackUrl": {
+                    "label": "Notification / Webhook URL",
+                    "button": "Configure",
+                    "tooltipText": "You must configure the webhook endpoint in your <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'>Novalnet Admin portal</a>. This will allow you to receive notifications about the transaction."
+                }
+			},
+			"paymentSettings": {
+				"testmode": {
+					"label": "Enable test mode",
+					"tooltipText": "The payment will be processed in the test mode therefore amount for this transaction will not be charged"
+				},
+				"oneclick": {
+					"label": "One-click shopping",
+					"tooltipText": "Payment details stored during the checkout process can be used for future payments"
+				},
+				"notification": {
+					"label": "Notification for the buyer",
+					"tooltipText": "The entered text will be displayed on the checkout page"
+				},
+				"onHold": {
+					"label": "Payment Action",
+					"tooltipText": "Choose whether or not the payment should be charged immediately. Capture completes the transaction by transferring the funds from buyer account to merchant account. Authorize verifies payment details and reserves funds to capture it later, giving time for the merchant to decide on the order",
+					"capture": "Capture",
+					"authroize": "Authorize",
+					"amountLabel": "Minimum transaction amount for authorization (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+					"amountTooltip": "In case the order amount exceeds the mentioned limit, the transaction will be set on-hold till your confirmation of the transaction. You can leave the field empty if you wish to process all the transactions as on-hold."
+				},
+				"guaranteeMinimumOrderAmount": {
+					"label": "Minimum order amount for payment guarantee (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+					"instalmentLabel": "Minimum order amount (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+					"instalmentTooltipText": "Minimum order amount to display the selected payment method (s) at during checkout",
+					"tooltipText": "Enter the minimum amount (in cents) for the transaction to be processed with payment guarantee. For example, enter 100 which is equal to 1,00. By default, the amount will be 9,99 EUR"
+				},
+				"forceGuarantee": {
+					"label": "Force Non-Guarantee payment",
+					"tooltipText": "Even if payment guarantee is enabled, payments will still be processed as non-guarantee payments if the payment guarantee requirements are not met",
+					"sepacondition": "Make sure the Direct Debit SEPA payment is enabled to use this option.",
+					"invoicecondition": "Make sure the Invoice payment is enabled to use this option."
+				},
+				"allowB2B": {
+					"label": "Allow B2B Customers",
+					"tooltipText": "Allow B2B customers to place order"
+				},
+				"productPageInfo": {
+					"label": "Display Instalment Plan on Product Detail Page",
+					"tooltipText": "Control whether or not an instalment plan should be displayed in the product page."
+				},
+				"instalmentCycleInfo": {
+					"label": "Instalment cycles",
+					"tooltipText": "Select the instalment cycles that can be availed in the instalment plan",
+					"cycle": " cycles"
+				},
+				"creditcard": {
+					"cardTitle": "Credit/Debit Cards",
+					"cc3D": {
+						"label": "Enable 3D secure",
+						"tooltipText": "The 3D-Secure will be activated for credit cards. The issuing bank prompts the buyer for a password what, in turn, help to prevent a fraudulent payment. It can be used by the issuing bank as evidence that the buyer is indeed their card holder. This is intended to help decrease a risk of charge-back"
+					},
+					"inline": {
+						"label": "Enable inline form",
+						"tooltipText": "Inline form: The following fields will be shown in the checkout in two lines: card holder & credit card number / expiry date / CVC"
+					},
+					"enforcecc3D": {
+						"label": "Enforce 3D secure payment outside EU",
+						"tooltipText": "By enabling this option, all payments from cards issued outside the EU will be authenticated via 3DS 2.0 SCA"
+					},
+					"css": {
+						"cardTitle": "CSS settings for iframe form",
+						"label": "Label",
+						"input": "Input",
+						"css": "CSS Text"
+					}
+				},
+				"sepa": {
+					"cardTitle": "Direct Debit SEPA",
+					"dueDate": {
+						"label": "Payment due date (in days)",
+						"tooltipText": "Number of days after which the payment is debited (must be between 2 and 14 days)",
+						"error": "SEPA Due date is not valid"
+					}
+				},
+				"sepaguarantee": {
+					"cardTitle": "Direct Debit SEPA with payment guarantee"
+				},
+				"paypal": {
+					"cardTitle": "PayPal",
+					"condition": "In order to use this option you must have billing agreement option enabled in your PayPal account. Please contact your account manager at PayPal.",
+					"configureLink": "To accept PayPal transactions, configure your PayPal API info in the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a> > PROJECT > 'Project' Information > Payment Methods > Paypal > Configure"
+				},
+				"sofort": {
+					"cardTitle": "Sofort"
+				},
+				"ideal": {
+					"cardTitle": "iDEAL"
+				},
+				"eps": {
+					"cardTitle": "eps"
+				},
+				"cashpayment": {
+					"cardTitle": "Barzahlen/viacash",
+					"dueDate": {
+						"label": "Slip expiry date (in days)",
+						"tooltipText": "Number of days given to the buyer to pay at a store. If this field is left blank, 14 days will be set as slip expiry date by default"
+					}
+				},
+				"giropay": {
+					"cardTitle": "giropay"
+				},
+				"invoice": {
+					"cardTitle": "Invoice",
+					"dueDate": {
+						"label": "Payment due date (in days)",
+						"tooltipText": "Number of days given to the buyer to transfer the amount to Novalnet (must be greater than 7 days). If this field is left blank, 14 days will be set as due date by default."
+					}
+				},
+				"invoiceguarantee": {
+					"cardTitle": "Invoice with payment guarantee",
+					"dueDate": {
+						"label": "Payment due date (in days)",
+						"tooltipText": "Number of days given to the buyer to transfer the amount to Novalnet (must be greater than 7 days). If this field is left blank, 14 days will be set as due date by default."
+					}
+				},
+				"prepayment": {
+					"cardTitle": "Prepayment",
+					"dueDate": {
+						"label": "Payment due date (in days)",
+						"tooltipText": "Number of days given to the buyer to transfer the amount to Novalnet (must be between 7 and 28 days). If this field is left blank, 14 days will be set as due date by default"
+					}
+				},
+				"bancontact": {
+					"cardTitle": "Bancontact"
+				},
+				"postfinance": {
+					"cardTitle": "PostFinance E-Finance"
+				},
+				"postfinancecard": {
+					"cardTitle": "PostFinance Card"
+				},
+				"multibanco": {
+					"cardTitle": "Multibanco"
+				},
+				"invoiceinstalment": {
+					"cardTitle": "Instalment by Invoice"
+				},
+				"sepainstalment": {
+					"cardTitle": "Instalment by Direct Debit SEPA"
+				},
+				"przelewy24": {
+					"cardTitle" : "Przelewy24"
+				},
+				"guaranteeCondition": {
+					"title": "Basic requirements:",
+					"country": "Allowed B2C countries: Germany, Austria, Switzerland",
+					"b2b": "Allowed B2B countries: European Union",
+					"currency": "Allowed currency: €",
+					"amount": "Minimum order amount: €9,99 or more",
+					"instalmentAmount": "Minimum order amount: €19,98 or more",
+					"instalmentCycleAmount": "Please note that the instalment cycle amount has to be a minimum of 9.99 EUR and the instalment cycles which do not meet, this criteria will not be displayed in the instalment plan",
+					"age": "Age limit: 18 years or more",
+					"address": "The billing address must be the same as the shipping address"
+				}
+			},
+			"extension":{
+				"Managetitle": "Manage Transaction",
+				"refundTitle" : "Refund process",
+				"refundButton": "Refund",
+				"amountTitle": "Refund amount",
+				"updateTitle": "Amount",
+				"onholdTitle": "Capture/void",
+				"emptyMessage": "Select",
+				"onholdLabel": "Please select status",
+				"confirmLabel": "Confirm",
+				"cancelLabel": "Cancel",
+				"instalmentCancelLabel": "Instalment Cancel",
+				"paidTooltip": "Total paid amount",
+				"refundTooltip": "Refuned amount",
+				"refundDescription": "Please enter the refund amount (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+				"confirmMessage": "Are you sure you want to capture the payment?",
+				"cancelMessage": "Are you sure you want to cancel the payment?",
+				"refundReference": "Refund reference",
+				"refundSuccess": "Your refund was successful.",
+				"updateSuccess": "Your update was successful.",
+				"onholdSuccess": "The transaction has been confirmed.",
+				"onholdCancel": "The transaction has been canceled"
+			},
+            "titleSuccess": "Success",
+            "titleError": "Error",
+            "amountError": "Invalid amount",
+            "failureMessage": "Please fill in the required fields",
+            "apiFailureMessage": "Please configure Novalnet Global Configuration",
+            "amountRefundError": "Invalid refund amount",
+            "successMessage": "Novalnet merchant details are configured successfully.",
+            "errorMessage": "There was an error and your request could not be completed",
+            "emptyMessage": "Enter Product activation key",
+            "emptyAccessKeyMessage": "Enter Payment access key",
+            "webhookUrlConfirm": "Are you sure you want to configure the Webhook URL in Novalnet Admin Portal?",
+            "webhookUrlSuccess": "Notification / Webhook URL is configured successfully in Novalnet Admin Portal",
+            "webhookUrlFailure": "Please enter the valid Webhook URL",
+            "instalmentNumber": "S.No",
+            "instalmentReference": "Novalnet Transaction ID",
+            "instalmentDate": "Date",
+            "instalmentAmount": "Amount",
+            "instalmentStatus": "Status",
+            "instalmentInfo": "Instalment Summary"
+        }
+	}
+}

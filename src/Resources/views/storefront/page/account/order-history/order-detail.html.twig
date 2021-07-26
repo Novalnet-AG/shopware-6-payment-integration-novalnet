@@ -1,0 +1,51 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-detail.html.twig' %}
+
+
+{% block page_account_order_item_detail_table_footer%}
+{{ parent() }}
+	{% for transaction in order.transactions %}
+		{% set paymentMethod = transaction.paymentMethod|getPaymentMethodName() %}
+        {% if 'novalnet' in paymentMethod and transaction.getCustomFields()['novalnet_comments'] != '' %}
+			{% block page_account_order_item_detail_comments%}
+				{% block page_account_order_item_detail_comments_label %}
+					<dt class="col-6 col-md-5">{{"NovalnetPayment.text.commentsHeader"|trans}}</dt>
+				{% endblock %}
+								
+				{% block page_account_order_item_detail_comments_value %}
+					<dd class="col-6 col-md-7 order-item-detail-labels-value">
+						{{ transaction.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+					</dd>
+				{% endblock %}
+				
+				{% if paymentMethod in ['novalnetinvoiceinstalment', 'novalnetsepainstalment'] %}
+					{% set instalmentInfo = context|getNovalnetInstalmentInfo(order.ordernumber) %}
+					{% if instalmentInfo is not empty %}
+						<table class="table table-striped novalnetinstalment-table">
+							<thead style="font-weight: bold;">
+								<tr>
+									<td>{{"NovalnetPayment.text.sno"|trans}}</td>
+									<td>{{"NovalnetPayment.text.date"|trans}}</td>
+									<td>{{"NovalnetPayment.text.tid"|trans}}</td>
+									<td>{{"NovalnetPayment.text.amount"|trans}}</td>
+								<tr>
+							</thead>
+							<tbody>
+								{% set instalmentData = instalmentInfo.InstalmentDetails %}
+								{% for info in instalmentData %}
+									{%set amount = info.amount/100 %}
+									<tr>
+										<td>{{ loop.index }}</td>
+										<td>{{ info.cycleDate ? info.cycleDate|date('d/m/Y'): '-' }}</td>
+										<td>{{ info.reference ? info.reference : '-' }}</td>
+										<td>{{ amount ? amount|currency(): '-' }}</td>
+									<tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% endif %}
+				{% endif %}
+				
+			{% endblock %}
+		{% endif %}
+    {% endfor %}
+{% endblock %}
