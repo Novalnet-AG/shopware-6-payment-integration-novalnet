@@ -1,0 +1,58 @@
+{% set paypalTokens = context|getTokens(paymentMethod) %}
+
+{% set onclick = novalnetSettings['NovalnetPayment.settings.paypal.oneclick'] %}
+{% set formName = nnShopVersion >= "6.4" ? "form = confirmOrderForm" : '' %}
+
+<div class="{{paymentMethod}}-payment"
+	 id="{{paymentMethod}}-payment"
+	 data-{{paymentMethod}}-payment>
+
+	{% if paypalTokens is not empty and onclick is not empty %}
+		<div class="form-row">
+			<ul class="{{paymentMethod}}-SavedPaymentMethods novalnet-SavedPaymentMethods" data-count="{{paypalTokens|length}}" style="width: 100%;">
+				{% for token in paypalTokens %}
+					{% if token.token != '' %}
+						{% set isChecked = '' %}
+						{% if loop.index == '1' %}
+							{% set isChecked = 'checked' %}
+						{% endif %}
+
+						<li class="{{paymentMethod}}-SavedPaymentMethods-token novalnet-SavedPaymentMethods-token">
+							<div class="row">
+								<div class="col-sm-12 px-0">
+									<label for="{{paymentMethod}}-payment-token-{{ token.token }}" style="float:left;min-width: 350px;"><input id="{{paymentMethod}}-payment-token-{{ token.token }}" type="radio" {{ formName }} name="{{paymentMethod}}FormData[paymentToken]" value="{{ token.token }}" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput" {{isChecked}}/>{{ "NovalnetPayment.text.paypalAccount"|trans }}{{ token.accountData }}  </label>
+									<div style="float:left;">
+										<a class="remove_paypal_account_details" data-value="{{ token.token }}" style="cursor:pointer">{% sw_icon 'trash' style {'size': 'xs','color': 'danger'} %}</a>
+									</div>
+								</div>
+							</div>
+						</li>
+					{% endif %}
+				{% endfor %}
+				<li class="{{paymentMethod}}-SavedPaymentMethods-new novalnet-SavedPaymentMethods-new">
+					<div class="row">
+						<div class="col-sm-12 px-0">
+							<label for="{{paymentMethod}}-payment-new"><input id="{{paymentMethod}}-payment-new" type="radio" {{ formName }} name="{{paymentMethod}}FormData[paymentToken]" value="new" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput"/>{{ "NovalnetPayment.text.useOtherPayment"|trans }}</label>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	{% endif %}
+
+	<div class="form-row" id="{{paymentMethod}}-payment-form" >
+		<div class="card">
+			<fieldset>
+				{% if onclick is not empty %}
+					<div class="form-group col-md-12 novalnet-input-field-container">
+						<input id="{{paymentMethod}}-save-data" {{ formName }} name="{{paymentMethod}}FormData[saveData]" type="checkbox" checked="checked">
+						<label class="form-label" for="{{paymentMethod}}-save-data">
+							{{ "NovalnetPayment.text.savePaymentData"|trans }}
+						</label>
+					</div>
+				{% endif %}
+			</fieldset>
+		</div>
+	</div>
+</div>
+<input type="hidden" value="{{paymentMethod}}" class="novalnet-payment-name">

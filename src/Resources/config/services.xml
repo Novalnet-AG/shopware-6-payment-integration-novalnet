@@ -1,0 +1,364 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+		<service id="Novalnet\NovalnetPayment\Components\NovalnetPaymentTokenRepository">
+            <argument type="service" id="novalnet_payment_token.repository" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Content\PaymentToken\NovalnetPaymentTokenDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Content\PaymentTransaction\NovalnetPaymentTransactionDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Resources\translations\de_DE\SnippetFile_de_DE" public="true">
+            <tag name="shopware.snippet.file"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Resources\translations\en_GB\SnippetFile_en_GB" public="true">
+            <tag name="shopware.snippet.file"/>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Subscriber\Storefront\PaymentEventSubscriber">
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="request_stack" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Subscriber\Administration\OrderEventSubscriber">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Twig\Filter\NovalnetFilter">
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <tag name="twig.extension"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Controller\Storefront\WebhookController" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\Content\MailTemplate\Service\MailService" on-invalid="null"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService" on-invalid="null"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Controller\Storefront\FrontendController" public="true">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetHelper">
+			<argument type="service" id="Novalnet\NovalnetPayment\Components\NovalnetPaymentTokenRepository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <argument type="service" id="service_container"/>
+			<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+			<argument type="service" id="request_stack" />
+			<argument type="service" id="language.repository" />
+			<argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
+            <argument>%kernel.shopware_version%</argument>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="novalnet_transaction_details.repository"/>
+            <argument type="service" id="twig"/>
+            <argument type="service" id="Shopware\Core\Content\MailTemplate\Service\MailService" on-invalid="null"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService" on-invalid="null"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetValidator">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+		</service>
+        <service id="Novalnet\NovalnetPayment\Controller\Administration\AdminController" public="true">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Installer\MediaProvider" public="true">
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="media.repository" />
+        </service>
+		<service id="Novalnet\NovalnetPayment\Service\NovalnetCreditCard">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepa">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepaGuarantee">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepaInstalment">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoice">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoiceGuarantee">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoiceInstalment">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPaypal">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSofort">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetIdeal">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetGiropay">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetEps">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPrzelewy24">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPostfinance">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPostfinanceCard">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetBancontact">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetMultibanco">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetCashpayment">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPrepayment">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister"/>
+			<tag name="shopware.payment.method.sync" />
+        </service>
+    </services>
+</container>

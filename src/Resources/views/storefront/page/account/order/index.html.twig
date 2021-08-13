@@ -1,0 +1,23 @@
+{% sw_extends '@Storefront/storefront/page/account/order/index.html.twig' %}
+
+{% block page_checkout_confirm_header %}
+    {% set errorMessage = null|getNovalnetErrorMessage %}
+    
+    {% if errorMessage is not empty %}
+		<div
+			role="alert"
+			class="alert alert-danger alert-has-icon">
+			{% sw_icon 'blocked' %}
+			<div class="alert-content-container">
+				<div class="alert-content" id="novalnet-error">
+					{{errorMessage}}
+				</div>
+			</div>
+		</div>
+		<h1 class="confirm-main-header">
+			{{ "account.completePayment"|trans|sw_sanitize }}
+		</h1>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}

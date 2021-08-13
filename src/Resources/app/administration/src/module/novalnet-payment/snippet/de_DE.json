@@ -1,0 +1,253 @@
+{
+  "novalnet-payment": {
+     "module": {
+      "title": "Novalnet",
+      "description": "PCI-konforme und lückenlose Integration mit verschiedenen Zahlungsarten und Zahlungsdienstleistungen auf einer Plattform.",
+      "txid": "Novalnet Transaktions-ID",
+      "comments": "Kommentare",
+      "projectInfo": "Ihr Projekt befindet sich im Testmodus",
+      "generalInfo": "Bevor Sie beginnen, lesen Sie bitte die Installationsanleitung und melden Sie sich mit Ihrem Händlerkonto im <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin-Portal </a> an. Um ein Händlerkonto zu erhalten, senden Sie bitte eine E-Mail an <a href='mailto:sales@novalnet.de' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> sales@novalnet.de </a> oder rufen Sie uns unter +49 89 923068320 an",
+      "globalTitle": "Konfigurationseinstellungen",
+      "paymentTitle": "Zahlungseinstellungen"
+    },
+    "settingForm": {
+			"title": "Novalnet",
+			"statusTitle": "Zustand",
+		    "billingAddressHeadline": "Rechnungsadresse",
+		    "shippingAddressHeadline": "Versandadresse",
+            "buttons": {
+					"save": "Speichern"
+			},
+            "credentials": {
+                "cardTitle": "Novalnet API-Konfiguration",
+                "activationKey": {
+                    "label": "Aktivierungsschlüssel des Produkts *",
+                    "tooltipText": "Ihr Produktaktivierungsschlüssel ist ein eindeutiger Token für die Händlerauthentifizierung und Zahlungsabwicklung.Ihr Produktaktivierungsschlüssel ist ein eindeutiges Token für die Händlerauthentifizierung und Zahlungsabwicklung. Ihren Produktaktivierungsschlüssel finden Sie im <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin-Portal </a>: PROJEKT > Wählen Sie Ihr Projekt > Shop-Parameter > API-Signatur (Produktaktivierungsschlüssel)"
+                },
+                "accessKey": {
+                    "label": "Zahlungs-Zugriffsschlüssel *",
+                    "tooltipText": "Ihr geheimer Schlüssel zur Verschlüsselung der Daten, um Manipulation und Betrug zu vermeiden. Ihren Paymentzugriffsschlüssel finden Sie im <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin-Portal </a>: PROJEKT > Wählen Sie Ihr Projekt > Shop-Parameter > Paymentzugriffsschlüssel"
+                },
+                "tariff": {
+                    "label": "Auswahl der Tarif-ID *",
+                    "tooltipText": "Wählen Sie eine Tarif-ID, die dem bevorzugten Tarifplan entspricht, den Sie im Novalnet Admin-Portal für dieses Projekt erstellt haben",
+                    "emptyText": "Tarif-ID auswählen"
+                }
+            },
+            "merchantSettings": {
+				"cardTitle": "Benachrichtigungs- / Webhook-URL festlegen",
+				"deactivateIp": {
+					"label": "Manuelles Testen der Benachrichtigungs / Webhook-URL erlauben",
+					"tooltipText": "Aktivieren Sie diese Option, um die Novalnet-Benachrichtigungs-/Webhook-URL manuell zu testen. Deaktivieren Sie die Option, bevor Sie Ihren Shop liveschalten, um unautorisierte Zugriffe von Dritten zu blockieren."
+				},
+                "mailTo": {
+                    "label": "E-Mails senden an",
+                    "tooltipText": "E-Mail-Benachrichtigungen werden an diese E-Mail-Adresse gesendet"
+                },
+                "callbackUrl": {
+                    "label": "Benachrichtigungs- / Webhook-URL",
+                    "button": "Konfigurieren",
+                    "tooltipText": "Sie müssen die folgende Webhook-URL im <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'>Novalnet Admin-Portal</a> hinzufügen. Dadurch können Sie Benachrichtigungen über den Transaktionsstatus erhalten."
+                }
+			},
+			"paymentSettings": {
+				"testmode" : {
+					"label": "Testmodus aktivieren",
+					"tooltipText": "Die Zahlung wird im Testmodus durchgeführt, daher wird der Betrag für diese Transaktion nicht eingezogen."
+				},
+				"oneclick": {
+					"label": "Kauf mit einem Klick",
+					"tooltipText": "Zahlungsdaten, die während des Bestellvorgangs gespeichert werden, können für zukünftige Zahlungen verwendet werden"
+				},
+				"notification": {
+					"label": "Benachrichtigung des Käufers",
+					"tooltipText": "Der eingegebene Text wird auf der Checkout-Seite angezeigt"
+				},
+				"onHold": {
+					"label": "Aktion für vom Besteller autorisierte Zahlungen",
+					"tooltipText": "Wählen Sie, ob die Zahlung sofort belastet werden soll oder nicht. Zahlung einziehen: Betrag sofort belasten. Zahlung autorisieren: Die Zahlung wird überprüft und autorisiert, aber erst zu einem späteren Zeitpunkt belastet. So haben Sie Zeit, über die Bestellung zu entscheiden.",
+					"capture": "Zahlung einziehen",
+					"authroize": "Zahlung autorisieren",
+					"amountLabel": "Mindesttransaktionsbetrag für die Autorisierung (in der kleinsten Währungseinheit, z.B. 100 Cent = entsprechen 1.00 EUR)",
+					"amountTooltip": "Übersteigt der Bestellbetrag das genannte Limit, wird die Transaktion, bis zu ihrer Bestätigung durch Sie, auf on hold gesetzt. Sie können das Feld leer lassen, wenn Sie möchten, dass alle Transaktionen als on hold behandelt werden."
+				},
+				"guaranteeMinimumOrderAmount": {
+					"label": "Mindestbestellbetrag für Zahlungsgarantie (in der kleinsten Währungseinheit, z.B. 100 Cent = entsprechen 1.00 EUR)",
+					"instalmentLabel": "Mindestbestellbetrag (in der kleinsten Währungseinheit, z.B. 100 Cent = entsprechen 1.00 EUR)",
+					"instalmentTooltipText": "Mindestbestellsumme zur Anzeige der ausgewählten Zahlungsart(en) im Checkout",
+					"tooltipText": "Geben Sie den Mindestbetrag (in Cent) für die zu bearbeitende Transaktion mit Zahlungsgarantie ein. Geben Sie z.B. 100 ein, was 1,00 entspricht. Der Standbetrag ist 9,99 EUR."
+				},
+				"forceGuarantee": {
+					"label": "Zahlung ohne Zahlungsgarantie erzwingen",
+					"tooltipText": "Falls die Zahlungsgarantie zwar aktiviert ist, jedoch die Voraussetzungen für Zahlungsgarantie nicht erfüllt sind, wird die Zahlung ohne Zahlungsgarantie verarbeitet.",
+					"sepacondition": "Stellen Sie sicher, dass Sie die Zahlungsart SEPA-Lastschrift aktiviert haben, um diese Option nutzen zu können.",
+					"invoicecondition": "Stellen Sie sicher, dass Sie die Zahlungsart Rechnung aktiviert haben, um diese Option nutzen zu können."
+				},
+				"allowB2B": {
+					"label": "B2B-Kunden erlauben",
+					"tooltipText": "B2B-Kunden erlauben, Bestellungen aufzugeben"
+				},
+				"productPageInfo": {
+					"label": "Ratenzahlungsplan auf der Produktdetailseite anzeigen",
+					"tooltipText": "Legen Sie fest, ob ein Ratenzahlungsplan auf der Produktseite angezeigt werden soll oder nicht."
+				},
+				"instalmentCycleInfo": {
+					"label": "Anzahl der Raten",
+					"tooltipText": "Wählen Sie die Ratenzyklen, die im Ratenplan in Anspruch genommen werden können",
+					"cycle": " Raten"
+				},
+				"creditcard": {
+					"cardTitle": "Kredit- / Debitkarte",
+					"cc3D": {
+						"label": "3D-Secure aktivieren",
+						"tooltipText": "3D-Secure wird für Kreditkarten aktiviert. Die kartenausgebende Bank fragt vom Käufer ein Passwort ab, welches helfen soll, betrügerische Zahlungen zu verhindern. Dies kann von der kartenausgebenden Bank als Beweis verwendet werden, dass der Käufer tatsächlich der Inhaber der Kreditkarte ist. Damit soll das Risiko von Chargebacks verringert werden."
+					},
+					"inline": {
+						"label": "Inline-Formular ermöglichen",
+						"tooltipText": "Inline-Formular: Die folgenden Felder werden im Checkout in zwei Zeilen angezeigt: Karteninhaber & Kreditkartennummer / Ablaufdatum / CVC"
+					},
+					"enforcecc3D": {
+						"label": "3D-Secure-Zahlungen außerhalb der EU erzwingen",
+						"tooltipText": "Wenn Sie diese Option aktivieren, werden alle Zahlungen mit Karten, die außerhalb der EU ausgegeben wurden, mit der starken Kundenauthentifizierung (Strong Customer Authentication, SCA) von 3D-Secure 2.0 authentifiziert."
+					},
+					"css": {
+						"cardTitle": "CSS-Einstellungen für den iFrameformular",
+						"label": "Beschriftung",
+						"input": "Eingabe",
+						"css": "Text für das CSS"
+					}
+				},
+				"sepa": {
+					"cardTitle": "SEPA-Lastschrift",
+					"dueDate": {
+						"label": "Fälligkeitsdatum (in Tagen)",
+						"tooltipText": "Geben Sie die Anzahl der Tage ein, nach denen der Zahlungsbetrag eingezogen werden soll (muss zwischen 2 und 14 Tagen liegen).",
+						"error": "SEPA Fälligkeitsdatum Ungültiger"
+					}
+				},
+				"sepaguarantee": {
+					"cardTitle": "SEPA-Lastschrift mit Zahlungsgarantie"
+				},
+				"paypal": {
+					"cardTitle": "PayPal",
+					"condition": "Um diese Option zu verwenden, müssen Sie die Option Billing Agreement (Zahlungsvereinbarung) in Ihrem PayPal-Konto aktiviert haben. Kontaktieren Sie dazu bitte Ihren Kundenbetreuer bei PayPal.",
+                    "configureLink": "Um PayPal-Transaktionen zu akzeptieren, konfigurieren Sie Ihre PayPal-API-Informationen im <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin-Portal </a> > PROJEKT > Wählen Sie Ihr Projekt > Zahlungsmethoden > Paypal > Konfigurieren"
+				},
+				"sofort": {
+					"cardTitle": "Sofortüberweisung"
+				},
+				"ideal": {
+					"cardTitle": "iDEAL"
+				},
+				"eps": {
+					"cardTitle": "eps"
+				},
+				"giropay": {
+					"cardTitle": "giropay"
+				},
+				"cashpayment": {
+					"cardTitle": "Barzahlen/viacash",
+					"dueDate": {
+						"label": "Verfallsdatum des Zahlscheins (in Tagen)",
+						"tooltipText": "Anzahl der Tage, die der Käufer Zeit hat, um den Betrag in einer Filiale zu bezahlen. Wenn Sie dieses Feld leer lassen, ist der Zahlschein standardmäßig 14 Tage lang gültig."
+					}
+				},
+				"invoice": {
+					"cardTitle": "Rechnung",
+					"dueDate": {
+						"label": "Fälligkeitsdatum (in Tagen)",
+						"tooltipText": "Anzahl der Tage, die der Käufer Zeit hat, um den Betrag an Novalnet zu überweisen (muss mehr als 7 Tage betragen). Wenn Sie dieses Feld leer lassen, werden standardmäßig 14 Tage als Fälligkeitsdatum festgelegt."
+					}
+				},
+				"invoiceguarantee": {
+					"cardTitle": "Rechnung mit Zahlungsgarantie",
+					"dueDate": {
+						"label": "Fälligkeitsdatum (in Tagen)",
+						"tooltipText": "Anzahl der Tage, die der Käufer Zeit hat, um den Betrag an Novalnet zu überweisen (muss mehr als 7 Tage betragen). Wenn Sie dieses Feld leer lassen, werden standardmäßig 14 Tage als Fälligkeitsdatum festgelegt."
+					}
+				},
+				"prepayment": {
+					"cardTitle": "Vorkasse",
+					"dueDate": {
+						"label": "Fälligkeitsdatum (in Tagen)",
+						"tooltipText": "Anzahl der Tage, die der Käufer Zeit hat, um den Betrag an Novalnet zu überweisen (muss zwischen 7 und 28 Tagen liegen). Wenn Sie dieses Feld leer lassen, werden standardmäßig 14 Tage als Fälligkeitsdatum festgelegt"
+					}
+				},
+				"bancontact": {
+					"cardTitle": "Bancontact"
+				},
+				"postfinance": {
+					"cardTitle": "PostFinance E-Finance"
+				},
+				"postfinancecard": {
+					"cardTitle": "PostFinance Card"
+				},
+				"multibanco": {
+					"cardTitle": "Multibanco"
+				},
+				"invoiceinstalment": {
+					"cardTitle": "Ratenzahlung per Rechnung"
+				},
+				"sepainstalment": {
+					"cardTitle": "Ratenzahlung per SEPA-Lastschrift"
+				},
+				"przelewy24": {
+					"cardTitle" : "Przelewy24"
+				},
+				"guaranteeCondition": {
+					"title": "Grundanforderungen:",
+					"country": "Erlaubte B2C-Länder: Deutschland, Österreich, Schweiz",
+					"b2b": "Erlaubte B2B-Länder: Europäische Union",
+					"currency": "Zugelassene Währung: €",
+					"amount": "Mindestbetrag der Bestellung: 9,99 €",
+					"instalmentAmount": "Mindestbetrag der Bestellung: 19,98 €",
+					"instalmentCycleAmount": "Bitte beachten Sie, dass der Betrag einer Rate mindestens 9.99 EUR betragen muss und Raten, die diese Kriterien nicht erfüllen, nicht im Ratenplan angezeigt werden",
+					"age": "Mindestalter: 18 Jahre",
+					"address": "Rechnungsadresse und Lieferadresse müssen übereinstimmen"
+				}
+			},
+			"extension":{
+				"Managetitle": "Transaktion verwalten",
+				"refundTitle" : "Ablauf der Rückerstattung",
+				"refundButton": "Rückerstattung",
+				"amountTitle": "Rückerstattungsbetrag",
+				"onholdTitle": "Erfassen / ungültig",
+				"emptyMessage": "--Auswählen--",
+				"onholdLabel": "Wählen Sie bitte einen Status aus",
+				"confirmLabel": "Bestätigen",
+				"cancelLabel": "Stornieren",
+				"instalmentCancelLabel": "Ratenzahlung Stornieren",
+				"paidTooltip": "Gezahlter Gesamtbetrag",
+				"refundTooltip": "Rückerstatteter Betrag",
+				"confirmMessage": "Sind Sie sicher, dass Sie die Zahlung einziehen möchten?",
+				"cancelMessage": "Sind Sie sicher, dass Sie die Zahlung stornieren wollen?",
+				"amountUpdateTitle": "Betrag ändern",
+				"refundDescription": "Geben Sie bitte den erstatteten Betrag ein (in der kleinsten Währungseinheit, z.B. 100 Cent = entsprechen 1.00 EUR)",
+				"refundReference": "Referenz für die Rückerstattung",
+				"refundSuccess": "Die Rückerstattung war erfolgreich.",
+				"updateSuccess": "Ihr Update war erfolgreich.",
+				"onholdSuccess": "Die Transaktion wurde bestätigt",
+				"onholdCancel": "Die Transaktion wurde storniert"
+			},
+            "titleSuccess": "Success",
+            "titleError": "Error",
+            "amountError": "Ungültiger Betrag",
+            "amountRefundError": "Ungültiger Rückerstattungsbetrag",
+            "failureMessage": "Bitte füllen Sie die erforderlichen Felder aus",
+            "apiFailureMessage": "Konfigurieren Sie bitte die zentralen Novalnet-Einstellungen",
+            "successMessage": "Die Novalnet-Händlerdaten wurden erfolgreich eingestellt.",
+            "errorMessage": "Ein Fehler trat auf und Ihre Zahlung konnte nicht abgeschlossen werden.",
+            "emptyMessage": "Aktivierungsschlüssel für das Produkt eingeben",
+            "emptyAccessKeyMessage": "Zahlungs-Zugangsschlüssel eingeben",
+            "webhookUrlConfirm": "Sind Sie sicher, dass Sie die Webhook-URL im Novalnet Admin Portal konfigurieren möchten?",
+            "webhookUrlSuccess": "Callbackskript-/ Webhook-URL wurde erfolgreich im Novalnet Admin Portal konfiguriert",
+            "webhookUrlFailure": "Bitte geben Sie eine gültige Webhook-URL ein",
+            "instalmentNumber": "S.No",
+            "instalmentReference": "Novalnet-Transaktions-ID",
+            "instalmentDate": "Datum",
+            "instalmentAmount": "Betrag",
+            "instalmentStatus": "Status",
+            "instalmentInfo": "Zusammenfassung der Ratenzahlung"
+        }
+	}
+}

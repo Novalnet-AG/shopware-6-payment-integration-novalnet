@@ -1,0 +1,43 @@
+{
+    "name": "novalnet/novalnet-payment",
+    "description": "PCI Compliant, seamless integration with the various types of payment and payment-related services integrated into one unique platform",
+    "version": "v12.1.2",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Novalnet AG",
+            "homepage": "https://www.novalnet.de"
+        }
+    ],
+    "extra": {
+        "shopware-plugin-class": "Novalnet\\NovalnetPayment\\NovalnetPayment",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by Novalnet AG",
+        "label": {
+            "de-DE": "Novalnet Zahlung",
+            "en-GB": "Novalnet Payments"
+        },
+        "description": {
+            "de-DE": "Das Novalnet Payment Plugin für Shopware 6 ist eine End-to-End-Lösung für die Full-Service-Verarbeitung von internationalen und lokalen Zahlungen auf der ganzen Welt. Durch die Anbindung an die Novalnet-Plattform stellt es sicher, dass Ihre Transaktionen durch ein Höchstmaß an Sicherheit geschützt sind. Zu diesem Zweck wird die Novalnet AG jährlich in einem umfassenden Sicherheitsaudit sowohl von der BaFin als auch nach dem Payment Card Industry Data Security Standard (PCI DSS) auf der höchsten Stufe 1 geprüft und zertifiziert.", 
+            "en-GB": "The Novalnet Payment Plugin for Shopware 6 is an end-to-end solution for the full service processing of international and local payments all over the world. By connecting to the Novalnet platform, it ensures that your transactions are protected by the highest level of security. For this purpose, Novalnet AG is tested and certified every year in a comprehensive security audit both by BaFin and according to the Payment Card Industry Data Security Standard (PCI DSS) at the highest level 1."
+        },
+        "manufacturerLink": {
+          "de-DE": "https://www.novalnet.de",
+          "en-GB": "https://www.novalnet.com"
+        },
+        "supportLink": {
+          "de-DE": "https://www.novalnet.de",
+          "en-GB": "https://www.novalnet.com"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Novalnet\\NovalnetPayment\\": "src/"
+        }
+    },
+    "require": {
+    "shopware/core": "^6.3.0",
+    "shopware/storefront": "^6.3.0"
+    }
+}

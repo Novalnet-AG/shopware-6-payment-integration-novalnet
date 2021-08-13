@@ -1,0 +1,37 @@
+{% set tokens = context|savedPaymentData('novalnetcreditcard') %}
+<br/>
+{% if tokens is not empty %}
+	{% for token in tokens %}
+
+		<br/>
+			{% if token.type != '' %}
+				{% if token.type == 'VISA' %}
+					<img src="{{ asset("storefront/assets/img/visa.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'MASTERCARD' %}
+					<img src="{{ asset("storefront/assets/img/mastercard.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'AMEX' %}
+					<img src="{{ asset("storefront/assets/img/amex.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'MAESTRO' %}
+					<img src="{{ asset("storefront/assets/img/maestro.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'DINERS' %}
+					<img src="{{ asset("storefront/assets/img/diners.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'DISCOVER' %}
+					<img src="{{ asset("storefront/assets/img/discover.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% elseif token.type == 'JCB' %}
+					<img src="{{ asset("storefront/assets/img/jcb.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+				{% else %}
+					{{token.type}}
+				{% endif %}
+			{% endif %}
+			{{ "NovalnetPayment.text.endingIn"|trans }} {{ token.accountData }} ({{ "NovalnetPayment.text.expires"|trans }} {{ token.expiryDate }})
+		
+		
+		{% if novalnetSettings['NovalnetPayment.settings.creditcard.oneclick'] is not empty %}
+			<input type='hidden' name="novalnetcreditcardFormData[paymentToken]" value="{{token.token}}" form="confirmOrderForm"/>
+		{% endif %}
+	{% endfor %}
+{% else %}
+	<input type="hidden" id="novalnetcreditcardHideButton" value="1">
+	<br/><strong style="color:red;">{{"NovalnetPayment.text.cardNotSelected"|trans}}</strong>
+{% endif %}
+

@@ -1,0 +1,33 @@
+{% block novalnet_payment_order_manage_modal %}
+    <sw-modal :title="$tc('novalnet-payment.settingForm.extension.Managetitle')"
+              @modal-close="closeModal">
+
+        {% block novalnet_payment_order_manage_modal_content %}
+            <template #default>
+
+                {% block novalnet_payment_order_manage_modal_content_info_text %}
+                    <sw-container columns="1fr"
+								gap="0px 30px">
+						<div v-if="status == 100">
+							{{ $tc('novalnet-payment.settingForm.extension.confirmMessage') }}
+						</div>
+						<div v-if="status == 103">
+							{{ $tc('novalnet-payment.settingForm.extension.cancelMessage') }}
+						</div>
+					</sw-container>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block novalnet_payment_order_manage_modal_actions %}
+            <template #modal-footer>
+
+                {% block novalnet_payment_order_manage_modal_confirm %}
+                    <sw-button secondary slim variant="primary" :disabled="disable" :square="false" :block="false" :isLoading="false" @click="novalnetOnhold">
+						{{ $tc('novalnet-payment.settingForm.extension.confirmLabel') }}
+					</sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}
