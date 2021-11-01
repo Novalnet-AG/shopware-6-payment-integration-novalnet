@@ -1,0 +1,39 @@
+{% block novalnet_payment_order_refund_modal %}
+    <sw-modal :title="$tc('novalnet-payment.settingForm.extension.refundButton')"
+              @modal-close="closeModal">
+		
+			{% block novalnet_payment_order_refund_modal_content %}
+				<template #default>
+
+					{% block novalnet_payment_order_refund_modal_content_info_text %}
+						<sw-container columns="1fr"
+									gap="0px 30px">
+							<sw-number-field v-model="refundableAmount"
+										:max="amount"
+										:min="0"
+										:allowEmpty="false"
+										numberType="integer"
+										:label="$tc('novalnet-payment.settingForm.extension.amountTitle')"
+										:helpText="$tc('novalnet-payment.settingForm.extension.refundDescription')">
+							</sw-number-field>
+							<sw-text-field v-model="reason"
+									:placeholder="$tc('novalnet-payment.settingForm.extension.refundReference')"
+									:label="$tc('novalnet-payment.settingForm.extension.refundReference')">
+							</sw-text-field>
+						</sw-container>
+					{% endblock %}
+				</template>
+			{% endblock %}
+
+			{% block novalnet_payment_order_refund_modal_actions %}
+				<template #modal-footer>
+
+					{% block novalnet_payment_order_refund_modal_confirm %}
+						<sw-button secondary slim variant="primary" :disabled="disable" :square="false" :block="false" :isLoading="false" @click="novalnetRefund">
+							{{ $tc('novalnet-payment.settingForm.extension.refundButton') }}
+						</sw-button>
+					{% endblock %}
+				</template>
+			{% endblock %}
+    </sw-modal>
+{% endblock %}

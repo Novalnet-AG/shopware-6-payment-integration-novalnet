@@ -1,0 +1,136 @@
+{% block mail_template_base %}
+	{# @var order \Shopware\Core\Checkout\Order\OrderEntity #}
+    {# @var config \Shopware\Core\Checkout\Document\DocumentConfiguration #}
+
+    {# @var customer \Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity #}
+    
+    
+    <div style="font-family:Arial; font-size:12px;">
+    
+	{% set currencyIsoCode = order.currency.isoCode %}
+	{{order.orderCustomer.salutation.letterName }} {{order.orderCustomer.firstName}} {{order.orderCustomer.lastName}},<br>
+	<br>
+		{% if instalment == false %}
+		
+			{{ "NovalnetPayment.text.mailContent1" | trans({
+				'%salesChannel%': salesChannel.name,
+				'%orderNumber%': order.orderNumber,
+				'%orderDateTime%': order.orderDateTime|date
+			}) }}<br>
+		{% else %}
+			{{ "NovalnetPayment.text.instalmentMailContent" | trans({
+				'%salesChannel%': salesChannel.name,
+				'%orderNumber%': order.orderNumber,
+				'%orderDateTime%': order.orderDateTime|date
+			}) }}<br>
+		{% endif %}
+	<br>
+	<strong>{{ "NovalnetPayment.text.mailContent2" | trans }}</strong><br>
+	<br>
+
+	<table width="80%" border="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+		<tr>
+			<td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>{{ "NovalnetPayment.text.mailContent3" | trans }}</strong></td>
+			<td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>{{ "NovalnetPayment.text.mailContent4" | trans }}</strong></td>
+			<td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>{{ "NovalnetPayment.text.mailContent5" | trans }}</strong></td>
+			<td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>{{ "NovalnetPayment.text.mailContent6" | trans }}</strong></td>
+			<td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>{{ "NovalnetPayment.text.mailContent7" | trans }}</strong></td>
+		</tr>
+
+		{% for lineItem in order.lineItems %}
+		<tr>
+			<td style="border-bottom:1px solid #cccccc;">{{ loop.index }} </td>
+			<td style="border-bottom:1px solid #cccccc;">
+			  {{ lineItem.label|u.wordwrap(80) }}<br>
+			  Art. No.: {{ lineItem.payload.productNumber|u.wordwrap(80) }}
+			</td>
+			<td style="border-bottom:1px solid #cccccc;">{{ lineItem.quantity }}</td>
+			<td style="border-bottom:1px solid #cccccc;">{{ lineItem.unitPrice|currency(currencyIsoCode) }}</td>
+			<td style="border-bottom:1px solid #cccccc;">{{ lineItem.totalPrice|currency(currencyIsoCode) }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	{% set delivery =order.deliveries.first %}
+	<p>
+		<br>
+		<br>
+		{{ "NovalnetPayment.text.mailContent8" | trans }} {{order.deliveries.first.shippingCosts.totalPrice|currency(currencyIsoCode) }}<br>
+		{{ "NovalnetPayment.text.mailContent9" | trans }} {{ order.amountNet|currency(currencyIsoCode) }}<br>
+			{% for calculatedTax in order.price.calculatedTaxes %}
+				{% if order.taxStatus is same as('net') %}plus{% else %}including{% endif %} {{ calculatedTax.taxRate }}% VAT. {{ calculatedTax.tax|currency(currencyIsoCode) }}<br>
+			{% endfor %}
+			<strong>{{ "NovalnetPayment.text.mailContent10" | trans }} {{ order.amountTotal|currency(currencyIsoCode) }}</strong><br>
+		<br>
+		
+		<strong>{{ "NovalnetPayment.text.mailContent11" | trans }}</strong> {{ order.transactions.first.paymentMethod.name }}<br>
+		{{ order.transactions.first.paymentMethod.description }}<br>
+		<br>
+		<br>
+		<strong>{{ "NovalnetPayment.text.mailContent12" | trans }}</strong><br>
+		{{ note|replace({"/ ": "<br>"}) | raw }}
+		<br>
+		
+		{% if 'NovalnetInvoiceInstalment' in order.transactions.first.paymentMethod.handlerIdentifier or 'NovalnetSepaInstalment' in order.transactions.first.paymentMethod.handlerIdentifier %}
+			{% set instalmentInfo = context|getNovalnetInstalmentInfo(order.ordernumber) %}
+				{% if instalmentInfo is not empty %}
+					<table width="40%" style="font-family:Arial, Helvetica, sans-serif; border: 1px solid;border-color: #bcc1c7;text-align: center;font-size:12px;">
+						<thead style="font-weight: bold;">
+							<tr>
+								<td style="border-bottom:1px solid #cccccc;">{{"NovalnetPayment.text.sno"|trans}}</td>
+								<td style="border-bottom:1px solid #cccccc;">{{"NovalnetPayment.text.date"|trans}}</td>
+								<td style="border-bottom:1px solid #cccccc;">{{"NovalnetPayment.text.tid"|trans}}</td>
+								<td style="border-bottom:1px solid #cccccc;">{{"NovalnetPayment.text.amount"|trans}}</td>
+							<tr>
+						</thead>
+						<tbody>
+							{% for info in instalmentInfo.InstalmentDetails %}
+								{%set amount = info.amount/100 %}
+								<tr>
+									<td style="border-bottom:1px solid #cccccc;">{{ loop.index }}</td>
+									<td style="border-bottom:1px solid #cccccc;">{{ info.cycleDate ? info.cycleDate|date('d/m/Y'): '-' }}</td>
+									<td style="border-bottom:1px solid #cccccc;">{{ info.reference ? info.reference : '-' }}</td>
+									<td style="border-bottom:1px solid #cccccc;">{{ amount ? amount|currency(currencyIsoCode): '-' }}</td>
+								<tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<br>
+				{% endif %}
+		{% endif %}
+		
+		<strong>{{ "NovalnetPayment.text.mailContent13" | trans }}</strong> {{ delivery.shippingMethod.name }}<br>
+		{{ delivery.shippingMethod.description }}<br>
+		<br>
+		
+		{% set billingAddress = order.addresses.get(order.billingAddressId) %}
+		<strong>{{ "NovalnetPayment.text.mailContent14" | trans }}</strong><br>
+		{{ billingAddress.company }}<br>
+		{{ billingAddress.firstName }} {{ billingAddress.lastName }}<br>
+		{{ billingAddress.street }} <br>
+		{{ billingAddress.zipcode }} {{ billingAddress.city }}<br>
+		{{ billingAddress.country.name }}<br>
+		<br>
+		
+		<strong>{{ "NovalnetPayment.text.mailContent15" | trans }}</strong><br>
+		{{ delivery.shippingOrderAddress.company }}<br>
+		{{ delivery.shippingOrderAddress.firstName }} {{ delivery.shippingOrderAddress.lastName }}<br>
+		{{ delivery.shippingOrderAddress.street }} <br>
+		{{ delivery.shippingOrderAddress.zipcode}} {{ delivery.shippingOrderAddress.city }}<br>
+		{{ delivery.shippingOrderAddress.country.name }}<br>
+		<br>
+		{% if billingAddress.vatId %}
+
+			{{ "NovalnetPayment.text.mailContent16" | trans }} {{ billingAddress.vatId }}
+			{{ "NovalnetPayment.text.mailContent17" | trans }}<br>
+		{% endif %}
+		<br>
+		<br>
+		{{ "NovalnetPayment.text.mailContent19" | trans }} {{ rawUrl('frontend.account.order.single.page', { 'deepLinkCode': order.deepLinkCode}, salesChannel.domains|first.url) }}
+		<br>
+		{{ "NovalnetPayment.text.mailContent18" | trans }}
+	</p>
+	<br>
+	</div>
+
+{% endblock %}

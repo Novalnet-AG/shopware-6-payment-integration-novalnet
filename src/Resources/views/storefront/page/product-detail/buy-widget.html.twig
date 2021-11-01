@@ -1,0 +1,165 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget.html.twig' %}
+
+{% block page_product_detail_tax %}
+    {{ parent() }}
+    {% set totalAmount = '' %}
+    {% set invoiceCount = 0 %}
+    {% set invoiceIsActive = 0 %}
+    {% set sepaCount = 0 %}
+    {% set sepaIsActive = 0 %}
+    {% set showInvoice = 0 %}
+    {% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+    
+    {% if page.product.calculatedPrices.elements is not empty %}
+		{% for price in page.product.calculatedPrices %}
+			{% if loop.index == 1 %}
+				{% set totalAmount =  price.unitPrice %}
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		{% set totalAmount =  page.product.calculatedPrice.unitPrice %}
+	{% endif %}
+		
+		
+    {% for paymentMethod in page.salesChannelPaymentMethods %}
+		{% if 'NovalnetInvoiceInstalment' in paymentMethod.handlerIdentifier %}
+			{% set invoiceIsActive = 1 %}
+		{% endif %}
+		
+		{% if 'NovalnetSepaInstalment' in paymentMethod.handlerIdentifier %}
+			{% set sepaIsActive = 1 %}
+		{% endif %}
+    {% endfor %}
+    
+    {% if novalnetSettings['NovalnetPayment.settings.sepainstalment.cycles'] is not empty %}
+		{% for cycle in novalnetSettings['NovalnetPayment.settings.sepainstalment.cycles']|sort %}
+			{% set cycleAmount	= (totalAmount / cycle) |round(2, 'common') %}
+				{% if cycleAmount >= '9.99' %}
+					{% set sepaCount = sepaCount + 1 %}
+				{% endif %}
+		{% endfor %}
+	{% endif %}
+    
+    {% if novalnetSettings['NovalnetPayment.settings.invoiceinstalment.cycles'] is not empty %}
+		{% for cycle in novalnetSettings['NovalnetPayment.settings.invoiceinstalment.cycles']|sort %}
+			{% set cycleAmount	= (totalAmount / cycle) |round(2, 'common') %}
+				{% if cycleAmount >= '9.99' %}
+					{% set invoiceCount = invoiceCount + 1 %}
+				{% endif %}
+		{% endfor %}
+    {% endif %}
+    
+    {% if (totalAmount > novalnetSettings['NovalnetPayment.settings.invoiceinstalment.minimumOrderAmount']/100 and invoiceCount != 0 and invoiceIsActive != 0 and novalnetSettings['NovalnetPayment.settings.invoiceinstalment.productPageInfo'] != 0) or (totalAmount > novalnetSettings['NovalnetPayment.settings.sepainstalment.minimumOrderAmount']/100 and sepaCount != 0 and sepaIsActive != 0 and novalnetSettings['NovalnetPayment.settings.sepainstalment.productPageInfo'] != 0) %}
+		<span> {{ "NovalnetPayment.text.instalmentProductPage1"|trans }} </span><a class="instalment_link" id="instalment_link" href="#" onmouseover="showinstalment()"> {{ "NovalnetPayment.text.instalmentProductPage2"|trans }} </a>
+	{% endif %}
+		<div class="card card-tabs" id="instalment-info-tabs" style="display:none">
+			<div class="card-header instalment-tab-navigation">
+				<ul class="nav nav-tabs instalment-tab-navigation-list"
+                        id="instalment-tabs"
+                        role="tablist"
+                        style="border-bottom:none;">
+                    
+                    {% if totalAmount > novalnetSettings['NovalnetPayment.settings.invoiceinstalment.minimumOrderAmount']/100 and invoiceCount != 0 and invoiceIsActive != 0 and novalnetSettings['NovalnetPayment.settings.invoiceinstalment.productPageInfo'] != 0 %}
+						{% set showInvoice = 1 %}
+						<li class="nav-item">
+							<a class="nav-link active"
+							   id="instalment-invoice-tab"
+							   data-toggle="tab"
+							   data-offcanvas-tabs="true"
+							   href="#instalment-invoice-tab-pane"
+							   role="tab"
+							   aria-controls="instalment-invoice-tab-pane"
+							   aria-selected="true">
+								<span>{{ "NovalnetPayment.text.instalmentProductInvoiceHeading"|trans|sw_sanitize }}</span>
+							</a>
+						</li>
+                    {% endif %}
+                    
+                    {% if totalAmount > novalnetSettings['NovalnetPayment.settings.sepainstalment.minimumOrderAmount']/100 and sepaCount != 0 and sepaIsActive != 0 and novalnetSettings['NovalnetPayment.settings.sepainstalment.productPageInfo'] != 0 %}
+						<li class="nav-item">
+							<a class="nav-link {% if showInvoice == 0 %} active {% endif %}"
+							   id="instalment-sepa-tab"
+							   data-toggle="tab"
+							   data-offcanvas-tabs="true"
+							   href="#instalment-sepa-tab-pane"
+							   role="tab"
+							   aria-controls="instalment-sepa-tab-pane"
+							   aria-selected="true">
+								<span>{{ "NovalnetPayment.text.instalmentProductSepaHeading"|trans|sw_sanitize }}</span>
+							</a>
+						</li>
+					{% endif %}
+                </ul>
+			</div>
+		
+			<div class="tab-content">
+				<div class="tab-pane fade show {% if showInvoice == 1 %} active {% endif %}"
+					 id="instalment-invoice-tab-pane"
+					 role="tabpanel"
+					 aria-labelledby="instalment-invoice-tab">
+					
+					<table class="table table-sm table-bordered">
+						<thead>
+							<tr>
+								<th colspan=2>{{ "NovalnetPayment.text.instalmentProductInvoiceHeading"|trans|sw_sanitize }} <a href="#" style="float: right;" onclick="hideInstalmentInfo()">{% sw_icon 'x' style {'size': 'xs'} %}</a></th>
+							</tr>
+						</thead>
+						<tbody class="instalment_invoice_details">
+							{% if novalnetSettings['NovalnetPayment.settings.invoiceinstalment.cycles'] is not empty %}
+								{% for cycle in novalnetSettings['NovalnetPayment.settings.invoiceinstalment.cycles']|sort  %}
+									{% set cycleAmount	= (totalAmount / cycle) |round(2, 'common') %}
+									{% if cycleAmount >= '9.99' %}
+										<tr>
+											<td>Plan {{ loop.index }}:</td>
+											<td>{{ cycle }} x {{ cycleAmount | currency() }}*</td>
+										</tr>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						</tbody>
+					</table>		
+				</div>
+				
+				<div class="tab-pane fade show {% if showInvoice == 0 %} active {% endif %}"
+					 id="instalment-sepa-tab-pane"
+					 role="tabpanel"
+					 aria-labelledby="instalment-sepa-tab">
+					
+					<table class="table table-sm table-bordered">
+						<thead>
+							<tr>
+								<th colspan=2>{{ "NovalnetPayment.text.instalmentProductSepaHeading"|trans|sw_sanitize }} <a href="#" style="float: right;" onclick="hideInstalmentInfo()">{% sw_icon 'x' style {'size': 'xs'} %}</a></th>
+							</tr>
+						</thead>
+						<tbody class="instalment_invoice_details">
+							{% if novalnetSettings['NovalnetPayment.settings.sepainstalment.cycles'] is not empty %}
+								{% for cycle in novalnetSettings['NovalnetPayment.settings.sepainstalment.cycles']|sort  %}
+									{% set cycleAmount	= (totalAmount / cycle) |round(2, 'common') %}
+									{% if cycleAmount >= '9.99' %}
+										<tr>
+											<td>Plan {{ loop.index }}:</td>
+											<td>{{ cycle }} x {{ cycleAmount | currency() }}*</td>
+										</tr>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			function showinstalment()
+			{
+				var instalment = document.getElementById("instalment-info-tabs");
+				instalment.style.display = "block";
+			}
+			
+			function hideInstalmentInfo()
+			{
+				var instalment = document.getElementById("instalment-info-tabs");
+				instalment.style.display = "none";
+			}
+		</script>
+{% endblock %}
