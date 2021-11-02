@@ -9,9 +9,6 @@ export default class NovalnetPayment extends Plugin {
 		const shopVersion = document.querySelector('#nnShopVersion').value;
 		const SepaPaymentTypes = ['novalnetsepa', 'novalnetsepaguarantee', 'novalnetsepainstalment'];
 		const InvoicePaymentTypes = ['novalnetinvoiceguarantee', 'novalnetinvoiceinstalment'];
-		if(document.getElementById('tos').checked == true){
-			document.getElementById('tos').checked = false;
-		}
 		
 		paymentName.forEach((element) => {
 			const selectedPaymentId = document.querySelector('input[name=paymentMethodId]:checked');
@@ -155,11 +152,10 @@ export default class NovalnetPayment extends Plugin {
 				const paymentMethodId = document.querySelector('#' + element.value + 'Id');
 				const selectedPaymentId = document.querySelector('input[name=paymentMethodId]:checked');
 				const radioInputChecked = document.querySelector('input[type="radio"].' + element.value + '-SavedPaymentMethods-tokenInput:checked');				
-				const tosChecked = document.getElementById('tos').checked;
 				if(element.value == 'novalnetcreditcard')
 				{
 					
-					if ( paymentMethodId !== undefined && paymentMethodId.value !== '' && selectedPaymentId.value === paymentMethodId.value && (radioInputChecked === undefined || radioInputChecked === null || radioInputChecked.value == 'new') && tosChecked == true  )
+					if ( paymentMethodId !== undefined && paymentMethodId.value !== '' && selectedPaymentId.value === paymentMethodId.value && (radioInputChecked === undefined || radioInputChecked === null || radioInputChecked.value == 'new'))
 					{
 						document.getElementById("confirmFormSubmit").disabled = true; 						
 						event.preventDefault();			
