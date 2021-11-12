@@ -1,0 +1,101 @@
+{% block novalnet_payment_settings %}
+    <sw-page class="novalnet-payment">
+        {% block novalnet_payment_settings_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('sw-settings.index.title') }}
+                    <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                    {{ $tc('novalnet-payment.settingForm.title') }}
+                </h2>
+            </template>
+        {% endblock %}
+        
+        {% block novalnet_payment_settings_actions %}
+            <template #smart-bar-actions>
+            
+				{% block novalnet_payment_actions_save %}
+                    <sw-button-process v-model="isSaveSuccessful"
+                                       class="sw-settings-login-registration__save-action"
+                                       variant="primary"
+                                       :isLoading="isLoading"
+                                       :disabled="isLoading"
+                                       @click="onSave">
+                        {{ $tc('novalnet-payment.settingForm.buttons.save') }}
+                    </sw-button-process>
+                {% endblock %}
+            
+            </template>
+        {% endblock %}
+        
+        {% block novalnet_payment_content %}
+			
+			<template #content>
+				{% block novalnet_payment_content_card %}
+					<sw-card-view>
+					
+						{% block novalnet_payment_content_sales_channel_config %}
+							<sw-sales-channel-config v-model="config"
+													 ref="configComponent"
+													 domain="NovalnetPayment.settings">
+													 
+								{% block novalnet_payment_content_sales_channelconfig_card %}
+								  <template #select="{ onInput, selectedSalesChannelId, salesChannel}">
+									{% block novalnet_payment_content_sales_channelconfig_card_sales_channel %}
+										<sw-container class="novalnet-sales-channel">
+											<sw-single-select v-model="selectedSalesChannelId"
+															labelProperty="translated.name"
+															valueProperty="id"
+															:options="salesChannel"
+															@change="onInput">
+											</sw-single-select>
+										</sw-container>
+									{% endblock %}
+								  </template>
+								{% endblock %}
+								
+								{% block novalnet_payment_config_content_channel_config_cards %}
+									<template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                                        <div v-if="actualConfigData">
+											<sw-tabs>
+											{% block novalnet_payment_content_card_channel_config_credentials_card %}
+                                                <sw-tabs-item class="novalnet-payment-configuration-global-config"
+															  :route="{ name: 'novalnet.payment.detail.credentials', params: { id: $route.params.id, actualConfigData: actualConfigData } }"
+															  :title="$tc('novalnet-payment.module.globalTitle')">
+															  
+													{{ $tc('novalnet-payment.module.globalTitle') }}
+												</sw-tabs-item>
+                                            {% endblock %}
+                                            
+                                            {% block novalnet_payment_content_card_channel_config_payment_card %}
+                                                <sw-tabs-item class="novalnet-payment-configuration-payment-config"
+															  :route="novalnetPaymentRoute"
+															  :title="$tc('novalnet-payment.module.paymentTitle')">
+													{{ $tc('novalnet-payment.module.paymentTitle') }}
+												</sw-tabs-item>
+                                            {% endblock %}
+                                            </sw-tabs>
+										</div>
+										{% block novalnet_payment_configuration_content_view %}
+										<router-view :isLoading="isLoading"
+													 :key="$route.params.id"
+													 :actualConfigData="actualConfigData"
+													 :allConfigs="allConfigs"
+													 :selectedSalesChannelId="selectedSalesChannelId">
+										</router-view>
+										{% endblock %}
+									</template>
+								{% endblock %}
+										 
+							</sw-sales-channel-config>
+						{% endblock %}
+						
+						{% block novalnet_payment_content_card_loading %}
+                            <sw-loader v-if="isLoading"></sw-loader>
+                        {% endblock %}
+                        	
+					</sw-card-view>
+				{% endblock %}
+			</template>
+        {% endblock %}   
+    </sw-page>
+{% endblock %}
