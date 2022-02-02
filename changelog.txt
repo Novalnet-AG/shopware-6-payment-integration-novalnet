@@ -1,0 +1,48 @@
+*** Changelog ***
+
+= 12.2.0   - 2021.11.17 =
+* Fix      - Compatibility for PHP version 8.0
+* New      - Configuration to send order confirmation email to end-customer
+* Enhance  - Payment plugin installation via composer 
+
+= 12.1.2   - 2021.08.13 =
+* Fix      - Order confirmation email sent to end customers for the newly created domain URLs
+
+= 12.1.1   - 2021.07.26 =
+* Fix      - Compatibility for Shopware 6.4 series
+* Fix      - Callback has been optimized as per the new testcase 
+
+= 12.1.0   - 2021.05.19 =
+* New      - Implemented instalment payments for Direct Debit SEPA and Invoice
+* Fix      - Saved card/account information can be deleted in Safari and Firefox browsers 
+* Fix      - Placed the saved card/account details view above change payment method button
+* Fix      - Webhook: Follow up transaction call restricted for on-hold payments
+* Enhanced - Vendor script has been optimized
+
+= 12.0.0   - 2021.04.01 =
+Major version release: Entire restructure & optimization of older version with usability, additional features and customizations
+
+= 1.0.5    - 2021.02.05 =
+* Fix      - Orders get confined while adding multiple order comments into the same order
+* Fix 	   - Adjusted payment plugin to display error message for guarantee payments when Force Non-Guarantee payment option was disabled
+
+= 1.0.4    - 2021.01.05 =
+* Fix      - Date of birth validation regulated on checkout page
+* Fix 	   - Adjusted the redirect payment methods to support Sales channels
+* Enhanced - Barzahlen payment name and logo
+
+= 1.0.3    - 2020.12.05 =
+* Fix      - Adjusted JavaScript for displaying the "Submit" button on the checkout page
+* Fix      - Adjusted JavaScript for throwing error message on the checkout page for Invalid Credit Card details
+* Fix      - Mailer configuration is not mandatory now for order success page 
+
+= 1.0.2    - 2020.11.11 =
+* Fix      -  Added Datepicker by adjusting Javascript for macOS Safari browser 
+
+= 1.0.1    - 2020.10.06 =
+* Fix      - Sitemap XML tag issue 
+* Fix      - Adjusted the redirect payment methods to support Sales channels
+* Enhanced - Barzahlen payment name and logo
+
+= 1.0.0    - 2021.01.05 =
+	   - New release
