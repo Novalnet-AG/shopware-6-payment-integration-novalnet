@@ -1,0 +1,51 @@
+@import "~scss/variables";
+
+
+.novalnet-sales-channel {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    position: relative;
+    color: #52667a;
+}
+
+.novalnet-field--osm-description {
+    font-size: $font-size-small;
+    margin: -10px 0 20px 0;
+}
+
+.novalnet_payment-settings-credentials, .novalnet_payment-settings-merchant-credentials{
+    margin: 30px;
+}
+
+.novalnet_payment_card_title{
+	margin: 15px;
+	font-size: 18px;
+    line-height: 24px;
+    color: #52667a;
+    display: inline-block;
+    width: 90%;
+}
+
+.novalnet_payment_css_card_title{
+	margin-left: 30px;
+	font-size: 18px;
+    line-height: 24px;
+    color: #52667a;
+    display: inline-block;
+}
+
+.novalnet_payment_card_head_down_bar{
+	display: inline-block;
+}
+
+@media only screen and (max-width: 600px) {
+  .novalnet_payment_card_title {
+    width: 75%;
+  }
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+	.novalnet_payment_card_title {
+		width: 85%;
+	}
+}

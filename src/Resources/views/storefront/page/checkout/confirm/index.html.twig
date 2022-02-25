@@ -1,0 +1,53 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm %}
+{{ parent() }}
+	<div id="novalnet-payment-script">
+		<input type="hidden" value={{ path('frontend.checkout.removePaymentToken') }} id="cardRemoveUrl">
+		<input type="hidden" value="{{ "NovalnetPayment.text.removeConfirmMessage"|trans }}" id="removeConfirmMessage">
+		<input type="hidden" value="{{ null|shopVersion }}" id="nnShopVersion">
+	</div>
+{% endblock %}
+
+{% block page_checkout_confirm_form_submit %}
+    {% set hidePayment = 'NO' %}
+    {% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+    
+    {% set invoiceGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceguarantee') %}
+    {% set invoiceInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceinstalment') %}
+    {% set sepaGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepaguarantee') %}
+    {% set sepaInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepainstalment') %}
+
+
+    {% if 'Novalnet' in context.paymentMethod.handlerIdentifier %}
+        {% if 'NovalnetInvoiceGuarantee' in context.paymentMethod.handlerIdentifier and invoiceGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaGuarantee' in context.paymentMethod.handlerIdentifier and sepaGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetInvoiceInstalment' in context.paymentMethod.handlerIdentifier and invoiceInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaInstalment' in context.paymentMethod.handlerIdentifier and sepaInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+    {% endif %}
+
+    {% if hidePayment == 'YES' %}
+        <button id="confirmFormSubmit"
+                class="btn btn-primary btn-block btn-lg"
+                form="confirmOrderForm"
+                disabled
+                type="submit">
+            {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
+        </button>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+
