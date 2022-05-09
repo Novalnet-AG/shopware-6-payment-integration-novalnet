@@ -1,0 +1,237 @@
+{% block sw_order_detail_customer_comment_card %}
+    {% parent %}
+    <template v-if="!isLoading" :isLoading="isLoading">
+        <template v-if="isNovalnetPayment">
+			<sw-card :title="$tc('novalnet-payment.module.title')" rows="2" :isLoading="isLoading">
+				<sw-container columns="1fr 1fr" class="novalnet-payment-order-page">
+					<div class="novalnet-payment-buyer-notification">
+						{# Logo #}
+						{% block novalnet_payment_order_buyer_info %}
+							<div class="novalnet-payment-buyer-notification-icon-container" align="center">
+								<img class="novalnet-payment-buyer-info-icon"
+									 :src="'novalnetpayment/static/img/plugin.png' | asset">
+							</div>
+						{% endblock %}
+
+						{# Full name and E-Mail address #}
+						{% block novalnet_payment_order_buyer_info_name_container %}
+							<div class="novalnet-payment-buyer-info-name">
+
+								{% block novalnet_payment_order_buyer_info_name_container_name %}
+									<div class="novalnet-payment-buyer-info-full-name">
+										{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }}
+									</div>
+								{% endblock %}
+
+								{% block novalnet_payment_order_buyer_info_name_container_email %}
+									<div class="novalnet-payment-buyer-info-email">
+										{{ order.orderCustomer.email }}
+									</div>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+
+					<sw-container class="novalnet-payment-amount-info" rows="4" columns="1fr">
+
+						{% block novalnet_payment_order_component_amount_info %}
+							<div class="novalnet-payment-amount-info-total-amount" align="right">
+								{{ displayAmount }}
+							</div>
+						{% endblock %}
+
+						{% block novalnet_payment_component_amount_info_card %}
+							<sw-card :isLoading="isLoading"
+									 :hero="true"
+									 class="novalnet-payment-amount-info-amount">
+
+								{% block novalnet_payment_amount_info_captured_amount %}
+									<div class="novalnet-payment-amount-captured-amount" align="right">
+
+										{% block novalnet_payment_amount_info_captured_amount %}
+											+ {{ displayPaidAmount }}
+										{% endblock %}
+
+										{% block novalnet_payment_amount_info_captured_amount_help %}
+											<sw-help-text class="novalnet-payment-captured-amount-help-icon"
+														  tooltipPosition="top"
+														  :text="$tc('novalnet-payment.settingForm.extension.paidTooltip')">
+											</sw-help-text>
+										{% endblock %}
+
+									</div>
+								{% endblock %}
+
+								{% block novalnet_payment_order_compoenent_amount_info_refuned %}
+									<div class="novalnet-payment-refuned-amount" align="right">
+
+										{% block novalnet_payment_order_compoenent_amount_info_refuned_amount %}
+											- {{ refundedAmount }}
+										{% endblock %}
+
+										{% block novalnet_payment_order_compoenent_amount_info_refuned_help %}
+											<sw-help-text class="novalnet-payment-refuned-amount-help-icon"
+														  tooltipPosition="top"
+														  :text="$tc('novalnet-payment.settingForm.extension.refundTooltip')">
+											</sw-help-text>
+										{% endblock %}
+									</div>
+								{% endblock %}
+							</sw-card>
+						{% endblock %}
+
+						{% block novalnet_payment_order_info_date %}
+							<div class="novalnet-payment-amount-info-charge-date" align="right">
+								{{ transaction.createdAt|date('d.m.y') }}
+							</div>
+						{% endblock %}
+					</sw-container>
+
+					<sw-container class="novalnet-payment-action-toolbar" rows="1" columns="1fr 1fr 1fr" gap="10px">
+
+						{% block novalnet_payment_order_container_toolbar_refund_button %}
+							<sw-button size="small"
+									   class="novalnet-payment-pay-action-toolbar__button"
+									   v-if="canRefund"
+									   @click="showRefundModal">
+								{{ $tc('novalnet-payment.settingForm.extension.refundButton') }}
+							</sw-button>
+						{% endblock %}
+
+                        {% block novalnet_payment_order_container_toolbar_instalment_cancel_button %}
+                            <sw-button size="small"
+                                       class="novalnet-payment-pay-action-toolbar__button"
+                                       v-if="canInstalmentCancel"
+                                       @click="showInstalmentCancelModal">
+                                {{ $tc('novalnet-payment.settingForm.extension.instalmentCancelLabel') }}
+                            </sw-button>
+                        {% endblock %}
+
+						{% block novalnet_payment_order_container_toolbar_capture_button %}
+							<sw-button size="small"
+									   class="novalnet-payment-pay-action-toolbar__button"
+									   v-if="canCaptureVoid"
+									   @click="showConfirmModal">
+								{{ $tc('novalnet-payment.settingForm.extension.confirmLabel') }}
+							</sw-button>
+						{% endblock %}
+
+						{% block novalnet_payment_order_container_toolbar_cancel_button %}
+							<sw-button size="small"
+									   class="novalnet-payment-pay-action-toolbar__button"
+									   v-if="canCaptureVoid"
+									   @click="showCancelModal">
+								{{ $tc('novalnet-payment.settingForm.extension.cancelLabel') }}
+							</sw-button>
+						{% endblock %}
+					</sw-container>
+				</sw-container>
+
+				<sw-container columns="1fr"
+                                          class="sw-card-section sw-card-section--secondary"
+                                          slot="grid">
+					<sw-container class="novalnet-payment-pay-info-container" columns="1fr 1fr" rows="2">
+
+						{% block novalnet_payment_order_component_checkout_info_billing_container %}
+							<div class="novalnet-payment_chechout-info-billing_container" v-if="isNovalnetPayment">
+
+								{% block novalnet_payment_order_component_checkout_info_billing_container_headline %}
+									<div class="novalnet-payment-checkout-info-header">
+										{{ $tc('novalnet-payment.module.comments') }}
+									</div>
+								{% endblock %}
+
+								{% block novalnet_payment_order_component_billing_value %}
+									<span class="novalnet-payment-checkout-info-comments" v-html="novalnetComments">
+									</span>
+								{% endblock %}
+
+							</div>
+						{% endblock %}
+
+						{% block novalnet_payment_order_componenet_checkout_info_status_container %}
+							<div class="novalnet-payment-status-container">
+
+								{% block novalnet_payment_order_component_status_container %}
+									<div class="novalnet-payment-checkout-info-header">
+										{{ $tc('novalnet-payment.settingForm.statusTitle') }}
+									</div>
+								{% endblock %}
+
+								{% block novalnet_payment_order_component_checkout_status_info_container_value %}
+									<div class="novalnet-payment-checkout-status-info">
+										{{ stateMachineState }}
+									</div>
+								{% endblock %}
+
+							</div>
+						{% endblock %}
+
+					{% block novalnet_payment_order_component_action_toolbar_modals %}
+						<novalnet-payment-refund-modal
+							v-if="refundModalVisible"
+							:refundableAmount="refundableAmount"
+							:amount="amount"
+							:order="order"
+							:item="item"
+							@modal-close="closeModals"
+							@reload-payment="reloadPaymentDetails">
+						</novalnet-payment-refund-modal>
+
+						<novalnet-payment-instalment-refund-modal
+							v-if="instalmentRefundModalVisible"
+							:item="item"
+							:refundableAmount="refundableAmount"
+							:order="order"
+							@modal-close="closeModals"
+							@reload-payment="reloadPaymentDetails">
+						</novalnet-payment-instalment-refund-modal>
+
+						<novalnet-payment-manage-transaction-modal
+							v-if="confirmModalVisible"
+							:status="status"
+							:order="order"
+							@modal-close="closeModals"
+							@reload-payment="reloadPaymentDetails">
+						</novalnet-payment-manage-transaction-modal>
+
+						<novalnet-payment-manage-transaction-modal
+							v-if="cancelModalVisible"
+							:status="status"
+							:order="order"
+							@modal-close="closeModals"
+							@reload-payment="reloadPaymentDetails">
+						</novalnet-payment-manage-transaction-modal>
+					{% endblock %}
+
+				</sw-container>
+            </sw-card>
+
+            <sw-card :title="$tc('novalnet-payment.settingForm.instalmentInfo')" v-if="canInstalmentShow">
+					<template #grid>
+						<sw-data-grid
+							:dataSource="InstalmentInfo"
+							:columns="getInstalmentColums"
+							:compactMode="false"
+							:allowInlineEdit="true"
+							:showSelection="false">
+
+							{% block sw_product_detail_base_ratings_actions %}
+								<template #actions="{ item }">
+									{% block sw_product_detail_base_ratings_actions_edit %}
+										<sw-context-menu-item
+											class="sw-product-detail-base__review-edit"
+											@click="instalmentRefund(item)"
+											:disabled="disableInstalmentRefund(item)">
+											{{ $tc('novalnet-payment.settingForm.extension.refundButton') }}
+										</sw-context-menu-item>
+									{% endblock %}
+								</template>
+							{% endblock %}
+
+						</sw-data-grid>
+					</template>
+            </sw-card>
+        </template>
+    </template>
+{% endblock %}
