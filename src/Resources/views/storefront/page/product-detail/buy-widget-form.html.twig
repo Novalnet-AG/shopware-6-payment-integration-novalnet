@@ -1,0 +1,55 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget-form.html.twig' %}
+
+{% block page_product_detail_buy_button_container %}
+    {{ parent() }}
+    
+    {% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+    {% set applePayIsActive = false %}
+	
+	{% for paymentMethod in page.salesChannelPaymentMethods %}
+		{% if 'NovalnetApplePay' in paymentMethod.handlerIdentifier %}
+			{% set applePayIsActive = true %}
+		{% endif %}
+    {% endfor %}
+    
+    {% if applePayIsActive is not empty  %}
+		{% if novalnetSettings['NovalnetPayment.settings.accessKey'] is not empty and novalnetSettings['NovalnetPayment.settings.clientId'] is not empty and 'productDetailPage' in novalnetSettings['NovalnetPayment.settings.applepay.displayFields'] %}
+			<div class="col-4">
+			</div>
+			<div class="col-8">
+				<button class="btn btn-primary btn-block btn-buy nn-product-detail-page nn-apple-pay-button"
+						data-novalnetapplepay-customer-login="{{ context.customer }}"
+						data-novalnetapplepay-addToCartUrl="{{ path('frontend.novalnet.addToCart') }}"
+						data-novalnetapplepay-shipping-url="{{ path('frontend.novalnet.loadShipping') }}"
+						data-novalnetapplepay-success-url="{{ path('frontend.novalnet.successOrder') }}"
+						data-novalnetapplepay-page-type="productDetailPage"
+						data-novalnetapplepay-payment-config="{{
+							{
+								'clientKey': novalnetSettings['NovalnetPayment.settings.clientKey'],
+								settings: {
+									'buttonRadius': novalnetSettings['NovalnetPayment.settings.applepay.buttonRadius'],
+									'buttonHeight': novalnetSettings['NovalnetPayment.settings.applepay.buttonHeight'],
+									'buttonType': novalnetSettings['NovalnetPayment.settings.applepay.buttonType'],
+									'buttonTheme': novalnetSettings['NovalnetPayment.settings.applepay.buttonTheme'],
+								},
+								transaction: {
+									'amount': (product.calculatedPrice.totalPrice * 100)|round,
+									'currency': context.currency.isoCode
+								},
+								merchant: {
+									'country_code': country.iso ?? 'DE'
+								},
+								custom: {
+									'lang': context.context|getLocaleCodeFromContext,
+								},
+								wallet: {
+									'shop_name': novalnetSettings['NovalnetPayment.settings.applepay.sellerName'],
+								}
+							}|jsonEncode()|escape('html_attr')}}">
+				<input type="hidden" id="productId" name="productId" value="{{ product.id }}" />
+				<input type="hidden" value="{{ null|shopVersion }}" id="nnShopVersion">
+				</button>
+			</div>
+		{% endif %}
+	{% endif %}
+{% endblock %}

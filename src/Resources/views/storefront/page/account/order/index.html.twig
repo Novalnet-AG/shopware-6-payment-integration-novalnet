@@ -1,0 +1,77 @@
+{% sw_extends '@Storefront/storefront/page/account/order/index.html.twig' %}
+{% block page_checkout_confirm_header %}
+    {% set transaction = page.order.transactions.elements|first %}
+    {% set errorMessage = transaction.id|getNovalnetErrorMessage(page.order.salesChannelId) %}
+    {% if errorMessage is not empty %}
+		<div
+			role="alert"
+			class="alert alert-danger alert-has-icon">
+			{% sw_icon 'blocked' %}
+			<div class="alert-content-container">
+				<div class="alert-content" id="novalnet-error">
+					{{errorMessage}}
+				</div>
+			</div>
+		</div>
+		<h1 class="confirm-main-header">
+			{{ "account.completePayment"|trans|sw_sanitize }}
+		</h1>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}
+
+
+{% block page_checkout_confirm_form_submit %}
+	{% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+
+    {% if 'NovalnetApplePay' in context.paymentMethod.handlerIdentifier and page.order is not empty %}
+		{% set authAmount = ( page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice ) * 100 %}
+		{% set nnShopVersion = null|shopVersion %}
+		{% set formName = nnShopVersion >= "6.4" ? "form = confirmOrderForm" : '' %}
+		{% set articleData = [] %}
+		{% for lineItem in page.order.lineItems %}
+			{% set articleData = articleData|merge([{ label: lineItem.label ~ " (" ~ lineItem.quantity ~ " x " ~ lineItem.price.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (lineItem.price.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		{% for delivery in page.order.deliveries %}
+			{% set articleData = articleData|merge([{ label: delivery.shippingMethod.name ~ " (" ~ delivery.shippingCosts.quantity ~ " x " ~ delivery.shippingCosts.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (delivery.shippingCosts.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		<button
+            class="btn btn-primary btn-block nn-apple-pay-button"
+            type="submit"
+            data-novalnetapplepay-page-type="checkoutPage"
+            data-novalnetapplepay-payment-config="{{
+					{
+					'clientKey': novalnetSettings['NovalnetPayment.settings.clientKey'],
+					settings: {
+						'buttonRadius': novalnetSettings['NovalnetPayment.settings.applepay.buttonRadius'],
+						'buttonHeight': novalnetSettings['NovalnetPayment.settings.applepay.buttonHeight'],
+						'buttonType': novalnetSettings['NovalnetPayment.settings.applepay.buttonType'],
+						'buttonTheme': novalnetSettings['NovalnetPayment.settings.applepay.buttonTheme'],
+					},
+					transaction: {
+						'amount': authAmount|round,
+						'currency': context.currency.isoCode
+					},
+					merchant: {
+						'country_code': context.customer.activeBillingAddress.country.iso
+					},
+					custom: {
+						'lang': context.context|getLocaleCodeFromContext,
+					},
+					wallet: {
+						'shop_name': novalnetSettings['NovalnetPayment.settings.applepay.sellerName'],
+						'order_info': articleData
+					}
+				 }|jsonEncode()|escape('html_attr')}}">
+        </button>
+        <input type="hidden" value="" name="novalnetapplepayFormData[walletToken]" id="novalnetapplepay-wallet-token" {{formName}}>
+		<input type="hidden" value="{{ null|shopVersion }}" id="nnShopVersion">
+    {% else %}
+		{{ parent() }}
+    {% endif %}
+{% endblock %}
+
+

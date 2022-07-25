@@ -1,0 +1,72 @@
+{% sw_extends '@Storefront/storefront/page/checkout/cart/index.html.twig' %}
+
+{% block page_checkout_cart_action_proceed %}
+	{{ parent() }}
+	{% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+	{% set applePayIsActive = false %}
+	
+	{% for paymentMethod in page.paymentMethods %}
+		{% if 'NovalnetApplePay' in paymentMethod.handlerIdentifier %}
+			{% set applePayIsActive = true %}
+		{% endif %}
+    {% endfor %}
+    
+	{% if applePayIsActive is not empty and novalnetSettings['NovalnetPayment.settings.accessKey'] and novalnetSettings['NovalnetPayment.settings.clientId'] and 'cart' in novalnetSettings['NovalnetPayment.settings.applepay.displayFields'] %}
+		{% set country = page.countries.first %}
+		{% set articleData  = [] %} {% set shippingMethods  = [] %}
+		{% for lineItem in page.cart.lineItems %}
+			{% set articleData = articleData|merge([{ label: lineItem.label ~ " (" ~ lineItem.quantity ~ " x " ~ lineItem.price.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (lineItem.price.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		{% for delivery in page.cart.deliveries %}
+			{% set articleData = articleData|merge([{ label: delivery.shippingMethod.name ~ " (" ~ delivery.shippingCosts.quantity ~ " x " ~ delivery.shippingCosts.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (delivery.shippingCosts.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		{% if country is empty %}
+			{% set country = context.salesChannel.countryId|getCountry(context.context) %}
+		{% endif %}
+		
+		{% if context.customer is not empty %}
+			{% for shipping in page.shippingMethods %}
+				{% set shippingCosts = shipping.id|getShippingCosts(context.context) %}
+				{% set price = shippingCosts.currencyPrice(context.currency.id) %}
+				{% set shippingMethods = shippingMethods|merge([{ label: shipping.translated.name ~ " (" ~ 1 ~ " x " ~ price.gross|currency(context.currency.isoCode) ~ ")", amount: (price.gross * 100)|round, detail: shipping.translated.description, identifier: shipping.id }]) %}
+			{% endfor %}
+		{% endif %}
+		
+		<div class="nn-cart-page">
+			<a class="btn btn-primary btn-block btn-lg begin-checkout-btn nn-apple-pay-button"sss
+			   data-novalnetapplepay-customer-login="{{ context.customer }}"
+			   data-novalnetapplepay-shipping-url="{{ path('frontend.novalnet.loadShipping') }}"
+			   data-novalnetapplepay-success-url="{{ path('frontend.novalnet.successOrder') }}"
+			   data-novalnetapplepay-page-type="cartPage"
+			   data-novalnetapplepay-payment-config="{{ 
+					{
+						'clientKey': novalnetSettings['NovalnetPayment.settings.clientKey'],
+						settings: {
+							'buttonRadius': novalnetSettings['NovalnetPayment.settings.applepay.buttonRadius'],
+							'buttonHeight': novalnetSettings['NovalnetPayment.settings.applepay.buttonHeight'],
+							'buttonType': novalnetSettings['NovalnetPayment.settings.applepay.buttonType'],
+							'buttonTheme': novalnetSettings['NovalnetPayment.settings.applepay.buttonTheme'],
+						},
+						transaction: {
+							'amount': (page.cart.price.totalPrice * 100)|round,
+							'currency': context.currency.isoCode
+						},
+						merchant: {
+							'country_code': country.iso ?? 'DE'
+						},
+						custom: {
+							'lang': context.context|getLocaleCodeFromContext,
+						},
+						wallet: {
+							'shop_name': novalnetSettings['NovalnetPayment.settings.applepay.sellerName'],
+							'order_info': articleData,
+							'shipping_methods': shippingMethods
+						}
+					}|jsonEncode()|escape('html_attr')}}">
+			</a>
+			<input type="hidden" value="{{ null|shopVersion }}" id="nnShopVersion">
+		</div>
+	{% endif %}
+{% endblock %}

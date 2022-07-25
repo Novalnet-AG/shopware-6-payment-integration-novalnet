@@ -1,0 +1,14 @@
+{% set tokens = context|savedPaymentData('novalnetpaypal') %}
+<br/>
+{% if tokens is not empty %}
+	{% for token in tokens %}
+	
+		{% if novalnetSettings['NovalnetPayment.settings.paypal.oneclick'] is not empty %}
+			<p>
+				{{ "NovalnetPayment.text.paypalAccount"|trans }}{{ token.accountData }}
+			</p>
+			<input type='hidden' name="novalnetpaypalFormData[paymentToken]" value="{{token.token}}" form="confirmOrderForm"/>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+

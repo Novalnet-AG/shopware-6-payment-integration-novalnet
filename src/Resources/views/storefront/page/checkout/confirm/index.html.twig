@@ -1,0 +1,98 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm %}
+{{ parent() }}
+	<div id="novalnet-payment-script">
+		<input type="hidden" value={{ path('frontend.checkout.removePaymentToken') }} id="cardRemoveUrl">
+		<input type="hidden" value="{{ "NovalnetPayment.text.removeConfirmMessage"|trans }}" id="removeConfirmMessage">
+		<input type="hidden" value="{{ null|shopVersion }}" id="nnShopVersion">
+	</div>
+{% endblock %}
+
+{% block page_checkout_confirm_form_submit %}
+    {% set hidePayment = 'NO' %}
+    {% set novalnetSettings = context.salesChannel.id|getNovalnetSettings %}
+    
+    {% set invoiceGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceguarantee') %}
+    {% set invoiceInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetinvoiceinstalment') %}
+    {% set sepaGuaranteeAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepaguarantee') %}
+    {% set sepaInstalmentAvailable = context|isGuaranteeAvailable(page,novalnetSettings, 'novalnetsepainstalment') %}
+
+
+    {% if 'Novalnet' in context.paymentMethod.handlerIdentifier %}
+        {% if 'NovalnetInvoiceGuarantee' in context.paymentMethod.handlerIdentifier and invoiceGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaGuarantee' in context.paymentMethod.handlerIdentifier and sepaGuaranteeAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetInvoiceInstalment' in context.paymentMethod.handlerIdentifier and invoiceInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+
+        {% if 'NovalnetSepaInstalment' in context.paymentMethod.handlerIdentifier and sepaInstalmentAvailable == 'NO' %}
+            {% set hidePayment = 'YES' %}
+        {% endif %}
+    {% endif %}
+
+    {% if hidePayment == 'YES' %}
+        <button id="confirmFormSubmit"
+                class="btn btn-primary btn-block btn-lg"
+                form="confirmOrderForm"
+                disabled
+                type="submit">
+            {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
+        </button>
+    {% elseif 'NovalnetApplePay' in context.paymentMethod.handlerIdentifier %}
+		{% set authAmount = ( page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice ) * 100 %}
+		{% set nnShopVersion = null|shopVersion %}
+		{% set formName = nnShopVersion >= "6.4" ? "form = confirmOrderForm" : '' %}
+		{% set articleData = [] %}
+		{% for lineItem in page.cart.lineItems %}
+			{% set articleData = articleData|merge([{ label: lineItem.label ~ " (" ~ lineItem.quantity ~ " x " ~ lineItem.price.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (lineItem.price.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		{% for delivery in page.cart.deliveries %}
+			{% set articleData = articleData|merge([{ label: delivery.shippingMethod.name ~ " (" ~ delivery.shippingCosts.quantity ~ " x " ~ delivery.shippingCosts.unitPrice|currency(context.currency.isoCode) ~ ")", amount: (delivery.shippingCosts.totalPrice * 100)|round }]) %}
+		{% endfor %}
+		
+		<input type="hidden" value="" name="novalnetapplepayFormData[walletToken]" id="novalnetapplepay-wallet-token" {{formName}}>
+		
+        <button id="confirmFormSubmit"
+                class="btn btn-primary btn-block btn-lg nn-apple-pay-button"
+                form="confirmOrderForm"
+                type="submit"
+                data-novalnetapplepay-page-type="checkoutPage"
+                data-novalnetapplepay-payment-config="{{ 
+					{
+					'clientKey': novalnetSettings['NovalnetPayment.settings.clientKey'],
+					settings: {
+						'buttonRadius': novalnetSettings['NovalnetPayment.settings.applepay.buttonRadius'],
+						'buttonHeight': novalnetSettings['NovalnetPayment.settings.applepay.buttonHeight'],
+						'buttonType': novalnetSettings['NovalnetPayment.settings.applepay.buttonType'],
+						'buttonTheme': novalnetSettings['NovalnetPayment.settings.applepay.buttonTheme'],
+					},
+					transaction: {
+						'amount': authAmount|round,
+						'currency': context.currency.isoCode
+					},
+					merchant: {
+						'country_code': context.customer.activeBillingAddress.country.iso
+					},
+					custom: {
+						'lang': context.context|getLocaleCodeFromContext,
+					},
+					wallet: {
+						'shop_name': novalnetSettings['NovalnetPayment.settings.applepay.sellerName'],
+						'order_info': articleData
+					}
+				 }|jsonEncode()|escape('html_attr')}}">
+        </button>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+
