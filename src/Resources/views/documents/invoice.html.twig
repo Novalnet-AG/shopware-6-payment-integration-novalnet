@@ -1,0 +1,9 @@
+{% sw_extends '@Framework/documents/invoice.html.twig' %}
+
+{% block document_payment_shipping_inner %}
+    {{ parent() }}
+    {% if order.transactions.first.customFields.novalnet_comments != '' %}
+		<br><strong>{{"NovalnetPayment.text.commentsHeader"|trans}}</strong><br>
+		{{ order.transactions.first.customFields.novalnet_comments|replace({'/ ': "<br>"}) | raw }}
+	{% endif %}
+{% endblock %}

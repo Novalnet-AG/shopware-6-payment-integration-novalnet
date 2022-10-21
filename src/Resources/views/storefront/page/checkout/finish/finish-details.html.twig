@@ -1,0 +1,12 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+
+{% block page_checkout_finish_order_payment_method%}
+	{{ parent() }}
+		<p>
+			{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+				<strong>{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}</strong>
+				{{ page.order.transactions.last.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+			{% endif %}
+        </p>
+{% endblock %}
