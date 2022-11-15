@@ -1,0 +1,23 @@
+{% set payment = context.paymentMethod|getPaymentMethodName() %}
+
+{% if payment == 'novalnetsepa' %}
+	{% set onclick = novalnetSettings['NovalnetPayment.settings.sepa.oneclick'] %}
+{% elseif payment == 'novalnetsepaguarantee' %}
+	{% set onclick = novalnetSettings['NovalnetPayment.settings.sepaguarantee.oneclick'] %}
+{% endif %}
+
+
+{% set tokens = context|savedPaymentData('novalnetsepa') %}
+<br/>
+{% if tokens is not empty %}
+	{% for token in tokens %}
+		<br/>{{token.type}} {{ "NovalnetPayment.text.endingIn"|trans }} {{ token.accountData }}
+		{% if token.token %}
+			<input type='hidden' name='{{payment}}FormData[paymentToken]' value="{{token.token}}" form="confirmOrderForm"/>
+		{% endif %}
+	{% endfor %}
+{% else %}
+	<input type="hidden" id='{{payment}}HideButton' value="1">
+	<br/><strong style="color:red;">{{"NovalnetPayment.text.accountNotSelected"|trans}}</strong>
+{% endif %}
+
