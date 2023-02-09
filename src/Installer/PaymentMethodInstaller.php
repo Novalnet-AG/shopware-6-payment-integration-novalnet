@@ -1,0 +1,1113 @@
+<?php
+
+/**
+ * Novalnet payment plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to Novalnet End User License Agreement
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category    Novalnet
+ * @package     NovalnetPayment
+ * @copyright   Copyright (c) Novalnet
+ * @license     https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+declare(strict_types=1);
+
+namespace Novalnet\NovalnetPayment\Installer;
+
+use Novalnet\NovalnetPayment\Service\NovalnetGooglePay;
+use Novalnet\NovalnetPayment\Service\NovalnetApplePay;
+use Novalnet\NovalnetPayment\Service\NovalnetBancontact;
+use Novalnet\NovalnetPayment\Service\NovalnetCashpayment;
+use Novalnet\NovalnetPayment\Service\NovalnetCreditCard;
+use Novalnet\NovalnetPayment\Service\NovalnetEps;
+use Novalnet\NovalnetPayment\Service\NovalnetGiropay;
+use Novalnet\NovalnetPayment\Service\NovalnetIdeal;
+use Novalnet\NovalnetPayment\Service\NovalnetTrustly;
+use Novalnet\NovalnetPayment\Service\NovalnetWeChatPay;
+use Novalnet\NovalnetPayment\Service\NovalnetAliPay;
+use Novalnet\NovalnetPayment\Service\NovalnetInvoice;
+use Novalnet\NovalnetPayment\Service\NovalnetInvoiceGuarantee;
+use Novalnet\NovalnetPayment\Service\NovalnetInvoiceInstalment;
+use Novalnet\NovalnetPayment\Service\NovalnetMultibanco;
+use Novalnet\NovalnetPayment\Service\NovalnetPaypal;
+use Novalnet\NovalnetPayment\Service\NovalnetPostfinance;
+use Novalnet\NovalnetPayment\Service\NovalnetPostfinanceCard;
+use Novalnet\NovalnetPayment\Service\NovalnetPrepayment;
+use Novalnet\NovalnetPayment\Service\NovalnetPrzelewy24;
+use Novalnet\NovalnetPayment\Service\NovalnetSepa;
+use Novalnet\NovalnetPayment\Service\NovalnetSepaGuarantee;
+use Novalnet\NovalnetPayment\Service\NovalnetSepaInstalment;
+use Novalnet\NovalnetPayment\Service\NovalnetSofort;
+use Novalnet\NovalnetPayment\Service\NovalnetOnlineBankTransfer;
+use Novalnet\NovalnetPayment\Installer\MediaProvider;
+use Doctrine\DBAL\Connection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\MailTemplate\MailTemplateEntity;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Uuid\Uuid;
+
+/**
+ * PaymentMethodInstaller Class.
+ */
+class PaymentMethodInstaller
+{
+    /**
+     * @var array
+     */
+    private $paymentMethods = [
+        NovalnetGooglePay::class,
+        NovalnetApplePay::class,
+        NovalnetBancontact::class,
+        NovalnetCashpayment::class,
+        NovalnetCreditCard::class,
+        NovalnetEps::class,
+        NovalnetGiropay::class,
+        NovalnetIdeal::class,
+        NovalnetTrustly::class,
+        NovalnetWeChatPay::class,
+        NovalnetAliPay::class,
+        NovalnetInvoice::class,
+        NovalnetInvoiceGuarantee::class,
+        NovalnetMultibanco::class,
+        NovalnetPaypal::class,
+        NovalnetPostfinance::class,
+        NovalnetPostfinanceCard::class,
+        NovalnetPrepayment::class,
+        NovalnetPrzelewy24::class,
+        NovalnetSepa::class,
+        NovalnetSepaGuarantee::class,
+        NovalnetSofort::class,
+        NovalnetOnlineBankTransfer::class,
+        NovalnetInvoiceInstalment::class,
+        NovalnetSepaInstalment::class,
+    ];
+
+    /**
+     * @var Context
+     */
+    private $context;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $mailTemplateRepo;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $mailTemplateTypeRepo;
+
+    /**
+     * @var array
+     */
+    private $customFields = [
+        [
+            'name' => 'novalnet',
+            'config' => [
+                'label' => [
+                    'en-GB' => 'Novalnet',
+                    'de-DE' => 'Novalnet',
+                ],
+            ],
+            'customFields' => [
+                [
+                    'name' => 'novalnet_comments',
+                    'active' => true,
+                    'type' => CustomFieldTypes::TEXT,
+                    'config' => [
+                        'componentName' => 'sw-field',
+                        'customFieldType' => 'text',
+                        'customFieldPosition' => 1,
+                        'label' => [
+                            'en-GB' => 'Novalnet Coments',
+                            'de-DE' => 'Novalnet Kommentare',
+                        ],
+                    ],
+                ],
+            ],
+            'relations' => [
+                [
+                    'entityName' => 'order_transaction',
+                ]
+            ]
+        ]
+    ];
+
+
+    /**
+     * @constant string
+     */
+    protected const SYSTEM_CONFIG_DOMAIN = 'NovalnetPayment.settings.';
+
+    /**
+     * @var array
+     */
+    protected $defaultConfiguration = [
+        'creditcard.css'                => 'body{color: #8798a9;font-family:Helvetica,Arial,sans-serif;font-weight: 500;}input{border-radius: 3px;background-clip: padding-box;box-sizing: border-box;line-height: 1.1875rem;padding: .625rem .625rem .5625rem .625rem;box-shadow: inset 0 1px 1px #dadae5;background: #f8f8fa;border: 1px solid #dadae5;border-top-color: #cbcbdb;color: #8798a9;text-align: left;font: inherit;letter-spacing: normal;margin: 0;word-spacing: normal;text-transform: none;text-indent: 0px;text-shadow: none;display: inline-block;height:40px;font-family:Helvetica,Arial,sans-serif;font-weight: 500;}input:focus{background-color: white;font-family:Helvetica,Arial,sans-serif;font-weight: 500;}',
+        'creditcard.inline'             => true,
+        'creditcard.oneclick'           => true,
+        'sepa.oneclick'                 => true,
+        'sepaguarantee.oneclick'        => true,
+        'sepainstalment.oneclick'       => true,
+        'sepaguarantee.allowB2B'        => true,
+        'invoiceguarantee.allowB2B'     => true,
+        'invoiceinstalment.allowB2B'    => true,
+        'invoiceinstalment.productPageInfo' => true,
+        'sepainstalment.productPageInfo'    => true,
+        'sepainstalment.allowB2B'       => true,
+        'emailMode'                     => true,
+        'applepay.buttonType'   => 'plain',
+        'applepay.buttonTheme'  => 'black',
+        'applepay.buttonHeight' => 40,
+        'applepay.buttonRadius' => 2,
+        'applepay.displayFields'    => ['cart', 'register', 'ajaxCart', 'productDetailPage', 'productListingPage'],
+        'googlepay.buttonType'  => 'book',
+        'googlepay.buttonTheme' => 'default',
+        'googlepay.buttonHeight'    => 50,
+        'googlepay.displayFields'   => ['cart', 'register', 'ajaxCart', 'productDetailPage', 'productListingPage'],
+        'invoiceguarantee.minimumOrderAmount'   => 999,
+        'sepaguarantee.minimumOrderAmount'      => 999,
+        'invoiceinstalment.minimumOrderAmount'  => 1998,
+        'sepainstalment.minimumOrderAmount'     => 1998,
+        'invoiceinstalment.cycles'              => [
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12'
+        ],
+        'sepainstalment.cycles' => [
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12'
+        ]
+    ];
+
+    /**
+     * Constructs a `PaymentMethodInstaller`
+     *
+     * @param ContainerInterface $container
+     * @param Context $context
+     */
+    public function __construct(ContainerInterface $container, Context $context)
+    {
+        $this->context   = $context;
+        $this->container = $container;
+        $this->mailTemplateRepo = $this->container->get('mail_template.repository');
+        $this->mailTemplateTypeRepo = $this->container->get('mail_template_type.repository');
+    }
+
+    /**
+     * Add Payment Methods on plugin installation
+     *
+     */
+    public function install(): void
+    {
+        $this->addPaymentMethods();
+        $this->createMailEvents();
+    }
+
+    /**
+     * Add Payment Methods on plugin update process
+     *
+     */
+    public function update(): void
+    {
+        $this->addPaymentMethods();
+        $this->updateMediaData();
+        $this->createMailEvents();
+    }
+
+    /**
+     * Add payment logo into media on plugin activation
+     *
+     */
+    public function activate(): void
+    {
+        #Update icon to the media repository
+        $this->updateMediaData();
+    }
+
+    /**
+     * Deactivate Payment Methods
+     *
+     */
+    public function deactivate(): void
+    {
+        $this->deactivatePaymentMethods();
+    }
+
+    /**
+     * Deactivate Payment Methods
+     *
+     */
+    public function uninstall(): void
+    {
+        $this->deactivatePaymentMethods();
+    }
+
+    /**
+     * Delete plugin related system configurations.
+     *
+     */
+    public function removeConfiguration(): void
+    {
+        $systemConfigRepository = $this->container->get('system_config.repository');
+        $criteria = (new Criteria())
+            ->addFilter(new ContainsFilter('configurationKey', self::SYSTEM_CONFIG_DOMAIN));
+
+        $idSearchResult = $systemConfigRepository->searchIds($criteria, $this->context);
+
+        $ids = array_map(static function ($id) {
+            return ['id' => $id];
+        }, $idSearchResult->getIds());
+
+        $systemConfigRepository->delete($ids, $this->context);
+    }
+
+    /**
+     * Delete plugin related mail configuration.
+     *
+     */
+    public function deleteMailSettings(): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', 'novalnet_order_confirmation_mail'));
+
+        $mailData = $this->mailTemplateRepo->search($criteria, $this->context)->first();
+
+        if($mailData)
+        {
+            // delete subscription mail template
+            $this->mailTemplateRepo->delete([['id' => $mailData->getId()]], $this->context);
+            $this->mailTemplateTypeRepo->delete([['id' => $mailData->getMailTemplateTypeId()]], $this->context);
+        }
+    }
+
+    /**
+     * Add Novalnet Payment methods
+     *
+     */
+    private function addPaymentMethods(): void
+    {
+        $paymentMethods = $this->getPaymentMethods();
+
+        if ($paymentMethods) {
+            $defaultLocale = (in_array($this->getDefaultLocaleCode(), ['de-DE', 'en-GB'])) ? $this->getDefaultLocaleCode() : 'en-GB';
+            $context = $this->context;
+
+            foreach ($paymentMethods as $paymentMethod) {
+                $paymentMethodId = $this->getHandlerIdentifier($paymentMethod->getPaymentHandler());
+
+                // Skip insertion if the payment already exists.
+                if (empty($paymentMethodId)) {
+                    $translations = $paymentMethod->getTranslations();
+                    $paymentData  = [
+                        [
+                            'name'              => $paymentMethod->getName($defaultLocale),
+                            'description'       => $paymentMethod->getDescription($defaultLocale),
+                            'position'          => $paymentMethod->getPosition(),
+                            'handlerIdentifier' => $paymentMethod->getPaymentHandler(),
+                            'translations'      => $translations,
+                            'afterOrderEnabled' => true,
+                            'customFields'      => [
+                                'novalnet_payment_method_name' => $paymentMethod->getPaymentCode(),
+                            ],
+                        ]
+                    ];
+
+                    $this->context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($paymentData): void {
+                        $this->container->get('payment_method.repository')->upsert($paymentData, $context);
+                    });
+
+                    $paymentMethodId = $this->getHandlerIdentifier($paymentMethod->getPaymentHandler());
+                    $channels        = $this->container->get('sales_channel.repository')->searchIds(new Criteria(), $this->context);
+
+                    // Enable payment method on available channels.
+                    if (!is_null($this->container->get('sales_channel_payment_method.repository'))) {
+                        foreach ($channels->getIds() as $channel) {
+                            $data = [
+                                'salesChannelId'  => $channel,
+                                'paymentMethodId' => $paymentMethodId,
+                            ];
+                            $this->container->get('sales_channel_payment_method.repository')->upsert([$data], $this->context);
+                        }
+                    }
+                }
+
+                $this->updateCustomFieldsForTranslations($paymentMethod, $paymentMethodId);
+            }
+        }
+
+        // Set default configurations value for payment methods
+        $customFields = $this->customFields;
+        $customFieldExistsId = $this->checkCustomField('novalnet');
+
+        if (!$customFieldExistsId && !is_null($this->container->get('custom_field_set.repository'))) {
+            $this->context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($customFields): void {
+                $this->container->get('custom_field_set.repository')->upsert($customFields, $context);
+            });
+        }
+
+        $systemConfig = $this->container->get(SystemConfigService::class);
+
+        if (!is_null($systemConfig)) {
+            foreach ($this->defaultConfiguration as $key => $value) {
+                if (!empty($value)) {
+                    $systemConfig->set(self::SYSTEM_CONFIG_DOMAIN . $key, $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Check custom field
+     *
+     * @param string $customFieldName
+     *
+     * @return string
+     */
+    private function checkCustomField(string $customFieldName): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('name', $customFieldName));
+
+        // Return null on given customField non existance case.
+        if (is_null($this->container->get('custom_field_set.repository'))) {
+            return null;
+        }
+        $result = $this->container->get('custom_field_set.repository')->searchIds($criteria, $this->context);
+
+        if (!$result->getTotal()) {
+            return null;
+        }
+
+        $customeFields = $result->getIds();
+        return array_shift($customeFields);
+    }
+
+    /**
+     * Get Novalnet Payment method instance
+     *
+     * @return array
+     */
+    private function getPaymentMethods(): array
+    {
+        $paymentMethods = [];
+
+        // Get Novalnet payment methods and initiate the corresponding instance
+        foreach ($this->paymentMethods as $paymentMethod) {
+            $paymentMethods[] = new $paymentMethod();
+        }
+
+        return $paymentMethods;
+    }
+
+    /**
+     * Get Payment handler identifier
+     *
+     * @param string $handlerIdentifier
+     *
+     * @retrun string|null
+     */
+    private function getHandlerIdentifier(string $handlerIdentifier): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
+
+        return $this->container->get('payment_method.repository')
+            ->searchIds($criteria, $this->context)
+            ->firstId();
+    }
+
+    /**
+     * Get Payment method entity
+     *
+     * @param string $handlerIdentifier
+     *
+     * @retrun PaymentMethodEntity|null
+     */
+    private function getPaymentMethodEntity(string $handlerIdentifier): ?PaymentMethodEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
+
+        return $this->container->get('payment_method.repository')->search($criteria, $this->context)->first();
+    }
+
+    /**
+     * Deactivate Payment methods
+     */
+    private function deactivatePaymentMethods(): void
+    {
+        $paymentMethods = $this->getPaymentMethods();
+        foreach ($paymentMethods as $paymentMethod) {
+            $paymentMethodId = $this->getHandlerIdentifier($paymentMethod->getPaymentHandler());
+            if (!$paymentMethodId) {
+                continue;
+            }
+
+            // Deactivate the payment methods.
+            $this->container->get('payment_method.repository')->update([
+                [
+                    'id' => $paymentMethodId,
+                    'active' => false,
+                ],
+            ], $this->context);
+        }
+
+        // Deactivate the custom fields.
+        $customFieldExistsId = $this->checkCustomField('novalnet');
+        if (!$customFieldExistsId) {
+            return;
+        }
+
+        $customField = [
+                'id' => $customFieldExistsId,
+                'active' => false,
+        ];
+        $context = $this->context;
+
+        $this->context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($customField): void {
+            $this->container->get('custom_field_set.repository')->upsert([$customField], $context);
+        });
+    }
+
+    /**
+     * Get default langauge during plugin installation
+     *
+     * @return string|null
+     */
+    private function getDefaultLocaleCode(): ?string
+    {
+        $criteria = new Criteria([Defaults::LANGUAGE_SYSTEM]);
+        $criteria->addAssociation('locale');
+
+        $systemDefaultLanguage = $this->container->get('language.repository')->search($criteria, $this->context)->first();
+
+        $locale = $systemDefaultLanguage->getLocale();
+        if (!$locale) {
+            return null;
+        }
+
+        return $locale->getCode();
+    }
+
+    /**
+     * Prepare and update media files on plugin activation
+     *
+     * @return void
+     */
+    private function updateMediaData(): void
+    {
+        $paymentMethods = $this->getPaymentMethods();
+        foreach ($paymentMethods as $paymentMethod) {
+            $paymentMethodEntity = $this->getPaymentMethodEntity($paymentMethod->getPaymentHandler());
+            $paymentMethodId = !is_null($paymentMethodEntity) ? $paymentMethodEntity->getId() : null;
+
+            if (!$paymentMethodId) {
+                continue;
+            }
+
+            // Initiate MediaProvider.
+            $mediaProvider = $this->container->get(MediaProvider::class);
+
+            if (!is_null($mediaProvider)) {
+
+                if(is_null($paymentMethodEntity->getMediaId()))
+                {
+                    $mediaId = $mediaProvider->getMediaId($paymentMethod->getPaymentCode(), $this->context);
+                    $this->container->get('payment_method.repository')->update([
+                        [
+                            'id'       => $paymentMethodId,
+                            'mediaId'  => $mediaId,
+                        ],
+                    ], $this->context);
+                }
+            }
+        }
+    }
+
+    /**
+     * Update payment custom fields
+     */
+    private function updateCustomFieldsForTranslations($paymentMethod, string $paymentMethodId): void
+    {
+        $customFields['novalnet_payment_method_name'] = $paymentMethod->getPaymentCode();
+        $customFields = json_encode($customFields, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
+
+        $connection->exec(sprintf("
+            UPDATE `payment_method_translation`
+            SET
+                `custom_fields` = '%s'
+            WHERE
+                `custom_fields` IS NULL AND
+                `payment_method_id` = UNHEX('%s');
+         ", $customFields, $paymentMethodId));
+    }
+
+    /**
+     * Create/Update novalnet order confirmation mail template
+     *
+     * @return void
+     */
+    public function createMailEvents(): void
+    {
+        $mailType = $this->getMailTemplateType();
+        $mailTemplateTypeId = Uuid::randomHex();
+        $mailTemplateId = Uuid::randomHex();
+
+        if (!is_null($mailType))
+        {
+            $mailTemplateId = $mailType->getId();
+            $mailTemplateTypeId = $mailType->getMailTemplateTypeId();
+        }
+
+        $this->mailTemplateRepo->upsert([
+            [
+                'id' => $mailTemplateId,
+                'translations' => [
+                    'de-DE' => [
+                        'subject' => 'Bestellbestätigung',
+                        'contentHtml' => $this->getHtmlTemplateDe(),
+                        'contentPlain'=> $this->getPlainTemplateDe(),
+                        'description' => 'Novalnet Bestellbestätigung',
+                        'senderName'  => '{{ salesChannel.name }}',
+                    ],
+                    'en-GB' => [
+                        'subject' => 'Order confirmation',
+                        'contentHtml' => $this->getHtmlTemplateEn(),
+                        'contentPlain'=> $this->getPlainTemplateEn(),
+                        'description' => 'Novalnet Order confirmation',
+                        'senderName'  => '{{ salesChannel.name }}',
+                    ],
+                ],
+                'mailTemplateType' => [
+                    'id' => $mailTemplateTypeId,
+                    'technicalName' => 'novalnet_order_confirmation_mail',
+                    'translations'  => [
+                        'de-DE' => [
+                            'name' => 'Bestellbestätigung',
+                        ],
+                        'en-GB' => [
+                            'name' => 'Order Confirmation',
+                        ],
+                    ],
+                    'availableEntities' => [
+                        'order' => 'order',
+                        'salesChannel' => 'sales_channel',
+                    ],
+                ],
+            ]
+        ], $this->context);
+    }
+
+    /**
+     * Get English HTML Template
+     *
+     * @return string
+     */
+    private function getHtmlTemplateEn(): string
+    {
+        return '<div style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+
+{% set currencyIsoCode = order.currency.isoCode %}
+{{order.orderCustomer.salutation.letterName }} {{order.orderCustomer.firstName}} {{order.orderCustomer.lastName}},<br>
+<br>
+{% if instalment == false %}
+Thank you for your order at {{ salesChannel.name }} (Number: {{order.orderNumber}}) on {{ order.orderDateTime|format_datetime("medium", "short", locale="en-GB") }}.<br>
+{% else %}
+The next instalment cycle have arrived for the instalment order (OrderNumber: {{order.orderNumber}}) placed at the store {{ salesChannel.name }} on {{ order.orderDateTime|format_datetime("medium", "short", locale="en-GB") }}.<br>
+{% endif %}
+<br>
+<strong>Information on your order:</strong><br>
+<br>
+
+<table width="80%" border="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+    <tr>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Pos.</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Description</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Quantities</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Price</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Total</strong></td>
+    </tr>
+
+    {% for lineItem in order.lineItems|reverse %}
+    <tr>
+        <td style="border-bottom:1px solid #cccccc;">{{ loop.index }} </td>
+        <td style="border-bottom:1px solid #cccccc;">
+          {{ lineItem.label|u.wordwrap(80) }}<br>
+          {% if lineItem.payload.productNumber is defined %} Art. No.: {{ lineItem.payload.productNumber|u.wordwrap(80) }} {% endif %}
+        </td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.quantity }}</td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.unitPrice|currency(currencyIsoCode) }}</td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.totalPrice|currency(currencyIsoCode) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% set delivery =order.deliveries.first %}
+
+
+{% set displayRounded = order.totalRounding.interval != 0.01 or order.totalRounding.decimals != order.itemRounding.decimals %}
+{% set decimals = order.totalRounding.decimals %}
+{% set total = order.price.totalPrice %}
+{% if displayRounded %}
+    {% set total = order.price.rawTotal %}
+    {% set decimals = order.itemRounding.decimals %}
+{% endif %}
+<p>
+    <br>
+    <br>
+    Shipping costs: {{order.deliveries.first.shippingCosts.totalPrice|currency(currencyIsoCode) }}<br>
+    Net total: {{ order.amountNet|currency(currencyIsoCode) }}<br>
+        {% for calculatedTax in order.price.calculatedTaxes %}
+            {% if order.taxStatus is same as(\'net\') %}plus{% else %}including{% endif %} {{ calculatedTax.taxRate }}% VAT. {{ calculatedTax.tax|currency(currencyIsoCode) }}<br>
+        {% endfor %}
+        {% if not displayRounded %}<strong>{% endif %}Total gross: {{ order.amountTotal|currency(currencyIsoCode,decimals=decimals) }}{% if not displayRounded %}</strong>{% endif %}<br>
+        {% if displayRounded %}
+            <strong>Rounded total gross: {{ order.price.totalPrice|currency(currencyIsoCode,decimals=order.totalRounding.decimals) }}</strong><br>
+        {% endif %}
+
+    <br>
+
+    <strong>Selected payment type:</strong> {{ order.transactions|last.paymentMethod.name }}<br>
+    {{ order.transactions|last.paymentMethod.description }}<br>
+    <br>
+
+    <strong>Comments:</strong><br>
+    {{ note|replace({"/ ": "<br>"}) | raw }}<br>
+    <br>
+
+    {% if "NovalnetInvoiceInstalment" in order.transactions|last.paymentMethod.handlerIdentifier or "NovalnetSepaInstalment" in order.transactions|last.paymentMethod.handlerIdentifier %}
+            {% if instalmentInfo is not empty %}
+                <table width="40%" style="font-family:Arial, Helvetica, sans-serif; border: 1px solid;border-color: #bcc1c7;text-align: center;font-size:12px;">
+                    <thead style="font-weight: bold;">
+                        <tr>
+                            <td style="border-bottom:1px solid #cccccc;">S.No</td>
+                            <td style="border-bottom:1px solid #cccccc;">Date</td>
+                            <td style="border-bottom:1px solid #cccccc;">Novalnet Transaction ID</td>
+                            <td style="border-bottom:1px solid #cccccc;">Amount</td>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        {% for info in instalmentInfo.InstalmentDetails %}
+                            {%set amount = info.amount/100 %}
+                            <tr>
+                                <td style="border-bottom:1px solid #cccccc;">{{ loop.index }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ info.cycleDate ? info.cycleDate|date("d/m/Y"): "-" }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ info.reference ? info.reference : "-" }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ amount ? amount|currency(currencyIsoCode): "-" }}</td>
+                            <tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+            {% endif %}
+    {% endif %}
+
+    <strong>Selected shipping type:</strong> {{ delivery.shippingMethod.translated.name }}<br>
+    {{ delivery.shippingMethod.translated.description }}<br>
+    <br>
+
+    {% set billingAddress = order.addresses.get(order.billingAddressId) %}
+    <strong>Billing address:</strong><br>
+    {{ billingAddress.company }}<br>
+    {{ billingAddress.firstName }} {{ billingAddress.lastName }}<br>
+    {{ billingAddress.street }} <br>
+    {{ billingAddress.zipcode }} {{ billingAddress.city }}<br>
+    {{ billingAddress.country.name }}<br>
+    <br>
+
+    <strong>Shipping address:</strong><br>
+    {{ delivery.shippingOrderAddress.company }}<br>
+    {{ delivery.shippingOrderAddress.firstName }} {{ delivery.shippingOrderAddress.lastName }}<br>
+    {{ delivery.shippingOrderAddress.street }} <br>
+    {{ delivery.shippingOrderAddress.zipcode}} {{ delivery.shippingOrderAddress.city }}<br>
+    {{ delivery.shippingOrderAddress.country.name }}<br>
+    <br>
+    {% if billingAddress.vatId %}
+
+      Your VAT-ID: {{ billingAddress.vatId }}
+      In case of a successful order and if you are based in one of the EU countries, you will receive your goods exempt from turnover tax.<br>
+    {% endif %}
+    <br/>
+    You can check the current status of your order on our website under "My account" - "My orders" anytime: {{ rawUrl("frontend.account.order.single.page", { "deepLinkCode": order.deepLinkCode }, salesChannel.domains|first.url) }}
+    </br>
+    If you have any questions, do not hesitate to contact us.
+
+</p>
+<br>
+</div>';
+    }
+
+    /**
+     * Get English Plain Template
+     *
+     * @return string
+     */
+    private function getPlainTemplateEn(): string
+    {
+        return '{% set currencyIsoCode = order.currency.isoCode %}
+{{ order.orderCustomer.salutation.letterName }} {{order.orderCustomer.firstName}} {{order.orderCustomer.lastName}},
+
+{% if instalment == false %}
+Thank you for your order at {{ salesChannel.name }} (Number: {{order.orderNumber}}) on {{ order.orderDateTime|format_datetime("medium", "short", locale="en-GB") }}.
+{% else %}
+The next instalment cycle have arrived for the instalment order (OrderNumber: {{order.orderNumber}}) placed at the store {{ salesChannel.name }} on {{ order.orderDateTime|format_datetime("medium", "short", locale="en-GB") }}.
+{% endif %}
+
+Information on your order:
+
+Pos.   Art.No.          Description         Quantities          Price           Total
+
+{% for lineItem in order.lineItems|reverse %}
+{{ loop.index }}       {% if lineItem.payload.productNumber is defined %}{{ lineItem.payload.productNumber|u.wordwrap(80) }}{% endif %}                {{ lineItem.label|u.wordwrap(80) }}         {{ lineItem.quantity }}         {{ lineItem.unitPrice|currency(currencyIsoCode) }}          {{ lineItem.totalPrice|currency(currencyIsoCode) }}
+{% endfor %}
+
+{% set delivery = order.deliveries.first %}
+
+{% set displayRounded = order.totalRounding.interval != 0.01 or order.totalRounding.decimals != order.itemRounding.decimals %}
+{% set decimals = order.totalRounding.decimals %}
+{% set total = order.price.totalPrice %}
+{% if displayRounded %}
+    {% set total = order.price.rawTotal %}
+    {% set decimals = order.itemRounding.decimals %}
+{% endif %}
+
+
+Shipping costs: {{order.deliveries.first.shippingCosts.totalPrice|currency(currencyIsoCode) }}
+Net total: {{ order.amountNet|currency(currencyIsoCode) }}
+    {% for calculatedTax in order.price.calculatedTaxes %}
+        {% if order.taxStatus is same as(\'net\') %}plus{% else %}including{% endif %} {{ calculatedTax.taxRate }}% VAT. {{ calculatedTax.tax|currency(currencyIsoCode) }}<br>
+     {% endfor %}
+     Total gross: {{ order.amountTotal|currency(currencyIsoCode,decimals=decimals) }}
+{% if displayRounded %}
+Rounded total gross: {{ order.price.totalPrice|currency(currencyIsoCode,decimals=order.totalRounding.decimals) }}
+{% endif %}
+
+
+Selected payment type: {{ order.transactions|last.paymentMethod.name }}
+{{ order.transactions|last.paymentMethod.description }}
+
+Comments:
+{{ note|replace({"/ ": "<br>"}) | raw }}
+
+{% if "NovalnetInvoiceInstalment" in order.transactions|last.paymentMethod.handlerIdentifier or "NovalnetSepaInstalment" in order.transactions|last.paymentMethod.handlerIdentifier %}
+        {% if instalmentInfo is not empty %}
+                S.No.   Date            Novalnet Transaction ID         Amount
+                    {% for info in instalmentInfo.InstalmentDetails %}
+                        {%set amount = info.amount/100 %}
+                            {{ loop.index }} {{ info.cycleDate ? info.cycleDate|date("d/m/Y"): "-" }} {{ info.reference ? info.reference : "-" }} {{ amount ? amount|currency(currencyIsoCode): "-" }}
+                    {% endfor %}
+        {% endif %}
+{% endif %}
+
+Selected shipping type: {{ delivery.shippingMethod.translated.name }}
+{{ delivery.shippingMethod.translated.description }}
+
+{% set billingAddress = order.addresses.get(order.billingAddressId) %}
+Billing address:
+{{ billingAddress.company }}
+{{ billingAddress.firstName }} {{ billingAddress.lastName }}
+{{ billingAddress.street }}
+{{ billingAddress.zipcode }} {{ billingAddress.city }}
+{{ billingAddress.country.name }}
+
+Shipping address:
+{{ delivery.shippingOrderAddress.company }}
+{{ delivery.shippingOrderAddress.firstName }} {{ delivery.shippingOrderAddress.lastName }}
+{{ delivery.shippingOrderAddress.street }}
+{{ delivery.shippingOrderAddress.zipcode}} {{ delivery.shippingOrderAddress.city }}
+{{ delivery.shippingOrderAddress.country.name }}
+
+{% if billingAddress.vatId %}
+Your VAT-ID: {{ billingAddress.vatId }}
+In case of a successful order and if you are based in one of the EU countries, you will receive your goods exempt from turnover tax.
+{% endif %}
+
+You can check the current status of your order on our website under "My account" - "My orders" anytime: {{ rawUrl("frontend.account.order.single.page", { "deepLinkCode": order.deepLinkCode }, salesChannel.domains|first.url) }}
+If you have any questions, do not hesitate to contact us.
+
+';
+    }
+
+    /**
+     * Get German HTML Template
+     *
+     * @return string
+     */
+    private function getHtmlTemplateDe(): string
+    {
+        return '<div style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+
+{% set currencyIsoCode = order.currency.isoCode %}
+{{order.orderCustomer.salutation.letterName }} {{order.orderCustomer.firstName}} {{order.orderCustomer.lastName}},<br>
+<br>
+{% if instalment == false %}
+vielen Dank für Ihre Bestellung im {{ salesChannel.name }} (Nummer: {{order.orderNumber}}) am {{ order.orderDateTime|format_datetime("medium", "short", locale="de-DE") }}.<br>
+{% else %}
+Für Ihre (Bestellung Nr: {{order.orderNumber}}) bei {{ salesChannel.name }}, ist die nächste Rate fällig. Bitte beachten Sie weitere Details unten am {{ order.orderDateTime|format_datetime("medium", "short", locale="de-DE") }}.<br>
+{% endif %}
+<br>
+<strong>Informationen zu Ihrer Bestellung:</strong><br>
+<br>
+
+<table width="80%" border="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+    <tr>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Pos.</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Bezeichnung</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Menge</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Preis</strong></td>
+        <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Summe</strong></td>
+    </tr>
+
+    {% for lineItem in order.lineItems |reverse %}
+    <tr>
+        <td style="border-bottom:1px solid #cccccc;">{{ loop.index }} </td>
+        <td style="border-bottom:1px solid #cccccc;">
+          {{ lineItem.label|u.wordwrap(80) }}<br>
+          {% if lineItem.payload.productNumber is defined %} Artikel-Nr: {{ lineItem.payload.productNumber|u.wordwrap(80) }} {% endif %}
+        </td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.quantity }}</td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.unitPrice|currency(currencyIsoCode) }}</td>
+        <td style="border-bottom:1px solid #cccccc;">{{ lineItem.totalPrice|currency(currencyIsoCode) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% set delivery =order.deliveries.first %}
+
+{% set displayRounded = order.totalRounding.interval != 0.01 or order.totalRounding.decimals != order.itemRounding.decimals %}
+{% set decimals = order.totalRounding.decimals %}
+{% set total = order.price.totalPrice %}
+{% if displayRounded %}
+    {% set total = order.price.rawTotal %}
+    {% set decimals = order.itemRounding.decimals %}
+{% endif %}
+<p>
+    <br>
+    <br>
+    Versandkosten: {{order.deliveries.first.shippingCosts.totalPrice|currency(currencyIsoCode) }}<br>
+    Gesamtkosten Netto: {{ order.amountNet|currency(currencyIsoCode) }}<br>
+        {% for calculatedTax in order.price.calculatedTaxes %}
+            {% if order.taxStatus is same as(\'net\') %}zzgl{% else %}inkl{% endif %} {{ calculatedTax.taxRate }}% MWST. {{ calculatedTax.tax|currency(currencyIsoCode) }}<br>
+        {% endfor %}
+        {% if not displayRounded %}<strong>{% endif %}Gesamtkosten Brutto: {{ order.amountTotal|currency(currencyIsoCode,decimals=decimals) }}{% if not displayRounded %}</strong>{% endif %}<br>
+    {% if displayRounded %}
+        <strong>Gesamtkosten Brutto gerundet: {{ order.price.totalPrice|currency(currencyIsoCode,decimals=order.totalRounding.decimals) }}</strong><br>
+    {% endif %}
+    <br>
+
+
+    <strong>Gewählte Zahlungsart:</strong> {{ order.transactions|last.paymentMethod.name }}<br>
+    {{ order.transactions|last.paymentMethod.description }}<br>
+    <br>
+
+    <strong>Kommentare:</strong><br>
+    {{ note|replace({"/ ": "<br>"}) | raw }}<br>
+    <br>
+
+    {% if "NovalnetInvoiceInstalment" in order.transactions|last.paymentMethod.handlerIdentifier or "NovalnetSepaInstalment" in order.transactions|last.paymentMethod.handlerIdentifier %}
+            {% if instalmentInfo is not empty %}
+                <table width="40%" style="font-family:Arial, Helvetica, sans-serif; border: 1px solid;border-color: #bcc1c7;text-align: center;font-size:12px;">
+                    <thead style="font-weight: bold;">
+                        <tr>
+                            <td style="border-bottom:1px solid #cccccc;">S.Nr</td>
+                            <td style="border-bottom:1px solid #cccccc;">Datum</td>
+                            <td style="border-bottom:1px solid #cccccc;">Novalnet-Transaktions-ID</td>
+                            <td style="border-bottom:1px solid #cccccc;">Betrag</td>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        {% for info in instalmentInfo.InstalmentDetails %}
+                            {%set amount = info.amount/100 %}
+                            <tr>
+                                <td style="border-bottom:1px solid #cccccc;">{{ loop.index }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ info.cycleDate ? info.cycleDate|date("d/m/Y"): "-" }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ info.reference ? info.reference : "-" }}</td>
+                                <td style="border-bottom:1px solid #cccccc;">{{ amount ? amount|currency(currencyIsoCode): "-" }}</td>
+                            <tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+            {% endif %}
+    {% endif %}
+
+    <strong>Gewählte Versandtart:</strong> {{ delivery.shippingMethod.translated.name }}<br>
+    {{ delivery.shippingMethod.translated.description }}<br>
+    <br>
+
+    {% set billingAddress = order.addresses.get(order.billingAddressId) %}
+    <strong>Rechnungsaddresse:</strong><br>
+    {{ billingAddress.company }}<br>
+    {{ billingAddress.firstName }} {{ billingAddress.lastName }}<br>
+    {{ billingAddress.street }} <br>
+    {{ billingAddress.zipcode }} {{ billingAddress.city }}<br>
+    {{ billingAddress.country.name }}<br>
+    <br>
+
+    <strong>Lieferadresse:</strong><br>
+    {{ delivery.shippingOrderAddress.company }}<br>
+    {{ delivery.shippingOrderAddress.firstName }} {{ delivery.shippingOrderAddress.lastName }}<br>
+    {{ delivery.shippingOrderAddress.street }} <br>
+    {{ delivery.shippingOrderAddress.zipcode}} {{ delivery.shippingOrderAddress.city }}<br>
+    {{ delivery.shippingOrderAddress.country.name }}<br>
+    <br>
+
+    {% if billingAddress.vatId %}
+        Ihre Umsatzsteuer-ID: {{ billingAddress.vatId }}
+        Bei erfolgreicher Prüfung und sofern Sie aus dem EU-Ausland
+        bestellen, erhalten Sie Ihre Ware umsatzsteuerbefreit. <br>
+    {% endif %}
+    <br>
+    <br/>
+    Den aktuellen Status Ihrer Bestellung können Sie auch jederzeit auf unserer Webseite im  Bereich "Mein Konto" - "Meine Bestellungen" abrufen: {{ rawUrl("frontend.account.order.single.page", { "deepLinkCode": order.deepLinkCode }, salesChannel.domains|first.url) }}
+    </br>
+    Für Rückfragen stehen wir Ihnen jederzeit gerne zur Verfügung.
+
+</p>
+<br>
+</div>';
+    }
+
+    /**
+     * Get German Plain Template
+     *
+     * @return string
+     */
+    private function getPlainTemplateDe(): string
+    {
+        return '{% set currencyIsoCode = order.currency.isoCode %}
+{{order.orderCustomer.salutation.letterName }} {{order.orderCustomer.firstName}} {{order.orderCustomer.lastName}},
+
+{% if instalment == false %}
+vielen Dank für Ihre Bestellung im {{ salesChannel.name }} (Nummer: {{order.orderNumber}}) am {{ order.orderDateTime|format_datetime("medium", "short", locale="de-DE") }}.
+{% else %}
+Für Ihre (Bestellung Nr: {{order.orderNumber}}) bei {{ salesChannel.name }}, ist die nächste Rate fällig. Bitte beachten Sie weitere Details unten am {{ order.orderDateTime|format_datetime("medium", "short", locale="de-DE")}}.
+{% endif %}
+
+Informationen zu Ihrer Bestellung:
+
+Pos.   Artikel-Nr.          Beschreibung            Menge           Preis           Summe
+{% for lineItem in order.lineItems |reverse %}
+{{ loop.index }}     {% if lineItem.payload.productNumber is defined %}{{ lineItem.payload.productNumber|u.wordwrap(80) }}{% endif %} {{ lineItem.label|u.wordwrap(80) }}         {{ lineItem.quantity }}         {{ lineItem.unitPrice|currency(currencyIsoCode) }}          {{ lineItem.totalPrice|currency(currencyIsoCode) }}
+{% endfor %}
+
+{% set delivery =order.deliveries.first %}
+
+{% set displayRounded = order.totalRounding.interval != 0.01 or order.totalRounding.decimals != order.itemRounding.decimals %}
+{% set decimals = order.totalRounding.decimals %}
+{% set total = order.price.totalPrice %}
+{% if displayRounded %}
+    {% set total = order.price.rawTotal %}
+    {% set decimals = order.itemRounding.decimals %}
+{% endif %}
+Versandtkosten: {{order.deliveries.first.shippingCosts.totalPrice|currency(currencyIsoCode) }}
+Gesamtkosten Netto: {{ order.amountNet|currency(currencyIsoCode) }}
+     {% for calculatedTax in order.price.calculatedTaxes %}
+        {% if order.taxStatus is same as(\'net\') %}zzgl{% else %}inkl{% endif %} {{ calculatedTax.taxRate }}% MWST. {{ calculatedTax.tax|currency(currencyIsoCode) }}<br>
+     {% endfor %}
+     Gesamtkosten Brutto: {{ order.amountTotal|currency(currencyIsoCode,decimals=decimals) }}
+{% if displayRounded %}
+Gesamtkosten Brutto gerundet: {{ order.price.totalPrice|currency(currencyIsoCode,decimals=order.totalRounding.decimals) }}
+{% endif %}
+
+
+Gewählte Zahlungsart: {{ order.transactions|last.paymentMethod.name }}
+{{ order.transactions|last.paymentMethod.description }}
+
+Kommentare:
+{{ note|replace({"/ ": "<br>"}) | raw }}
+
+{% if "NovalnetInvoiceInstalment" in order.transactions|last.paymentMethod.handlerIdentifier or "NovalnetSepaInstalment" in order.transactions|last.paymentMethod.handlerIdentifier %}
+        {% if instalmentInfo is not empty %}
+                        S.Nr     Datum     Novalnet-Transaktions-ID    Betrag
+                    {% for info in instalmentInfo.InstalmentDetails %}
+                        {%set amount = info.amount/100 %}
+                        {{ loop.index }}     {{ info.cycleDate ? info.cycleDate|date("d/m/Y"): "-" }}    {{ info.reference ? info.reference : "-" }}     {{ amount ? amount|currency(currencyIsoCode): "-" }}
+                    {% endfor %}
+        {% endif %}
+{% endif %}
+
+Gewählte Versandtart: {{ delivery.shippingMethod.translated.name }}
+{{ delivery.shippingMethod.translated.description }}
+
+{% set billingAddress = order.addresses.get(order.billingAddressId) %}
+Rechnungsadresse:
+{{ billingAddress.company }}
+{{ billingAddress.firstName }} {{ billingAddress.lastName }}
+{{ billingAddress.street }}
+{{ billingAddress.zipcode }} {{ billingAddress.city }}
+{{ billingAddress.country.name }}
+
+Lieferadresse:
+{{ delivery.shippingOrderAddress.company }}
+{{ delivery.shippingOrderAddress.firstName }} {{ delivery.shippingOrderAddress.lastName }}
+{{ delivery.shippingOrderAddress.street }}
+{{ delivery.shippingOrderAddress.zipcode}} {{ delivery.shippingOrderAddress.city }}
+{{ delivery.shippingOrderAddress.country.name }}
+
+{% if billingAddress.vatId %}
+Ihre Umsatzsteuer-ID: {{ billingAddress.vatId }}
+Bei erfolgreicher Prüfung und sofern Sie aus dem EU-Ausland
+bestellen, erhalten Sie Ihre Ware umsatzsteuerbefreit.
+{% endif %}
+
+Den aktuellen Status Ihrer Bestellung können Sie auch jederzeit auf unserer Webseite im  Bereich "Mein Konto" - "Meine Bestellungen" abrufen: {{ rawUrl("frontend.account.order.single.page", { "deepLinkCode": order.deepLinkCode }, salesChannel.domains|first.url) }}
+Für Rückfragen stehen wir Ihnen jederzeit gerne zur Verfügung.
+
+';
+    }
+
+    /**
+     * Get Mail template entity
+     *
+     * @return MailTemplateEntity|null
+     */
+    private function getMailTemplateType(): ?MailTemplateEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', 'novalnet_order_confirmation_mail'));
+        return $this->mailTemplateRepo->search($criteria, $this->context)->first();
+    }
+}
