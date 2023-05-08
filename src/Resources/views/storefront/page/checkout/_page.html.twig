@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/page/checkout/_page.html.twig' %}
+
+
+{% block base_flashbags_checkout %}
+	{{ parent() }}
+	{% if 'NovalnetApplePay' in context.paymentMethod.handlerIdentifier and context.customer is not null and '/cart' not in app.request.requestUri %}
+		<div class="flashbags nn-apple-pay-error-message">
+			{% sw_include '@Storefront/storefront/utilities/alert.html.twig' with { type: "danger", content: "NovalnetPayment.text.applepayErrorMessage"|trans|sw_sanitize } %}
+        </div>
+	{% endif %}
+{% endblock %}
