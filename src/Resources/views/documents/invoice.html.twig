@@ -1,0 +1,19 @@
+{% sw_extends '@Framework/documents/invoice.html.twig' %}{% block document_payment_shipping_inner %}
+    {{ parent() }}
+    {% set comments = '' %}
+    
+    {% for transaction in order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+        {% if transaction.customFields.novalnet_comments != '' %}
+            {% set comments = transaction.customFields.novalnet_comments %}
+        {% endif %}
+        
+        {% if 'Novalnet' not in transaction.paymentMethod.handlerIdentifier %}
+            {% set comments = '' %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if comments != '' %}
+        <br><strong>{{"NovalnetPayment.text.commentsHeader"|trans}}</strong><br>
+        {{ comments|replace({'/ ': "<br>"}) | raw }}
+    {% endif %}
+{% endblock %}
