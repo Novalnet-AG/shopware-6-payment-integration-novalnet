@@ -1,0 +1,202 @@
+<input type="hidden" value="{{paymentMethod}}" class="novalnet-payment-name">
+
+{% set sepaTokens = context|getTokens(paymentMethod) %}
+{% set onclick = '' %}
+
+{% if paymentMethod == 'novalnetsepa' %}
+	{% set onclick = config('NovalnetPayment.settings.sepaOneclick') %}
+{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+	{% set onclick = config('NovalnetPayment.settings.sepaguaranteeOneclick') %}
+{% elseif paymentMethod == 'novalnetsepainstalment' %}
+	{% set onclick = config('NovalnetPayment.settings.sepainstalmentOneclick') %}
+{% endif %}
+
+{% set formName = nnShopVersion >= "6.4" ? "form = confirmOrderForm" : '' %}
+
+<div class="{{paymentMethod}}-payment"
+	 id="{{paymentMethod}}-payment"
+	 data-{{paymentMethod}}-payment
+	 data-{{paymentMethod}}-payment-config="{{
+	 {
+		'forceGuarantee': config('NovalnetPayment.settings.sepaguaranteeForceGuarantee')|abs,
+		'allowB2B': config('NovalnetPayment.settings.sepaguaranteeAllowB2B')|abs,
+		'company': context.customer.activeBillingAddress.company,
+		'text' : {
+			'dobEmpty' : "NovalnetPayment.text.dobEmpty" | trans,
+			'dobInvalid' : "NovalnetPayment.text.dobInvalid" | trans,
+			'invalidIban' : "NovalnetPayment.text.invalidIban" | trans
+		}
+	 }|jsonEncode()|escape('html_attr')}}">
+	
+	<div class="form-group col-md-12 novalnet-input-field-container">
+	{% set sepaCycles	= config('NovalnetPayment.settings.sepainstalmentCycles') %}
+		<div id="{{paymentMethod}}-error-container" class="error-container nnhide">
+			<div role="alert" class="alert alert-danger alert-has-icon">
+				{% sw_icon 'blocked' %}
+				<div class="alert-content-container">
+					<div class="alert-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	 {% if sepaTokens is not empty and onclick is not empty %}
+		<div>
+			{% set isAlreadyExists = [] %}
+			<ul class="{{paymentMethod}}-SavedPaymentMethods novalnet-SavedPaymentMethods" data-count="{{sepaTokens|length}}">
+				{% for token in sepaTokens %}
+					{% if token.token != '' and token.subscription == 0 %}
+						{% set isChecked = '' %}
+						{% if loop.index == '1' %}
+							{% set isChecked = 'checked' %}
+						{% endif %}
+						{% if token.accountData not in isAlreadyExists %}
+							{% set isAlreadyExists = isAlreadyExists|merge([token.accountData]) %}
+							<li class="{{paymentMethod}}-SavedPaymentMethods-token novalnet-SavedPaymentMethods-token">
+								<div class="row">
+									<div class="col-sm-12 px-0">
+										<label for="{{paymentMethod}}-payment-token-{{ token.token }}" style="float:left;min-width: 275px;"><input id="{{paymentMethod}}-payment-token-{{ token.token }}" {{ formName }} type="radio" name="{{paymentMethod}}FormData[paymentToken]" value="{{ token.token }}" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput" {{isChecked}}/> {{token.type}} {{ "NovalnetPayment.text.endingIn" | trans }} {{ token.accountData }} &nbsp;</label>
+										<div style="float:left;">
+											<a class="{% if paymentMethod == 'novalnetsepainstalment' %}remove_instalment_card_details{% elseif paymentMethod == 'novalnetsepaguarantee' %} remove_guarantee_card_details {% else %} remove_card_details {% endif %}" data-value="{{ token.token }}" style="cursor:pointer;">{% sw_icon 'trash' style {'size': 'xs','color': 'danger'} %}</a>
+										</div>
+									</div>
+								</div>
+							</li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if isAlreadyExists is not empty %}
+				<li class="{{paymentMethod}}-SavedPaymentMethods-new novalnet-SavedPaymentMethods-new">
+					<div class="row">
+						<div class="col-sm-12 px-0">
+							<label for="{{paymentMethod}}-payment-new"><input id="{{paymentMethod}}-payment-new" {{ formName }} type="radio" name="{{paymentMethod}}FormData[paymentToken]" value="new" style="width:auto;" class="{{paymentMethod}}-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput"/>
+							{{ "NovalnetPayment.text.useOtherPayment" | trans }}</label>
+						</div>
+					</div>
+				</li>
+				{% endif %}
+			</ul>
+		</div>
+	{% endif %}
+	<div id="{{paymentMethod}}-payment-form" class="{{paymentMethod}}-payment-form">
+		<div class="card">
+			{% set novalnetConfiguration = ( page.cart.extensions.novalnetConfiguration ? page.cart.extensions.novalnetConfiguration : page.order.extensions.novalnetSubscription) %}
+			<div class="form-group col-md-12 novalnet-input-field-container">
+				<label class="form-label" for="{{paymentMethod}}AccountData">{{ "NovalnetPayment.text.sepaIban" | trans }}</label>
+				<input class="form-control" {{ formName }} id="{{paymentMethod}}AccountData" name="{{paymentMethod}}FormData[accountData]" placeholder="DE00 0000 0000 0000 0000 00" onkeypress="return NovalnetUtility.formatIban(event);" onchange="return NovalnetUtility.formatIban(event);" autocomplete="OFF" style="text-transform:uppercase;"/>
+			</div>
+			<div class="form-group col-md-12 novalnet-input-field-container nn-bic-field nnhide">
+				<label class="form-label" for="{{paymentMethod}}AccountData">{{ "NovalnetPayment.text.sepaBic" | trans }}</label>
+				<input class="form-control" {{ formName }} id="{{paymentMethod}}AccountBic" name="{{paymentMethod}}FormData[accountBic]" placeholder="0000 00 00 000" onkeypress="return NovalnetUtility.formatBic(event);" onchange="return NovalnetUtility.formatBic(event);" autocomplete="OFF" style="text-transform:uppercase;"/>
+			</div>
+			<input type="hidden" value="" name="{{paymentMethod}}FormData[guarantee]" id="{{paymentMethod}}-guarantee" value="{{sepaGuaranteeAvailable}}">
+			{% if onclick is not empty and context.customer.guest is empty and novalnetConfiguration is null %}
+				<div class="form-group col-md-12 custom-control custom-checkbox form-check" style="padding-left: 44px !important;">
+					<input class="custom-control-input form-check-input" {{ formName }} id="{{paymentMethod}}-save-data" name="{{paymentMethod}}FormData[saveData]" type="checkbox" checked="checked">
+					<label class="custom-control-label" for="{{paymentMethod}}-save-data">
+						{{ "NovalnetPayment.text.savePaymentData" | trans }}
+					</label>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+	<div id="{{paymentMethod}}-payment-instalment-form" class="{{paymentMethod}}-payment-instalment-form">
+		<div class="card">
+            {% if (paymentMethod == 'novalnetsepaguarantee' and sepaGuaranteeAvailable == 'YES') or (paymentMethod == 'novalnetsepainstalment' and sepaInstalmentAvailable == 'YES') %}
+                {% set block = "block" %}
+            {% else %}
+                {% set block = "none" %}
+            {% endif %}
+
+            <div class="form-group col-md-12 novalnet-input-field-container" id="{{paymentMethod}}DobField" style="display:{{ block }}">
+                <label class="form-label" for="{{paymentMethod}}Dob">{{ "NovalnetPayment.text.dob" | trans }}</label>
+                <input class="form-control" {{ formName }} id="{{paymentMethod}}Dob" name="{{paymentMethod}}FormData[dob]" placeholder="{{ "NovalnetPayment.text.dobPlaceholder" | trans }}" onkeydown="return NovalnetUtility.isNumericBirthdate( this, event );" value="{{context.customer.birthday ? context.customer.birthday|date('d.m.Y') : ''}}" autocomplete="OFF"/>
+            </div>
+
+			{% if paymentMethod == 'novalnetsepainstalment' and ( sepaInstalmentAvailable == 'YES' or sepaInstalmentAvailable == 'HIDE_DOB' ) %}
+                {% set totalPrice	= page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice %}
+				<div class="form-group col-md-12 novalnet-input-field-container">
+					<div class="instalmentBannerTitle">
+						<strong>{{ "NovalnetPayment.text.instalmentBannerTitle" | trans ({
+                                '%amount%':  totalPrice | currency()
+                            }) }}</strong>
+					</div>
+					
+					<div class="instalmentBannerInfo">
+						<p>{{ "NovalnetPayment.text.instalmentBannerInfo" | trans }}</p>
+					</div>
+					
+					<select class="form-control" id="{{paymentMethod}}Duration" name="{{paymentMethod}}FormData[duration]" {{ formName }} autocomplete="off">
+						{% for cycle in sepaCycles|sort  %}
+                            {% set cycleAmount = (totalPrice / cycle)|round(2, 'common') %}
+
+								{% if cycleAmount >= '9.99' %}
+									<option value="{{ cycle }}" {% if loop.first %}selected="selected"{% endif %}>
+										{{ "NovalnetPayment.text.instalmentAmountDisplay" | trans({
+											'%cycle%': cycle,
+											'%amount%':  cycleAmount | currency()
+										}) }}
+									</option>
+								{% endif %}
+						{% endfor %}
+					</select>
+
+                    <div class="novalnetInstalmentInfo collapsed btn-link" id="{{paymentMethod}}Info">
+                        {{ "NovalnetPayment.text.instalmentSummary" | trans }}
+                    </div>
+                    
+                    <div id="{{paymentMethod}}Summary" class="{{paymentMethod}}InfoSummary">
+						{% for cycle in sepaCycles  %}
+                            {% set cycleAmount = (totalPrice / cycle)|round(2, 'common') %}
+
+							{% if cycleAmount >= '9.99' %}
+								<div class="{{paymentMethod}}Detail" data-duration="{{ cycle }}" {% if not loop.first %}hidden="hidden"{% endif %}>
+									<table class="table table-striped novalnetinstalment-table">
+										<thead>
+											<tr>
+												<th>{{ "NovalnetPayment.text.instalmentHeading1" | trans }}</th>
+												<th>{{ "NovalnetPayment.text.instalmentHeading2" | trans }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for instalment in 1..cycle %}
+												<tr>
+													{% if instalment != cycle %}
+														<td>{{ loop.index }}</td>
+														<td>{{ cycleAmount | currency() }}</td>
+													{% else %}
+														{% set cycleAmount = totalPrice - (cycleAmount * (instalment-1))  %}
+														<td>{{ loop.index }}</td>
+														<td>{{ cycleAmount | currency() }}</td>
+													{% endif %}
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							{% endif %}
+						{% endfor %}
+                    </div>
+				</div>
+			{% endif %}
+
+			<div class="novalnet-input-field-container">
+				<a id="{{paymentMethod}}Mandate" href="#{{paymentMethod}}Mandate">{{ "NovalnetPayment.text.mandateNotification" | trans | sw_sanitize }}</a><br/><br/>
+				<div role="alert" class="alert alert-info alert-has-icon nnhide" id="{{paymentMethod}}AboutMandate">
+					{% sw_icon 'info' %}
+					<div class="alert-content-container">
+						<div class="alert-content">
+							{{ "NovalnetPayment.text.aboutMandate" | trans | sw_sanitize }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" value="IBAN" name="{{paymentMethod}}FormData[type]">
+	{% if paymentMethod == 'novalnetsepainstalment' %}
+		<input type="hidden" value="{{paymentMethod}}" id="novalnet-instalment-payment-name">
+	{% endif %}
+	<input type="hidden" value="0" name="doForceSepaPayment" id="doForceSepaPayment">
+	<input type="hidden" name="{{paymentMethod}}FormData[doForceSepaPayment]" id="SepaForcePayment" {{ formName }}>
+</div>
