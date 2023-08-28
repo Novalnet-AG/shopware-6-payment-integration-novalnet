@@ -1,0 +1,41 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
+
+	 {% block component_payment_method_field %}
+			
+		{% set authAmount = ( page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice ) * 100 %}
+		{% set novalnetPaymentHandler = context|novalnetPaymentHandler(payment.handlerIdentifier) %}
+        {% set novalnetConfiguration = ( page.cart.extensions.novalnetConfiguration.all ? page.cart.extensions.novalnetConfiguration.all : (page.order.extensions.novalnetSubscription.id or page.order.extensions.subsOrders.id)) %}
+	
+		{% if novalnetPaymentHandler == 'NovalnetPayment' %}
+                   {% set novalnetpay = novalnetConfiguration is not empty ? context|novalnetPayment(page, 'novalnetpay', 1) : context|novalnetPayment(page, 'novalnetpay') %}
+			<input type="hidden" value="{{ payment.id }}" name="novalnetId" id="novalnetId">
+			<input type="hidden" value="" id="novalnet-paymentdata" form="confirmOrderForm" name="novalnetpaymentFormData[paymentData]"  >
+			<div style ="display:none">
+			 {{ parent()}}
+			</div>
+			
+			{% set articleData = [] %}
+
+            {% set cart = page.cart ? page.cart : page.order %}
+            
+            {% for lineItem in cart.lineItems %}
+                {% set articleData = articleData|merge([{ label: lineItem.label ~ " (" ~ lineItem.quantity ~ " x " ~ lineItem.price.unitPrice|currency(context.currency.isoCode) ~ ")", type: 'SUBTOTAL', amount: (lineItem.price.totalPrice * 100)|round }]) %}
+            {% endfor %}
+
+            {% for delivery in cart.deliveries %}
+                {% set articleData = articleData|merge([{ label: delivery.shippingMethod.translated.name ~ " (" ~ delivery.shippingCosts.quantity ~ " x " ~ delivery.shippingCosts.unitPrice|currency(context.currency.isoCode) ~ ")", type: 'SUBTOTAL', amount: (delivery.shippingCosts.totalPrice * 100)|round }]) %}
+            {% endfor %}
+                    
+            {% for tax in cart.price.calculatedTaxes %}
+                {% set articleData = articleData|merge([{ label: "NovalnetPayment.text.vatLabel"|trans({'%vat%': tax.taxRate|trans|sw_sanitize})|sw_sanitize, type: 'SUBTOTAL', amount: (tax.tax * 100)|round }]) %}
+            {% endfor %}
+			<div  id="novalnet-payment-script" data-lineItems="{{ articleData|json_encode() }}" >
+				<iframe id = "novalnetPaymentIframe" frameborder="0" scrolling="no" width="100%" src="{{ novalnetpay }}" allow="payment" ></iframe>
+			</div>
+		{% else %}	
+			{{ parent()}}
+		{% endif %}
+			
+    {% endblock %}
+	
+	

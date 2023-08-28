@@ -1,0 +1,48 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{% set paymentMethod = page.order.transactions|last.paymentMethod|getPaymentMethodName() %}
+{% set paymentMethodResponse = context|cashPaymentResponse() %}
+
+{% block page_checkout_finish_order_payment_method%}
+
+	{% if 'novalnet' in paymentMethod  %}
+		{% set paymentName = context|getPaymentName(page.order.orderNumber) %}
+		<p>
+			<strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+			{{ paymentName }}
+		</p>
+		
+		{% if paymentMethodResponse.transaction.payment_type == 'CASHPAYMENT' %}	
+			<p class="panel--body is--align-center">
+				{% if paymentMethodResponse.transaction.checkout_token %}
+					<button class="bz-checkout-btn nn-btn" id="novalnet_button" >{{ "NovalnetPayment.text.barzahlen"|trans|sw_sanitize }}</button>
+					<style>
+					  .nn-btn {
+						display:inline-block !important;
+						float:none !important;
+						margin: 0px !important;
+					}
+					</style>
+				{% endif %}
+			</p>
+			{% if paymentMethodResponse.transaction.checkout_token %}
+				<script src="{{ paymentMethodResponse.transaction.checkout_js }}" class="bz-checkout" data-token="{{ paymentMethodResponse.transaction.checkout_token }}" data-auto-display="true"></script>
+				<style type="text/css">
+					iframe#bz-checkout-modal {
+					position: fixed !important; }
+				</style>
+			{% endif %}
+		{% endif %}
+	
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+	
+	<p>
+		{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+			{% set novalnetFinishComments = page.order.transactions.last.getCustomFields()['novalnet_comments']|getFinishNovalnetComments() %}
+			<strong>{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}</strong>
+			{{ novalnetFinishComments|replace({'/ ': "<br>"}) | raw }}
+		{% endif %}
+	</p>
+{% endblock %}
