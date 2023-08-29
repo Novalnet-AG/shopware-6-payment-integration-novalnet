@@ -1,0 +1,118 @@
+{
+	"novalnet-payment" : {
+		"module" : {
+			"title": "Novalnet",
+			"description": "PCI compliant and seamless integration with various payment types and payment processing services in one unique platform...",
+			"projectInfo": "Your project is in test mode",
+			"comments": "Comments",
+			"generalInfo": "Please read the <a href='https://www.novalnet.com/docs/plugins/installation-guides/shopware-6-installation-guide.pdf' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Installation Guide </a> before you start and login to the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a> using your merchant account. To get a merchant account, mail to <a href='mailto:sales@novalnet.de' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> sales@novalnet.de</a> or call +49 (089) 923068320",
+			"globalTitle": "Global Configuration",
+			"installationInfo": "For setup and handling of the Novalnet-Payment plugin you can find the installation guide <a href='https://www.novalnet.com/docs/plugins/installation-guides/shopware-6-installation-guide.pdf' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'>Here</a>",
+			"PaymentConfiguration" : "<span style='font-weight: bold; color:red;'>Important notice:</span> Payment plugin configurations are now available in the <a href='https://admin.novalnet.de/' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal</a>. Navigate to the <b> Projects > choose your project > Payment plugin configuration, </b> to configure them. <br><br> Novalnet allows you to verify the payment method behaviour before going into production mode by using test payment data. Access the Novalnet test payment data available <a href='https://developer.novalnet.de/testing' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Here </a>"
+		},
+		 "settingForm": {
+		    "title": "Novalnet",
+		    "statusTitle": "Status",
+		    "amountError": "Invalid amount",
+		    "buttons": {
+					"save": "Save"
+			},
+		    "credentials": {
+                "cardTitle": "Novalnet API Configuration",
+                "activationKey": {
+                    "label": "Product activation key *",
+                    "tooltipText": "Your product activation key is a unique token for merchant authentication and payment processing. Get your Product activation key from the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a>: Projects > Choose your project > API credentials > API Signature (Product activation key)"
+                },
+                "accessKey": {
+                    "label": "Payment access key *",
+                    "tooltipText": "Your secret key used to encrypt the data to avoid user manipulation and fraud. Get your Payment access key from the <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'> Novalnet Admin Portal </a> Projects > Choose your project > API credentials > Payment access key"
+                },
+                "tariff": {
+                    "label": "Select Tariff ID *",
+                    "tooltipText": "Select a Tariff ID to match the preferred tariff plan you created at the Novalnet Admin Portal for this project",
+                    "emptyText": "Select Tariff ID"
+                },
+                 "orderEmailMode": {
+                    "label": "Enable Order Confirmation E-mail",
+                    "tooltipText": "Enable this configuration to send another Order Confirmation e-mail with Novalnet transaction details to the end customer for orders made through Invoice, Prepayment, Cashpayment, and Multibanco payments. (By default initial Order confirmation e-mail will send to end customers without Novalnet transaction details)"
+                }
+            },
+            "merchantSettings": {
+				"cardTitle": "Notification / Webhook URL Setup",
+				"deactivateIp": {
+					"label": "Allow manual testing of the Notification / Webhook URL",
+					"tooltipText": "Enable this to test the Novalnet Notification / Webhook URL manually. Disable this before setting your shop live to block unauthorized calls from external parties"
+				},
+                "mailTo": {
+                    "label": "Send e-mail to",
+                    "tooltipText": "Notification / Webhook URL execution messages will be sent to this e-mail"
+                },
+                "callbackUrl": {
+                    "label": "Notification / Webhook URL",
+                    "button": "Configure",
+                    "tooltipText": "You must configure the webhook endpoint in your <a href='https://admin.novalnet.de' target='_blank' style='text-decoration: underline; font-weight: bold; color:#0080c9;'>Novalnet Admin portal</a>. This will allow you to receive notifications about the transaction."
+                }
+			},
+			
+			"extension":{
+				"paidTooltip": "Total paid amount",
+				"refundTooltip": "Refuned amount",
+				"refundButton": "Refund",
+				"amountTitle": "Refund amount",
+				"zeroAmountTitle": "Order Booked for this amount",
+				"refundDescription": "Please enter the refund amount (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+				"refundReference": "Refund reference",
+				"confirmLabel": "Confirm",
+				"cancelLabel": "Cancel",
+				"Managetitle": "Manage Transaction",
+				"confirmMessage": "Are you sure you want to capture the payment?",
+				"cancelMessage": "Are you sure you want to cancel the payment?",
+				"cancelAllCycleMessage": "Are you sure you want to cancel all cycle installment?",
+				"cancelRemainingCycleMessage": "Are you sure you want to cancel remaining cycle installment?",
+				"refundSuccess": "Your refund was successful.",
+				"onholdSuccess": "The transaction has been confirmed.",
+				"onholdCancel": "The transaction has been canceled",
+				"instalmentCancelLabel": "Instalment Cancel",
+				"instalmentAllCancelLabel":"Cancel All Instalment",
+				"instalmentRemainCancelLabel":"Cancel All Remaining Instalment",
+				"instalmentSuccessMsg": "Instalment canceled successfully.",				
+				"zeroAmountButton": "Book Amount",
+				"bookedSuccess": "Your amount booked was successful.",
+				"zeroAmountDescription": "Please enter the amount (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
+				"bookButton": "Book"
+			},
+			"titleSuccess": "Success",
+			"successMessage": "Novalnet merchant details are configured successfully.",
+			"titleError": "Error",
+			"apiFailureMessage": "Please configure Novalnet Global Configuration",
+			"customerFailureMessage": "Please select your customer",
+			"currencyFailureMessage": "Please select currency",
+			"lineitemFailureMessage": "Please Add Product",
+			"amountRefundError": "Invalid refund amount",
+			"failureMessage": "Please fill in the required fields",
+			"instalmentNumber": "S.No",
+            "instalmentReference": "Novalnet Transaction ID",
+            "instalmentDate": "Next Instalment Date",
+            "instalmentAmount": "Amount",
+            "instalmentStatus": "Status",
+            "instalmentInfo": "Instalment Summary",
+            "webhookUrlFailure": "Please enter the valid Webhook URL",
+            "webhookUrlSuccess": "Notification / Webhook URL is configured successfully in Novalnet Admin Portal"
+           
+			
+		}
+	},
+	"sw-privileges": {
+		"permissions": {
+		  "novalnet_extension": {
+			"label": "Novalnet Extensions"
+		  },
+		  "parents": {
+                "novalnet_payment": "Novalnet"
+            },
+            "novalnet_payment": {
+                "label": "Novalnet Settings"
+            }
+		}
+	}
+}
