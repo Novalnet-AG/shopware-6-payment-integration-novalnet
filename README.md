@@ -86,7 +86,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Quick Installation via plugin upload
 Follow the below steps to install the payment plugin for Shopware 6 in the shop system.
 
-1. **Download** the plugin from <a href="https://store.shopware.com/en/noval29035660349f/novalnet-payments-plugin.html"> here</a> or <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
+1. Get the payment plugin for Shopware 6.4 & detailed documentation by <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
 
 2. **Login** to shop backend, move to:
    - Extensions
