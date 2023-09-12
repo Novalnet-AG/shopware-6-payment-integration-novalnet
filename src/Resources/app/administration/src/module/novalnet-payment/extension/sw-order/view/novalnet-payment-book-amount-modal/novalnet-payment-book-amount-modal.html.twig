@@ -1,0 +1,34 @@
+{% block novalnet_payment_order_refund_modal %}
+    <sw-modal :title="$tc('novalnet-payment.settingForm.extension.zeroAmountButton')"
+              @modal-close="closeModal">
+		
+			{% block novalnet_payment_order_zero_amount_modal_content %}
+				<template #default>
+
+					{% block novalnet_payment_order_zero_amount_modal_content_info_text %}
+						<sw-container columns="1fr"
+									gap="0px 30px">
+							<sw-number-field v-model="orderAmount"
+										:min="0"
+										:allowEmpty="false"
+										numberType="integer"
+										:label="$tc('novalnet-payment.settingForm.extension.zeroAmountTitle')"
+										:helpText="$tc('novalnet-payment.settingForm.extension.zeroAmountDescription')">
+							</sw-number-field>
+						</sw-container>
+					{% endblock %}
+				</template>
+			{% endblock %}
+
+			{% block novalnet_payment_order_zero_amount_modal_actions %}
+				<template #modal-footer>
+
+					{% block novalnet_payment_order_zero_amount_modal_confirm %}
+						<sw-button secondary slim variant="primary" :disabled="disable" :square="false" :block="false" :isLoading="false" @click="novalnetBookAmount">
+							{{ $tc('novalnet-payment.settingForm.extension.bookButton') }}
+						</sw-button>
+					{% endblock %}
+				</template>
+			{% endblock %}
+    </sw-modal>
+{% endblock %}
