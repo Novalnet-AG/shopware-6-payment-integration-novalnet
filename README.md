@@ -40,10 +40,10 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Supported payment methods
 
 -	Direct Debit SEPA
--   Direct Debit ACH
+- Direct Debit ACH
 -	Credit/Debit Cards
-- 	Apple Pay
-- 	Google Pay
+- Apple Pay
+- Google Pay
 -	Invoice
 -	Prepayment
 -	Invoice with payment guarantee
@@ -61,19 +61,19 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	PostFinance E-Finance
 -	Bancontact
 -	Multibanco
-- 	Online bank transfer
+- Online bank transfer
 -	Alipay
-- 	WeChat Pay
-- 	Trustly
-- 	Blik
-- 	Payconiq
+- WeChat Pay
+- Trustly
+- Blik
+- Payconiq
 
 ## Installation via Composer
 
 #### Follow the below steps and run each command in your terminal from the shop root directory
  ##### 1. Run the below command to upload the payment plugin
  ```
- composer require novalnet/shopware6-payment: 12.5.4-p1
+ composer require novalnet/shopware6-payment:12.5.4-p1
  ```
  ##### 2. Run the below command to refresh the payment plugin
  ```
@@ -86,7 +86,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Quick Installation via plugin upload
 Follow the below steps to install the payment plugin for Shopware 6 in the shop system.
 
-1. **Download** the plugin from <a href="https://store.shopware.com/en/noval29035660349f/novalnet-payments-plugin.html"> here</a> or <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
+1. Get the payment plugin for Shopware 6.4 & detailed documentation by <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
 
 2. **Login** to shop backend, move to:
    - Extensions
@@ -95,7 +95,7 @@ Follow the below steps to install the payment plugin for Shopware 6 in the shop 
        
 3. **Upload** the Shopware 6 payment Apps from Novalnet to the shop
 
-4. Click **Install** to install the Novalnet Shopware 6 payment Apps
+4. Click **Install** to install the Novalnet Shopware 6 Payment Apps
 
 ## Documentation & Support
 For more information about the integration, please get in touch with us: sales@novalnet.de or +49 89 9230683-20 or by contacting us <a href="https://www.novalnet.de/kontakt/sales"> here.</a>
