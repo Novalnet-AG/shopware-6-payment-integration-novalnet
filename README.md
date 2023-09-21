@@ -25,14 +25,14 @@ Shopware 6 is the next generation shop system based on advanced hook system. Wit
 -	One click shopping supported Credit/Debit Cards & Direct Debit SEPA 
 -	Easy way of confirmation and cancellation of on-hold transactions for Direct Debit SEPA, Direct Debit SEPA with payment guarantee, Instalment payment for Direct Debit SEPA, Credit/Debit Cards, Invoice, Invoice with payment guarantee, Instalment payment for Invoice, Prepayment, PayPal, Apple Pay & Google Pay
 -	Refund option for Credit/Debit Cards, Direct Debit SEPA,Direct Debit ACH, Direct Debit SEPA with payment guarantee, Instalment by Direct Debit SEPA, Invoice, Invoice with payment guarantee, Instalment by Invoice, Prepayment, Barzahlen/viacash, Sofort, iDEAL, eps, giropay, PayPal, Przelewy24, PostFinance Card, PostFinance E-Finance, Bancontact, Apple Pay, Google Pay, Online bank transfer, Alipay, WeChat pay, Trustly, Blik & Payconiq
--   Order creation process handled for shop admin for the Invoice, Prepayment, Barzahlen/viacash & Multibanco
+- Order creation process handled for shop admin for the Invoice, Prepayment, Barzahlen/viacash & Multibanco
 -	Responsive templates
 
 ## Compatibility
 
 Shopware 6 payment plugin is compatible with below technical capabilities. 
 
-- [x]	Shopware versions 6.5.0.0 - 6.5.5.1
+- [x]	Shopware versions 6.4.3.1 - 6.4.20.2
 - [x]	Linux based OS with Apache 2.2 or 2.4
 - [x]	PHP 7.2.0 or higher
 - [x]	MySQL 5.7 or higher
@@ -40,10 +40,10 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Supported payment methods
 
 -	Direct Debit SEPA
--   Direct Debit ACH
+- Direct Debit ACH
 -	Credit/Debit Cards
-- 	Apple Pay
-- 	Google Pay
+- Apple Pay
+- Google Pay
 -	Invoice
 -	Prepayment
 -	Invoice with payment guarantee
@@ -61,19 +61,19 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	PostFinance E-Finance
 -	Bancontact
 -	Multibanco
-- 	Online bank transfer
+- Online bank transfer
 -	Alipay
-- 	WeChat Pay
-- 	Trustly
-- 	Blik
-- 	Payconiq
+- WeChat Pay
+- Trustly
+- Blik
+- Payconiq
 
 ## Installation via Composer
 
 #### Follow the below steps and run each command in your terminal from the shop root directory
  ##### 1. Run the below command to upload the payment plugin
  ```
- composer require novalnet/shopware6-payment
+ composer require novalnet/shopware6-payment:13.1.0
  ```
  ##### 2. Run the below command to refresh the payment plugin
  ```
@@ -86,7 +86,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Quick Installation via plugin upload
 Follow the below steps to install the payment plugin for Shopware 6 in the shop system.
 
-1. **Download** the plugin from <a href="https://store.shopware.com/en/noval29035660349f/novalnet-payments-plugin.html"> here</a> or <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
+1. Get the payment plugin for Shopware 6.4 & detailed documentation by <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
 
 2. **Login** to shop backend, move to:
    - Extensions
