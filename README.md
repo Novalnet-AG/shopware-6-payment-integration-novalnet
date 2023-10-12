@@ -40,10 +40,10 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Supported payment methods
 
 -	Direct Debit SEPA
--   Direct Debit ACH
+- Direct Debit ACH
 -	Credit/Debit Cards
-- 	Apple Pay
-- 	Google Pay
+- Apple Pay
+- Google Pay
 -	Invoice
 -	Prepayment
 -	Invoice with payment guarantee
@@ -61,12 +61,12 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	PostFinance E-Finance
 -	Bancontact
 -	Multibanco
-- 	Online bank transfer
+- Online bank transfer
 -	Alipay
-- 	WeChat Pay
-- 	Trustly
-- 	Blik
-- 	Payconiq
+- WeChat Pay
+- Trustly
+- Blik
+- Payconiq
 
 ## Installation via Composer
 
