@@ -1,0 +1,43 @@
+{% sw_extends '@Framework/documents/invoice.html.twig' %}{% block document_payment_shipping_inner %}
+
+    {% set paymentMethod = order.transactions.last.paymentMethod|getPaymentMethodName() %}
+		{% block document_payment %}
+			{% if 'novalnet' in paymentMethod  %}
+				{% set paymentName = context|getPaymentName(order.ordernumber) %}
+				{% if paymentName is not empty  %}
+					 {{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': paymentName})|sw_sanitize }}<br>
+				{% else %}  
+					{{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': order.transactions.last.paymentMethod.name})|sw_sanitize }}<br>
+				{% endif %}
+			{% endif %}
+		{% endblock %}
+		
+		{% block document_shipping %}
+			{{ 'document.paymentShippingInfo.shippingMethod'|trans({'%shippingMethod%': order.deliveries.first.shippingMethod.name})|sw_sanitize }}<br><br>
+		{% endblock %}
+		{% block document_payment_shipping_additional %}
+			{{ 'document.paymentShippingInfo.additionalInfo'|trans|sw_sanitize }}<br>
+		{% endblock %}
+		{% block document_payment_shipping_service_date_notice %}
+			{{ 'document.serviceDateNotice'|trans|sw_sanitize }}<br>
+		{% endblock %}
+
+  
+    {% set comments = '' %}
+    
+    {% for transaction in order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+        {% if transaction.customFields.novalnet_comments != '' %}
+            {% set comments = transaction.customFields.novalnet_comments %}
+        {% endif %}
+
+        {% if 'Novalnet' not in transaction.paymentMethod.handlerIdentifier %}
+            {% set comments = '' %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if comments != '' %}
+		{% set novalnetInvoiceDocument = comments|getFinishNovalnetComments() %}
+        <br><strong>{{"NovalnetPayment.text.commentsHeader"|trans}}</strong><br>
+        {{ novalnetInvoiceDocument|replace({'/ ': "<br>"}) | raw }}
+    {% endif %}
+{% endblock %}
