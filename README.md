@@ -2,7 +2,7 @@
 
 Novalnet payment plugin for Shopware 6 simplifies your daily work by automating the entire payment process, from checkout till collection. The Shopware 6 payment plugin is designed to help you increase your sales by offering various international and local payment methods.
 
-## Why Shopware 6 with Novalnet? 
+## Why Shopware 6 with Novalnet ? 
 
 Shopware 6 is the next generation shop system based on advanced hook system. With the open source and commercial versions, users can easily create Shopware 6 storefronts based on Twig and Bootstrap technologies. Novalnet’s Shopware 6 payment plugin supports international and local payments including payment guarantee and cash payment particularly for Shopware. We encrypt our end customer data (strong encryption) to free you from data protection concerns and from payment related licenses.
 
