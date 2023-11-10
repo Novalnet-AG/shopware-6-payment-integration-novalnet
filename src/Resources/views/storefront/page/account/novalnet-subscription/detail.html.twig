@@ -1,0 +1,41 @@
+{% sw_extends '@NovalnetSubscription/storefront/page/account/novalnet-subscription/detail.html.twig' %}
+
+{% block novalnet_account_main_body_payment_content %}
+
+	{% set paymentMethodName = paymentMethod|getPaymentMethodName() %}
+	
+	{% if paymentMethodName == 'novalnetpayment' %}
+		{% set paymentName = context|getChangedPaymentName(abo.order.ordernumber) %}
+		{% if paymentName is not empty  %}
+			 {{ paymentName }} 
+		{% else %}  
+			{{ paymentMethod.translated.name ?? paymentMethod.name }} 
+		{% endif %}
+	{% else %}  
+		{{ parent() }}
+	{% endif %}
+
+{% endblock %}
+
+
+{% block novalnet_account_main_body_content_order_payment_info %} 
+
+	{% set activePaymentMethod = '' %}
+	{% for transaction in subCycle.order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+		{% set activePaymentMethod = transaction.paymentMethod %}
+	{% endfor %}
+	
+	{% set paymentMethodName = activePaymentMethod|getPaymentMethodName() %}
+	
+	{% if paymentMethodName == 'novalnetpayment' %}
+		{% set paymentName = context|getPaymentName(subCycle.order.ordernumber) %}
+		{% if paymentName is not empty  %}
+			 {{ paymentName }} 
+		{% else %}  
+			{{ activePaymentMethod.translated.name ?? activePaymentMethod.name }} 
+		{% endif %}
+	{% else %}  
+		{{ parent() }}
+	{% endif %}
+
+{% endblock %}

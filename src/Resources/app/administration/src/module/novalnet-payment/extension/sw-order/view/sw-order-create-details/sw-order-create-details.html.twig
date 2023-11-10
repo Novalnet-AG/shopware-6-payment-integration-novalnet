@@ -1,0 +1,23 @@
+{% block sw_order_create_details_payment %}
+
+	{% parent %}
+	{% block sw_order_create_details_payment_novalnet_seaction %}
+		<template v-if="novalnetPayment" >
+			<sw-card
+				rows="2"  :isLoading="isLoading"
+				:title="$tc('novalnet-payment.module.title')" >
+				<div >
+					<iframe 
+						v-if="loaded"
+						id ="adminnovalnetPaymentiframe"
+						width="100%"
+						frameborder="0"
+					  :src="iframe.src"></iframe>
+				</div>
+			
+			</sw-card>	
+		
+		</template>
+		
+	{% endblock %}
+{% endblock %}
