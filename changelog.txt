@@ -1,6 +1,6 @@
 *** Changelog ***
 
-= 13.3.1   - 2023.12.12 =
+= 13.4.0   - 2023.12.12 =
 * New 	   - Implemented configuration options for On-hold and Completion payment statuses
 * New 	   - Implemented Zero amount authorization for Apple Pay, Google Pay and Direct Debit ACH payments
 * Fix 	   - Order update emails will dynamically display payment method name associated with an order
