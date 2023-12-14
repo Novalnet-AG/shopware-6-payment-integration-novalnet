@@ -1,0 +1,43 @@
+{
+    "name": "novalnet/novalnet-payment",
+    "description": "PCI Compliant, seamless integration with the various types of payment and payment-related services integrated into one unique platform",
+    "version": "v13.1.2",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Novalnet AG",
+            "homepage": "https://www.novalnet.de"
+        }
+    ],
+    "extra": {
+        "shopware-plugin-class": "Novalnet\\NovalnetPayment\\NovalnetPayment",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by Novalnet AG",
+        "label": {
+            "de-DE": "Novalnet Zahlung",
+            "en-GB": "Novalnet Payments"
+        },
+        "description": {
+            "de-DE": "PCI-konforme Zahlungsabwicklung mit einer Vielzahl an Payment-Services und nahtloser Integration für eine einfache Anbindung.", 
+            "en-GB": "PCI compliant payment solution, covering a full scope of payment services and seamless integration for easy adaptability."
+        },
+        "manufacturerLink": {
+          "de-DE": "https://www.novalnet.de",
+          "en-GB": "https://www.novalnet.com"
+        },
+        "supportLink": {
+          "de-DE": "https://www.novalnet.de",
+          "en-GB": "https://www.novalnet.com"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Novalnet\\NovalnetPayment\\": "src/"
+        }
+    },
+    "require": {
+    "shopware/core": "~6.4.3.1 | 6.4.x",
+    "shopware/storefront": "~6.4.3.1 | 6.4.x"
+    }
+}
