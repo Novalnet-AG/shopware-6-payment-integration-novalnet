@@ -1,6 +1,6 @@
 *** Changelog ***
 
-= 13.4.1   - 2024.02.14 =
+= 13.4.1   - 2024.02.15 =
 * Fix 	   - Adjusted webhook to handle multiple transactions on the same order
 * Fix      - Removed session handling during API and Administration processes
 * Fix      - Dynamically displays the payment name in the language of your order for both the Invoice PDF and the Shop Order Confirmation Email
