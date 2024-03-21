@@ -1,0 +1,31 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+
+{% block page_checkout_finish_order_payment_method%}
+		
+		{% set paymentMethod = '' %}
+		{% for transaction in page.order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+			{% set paymentMethod = transaction.paymentMethod|getPaymentMethodName() %}
+		{% endfor %}
+		
+		{% if paymentMethod == 'novalnetinvoiceguarantee' %}
+			<p>
+                <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+                {{"NovalnetPayment.text.invoiceLabel"|trans}}
+            </p>
+		{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+			<p>
+                <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+                {{"NovalnetPayment.text.sepaLabel"|trans}}
+            </p>
+		{% else %}
+			{{ parent() }}
+		{% endif %}
+    
+		<p>
+			{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+				<strong>{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}</strong>
+				{{ page.order.transactions.last.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+			{% endif %}
+        </p>
+{% endblock %}
