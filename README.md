@@ -94,9 +94,9 @@ Follow the below steps to install the payment plugin for Shopware 6 in the shop 
      - My extensions
        - Upload extensions
        
-3. **Upload** the Shopware 6 payment Apps from Novalnet to the shop
+3. **Upload** the Shopware 6 payment plugin from Novalnet to the shop
 
-4. Click **Install** to install the Novalnet Shopware 6 Payment Apps
+4. Click **Install** to install the Novalnet Shopware 6 Payment App
 
 ## Documentation & Support
 For more information about the integration, please get in touch with us at sales@novalnet.de or +49 89 9230683-20 or by contacting us <a href="https://www.novalnet.de/kontakt/sales"> here.</a>
