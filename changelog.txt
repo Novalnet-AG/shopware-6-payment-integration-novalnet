@@ -2,7 +2,7 @@
 
 = 13.5.0   - 2024.04.11 =
 * Fix      - Compatiblity for Shopware 6.6
-* Fix      - Novalnet Order confirmation email templates now support attachments and customized headers and footers
+* Enhanced      - Novalnet Order confirmation email templates now support attachments and customized headers and footers
 
 = 13.4.1   - 2024.02.15 =
 * Fix 	   - Adjusted webhook to handle multiple transactions on the same order
