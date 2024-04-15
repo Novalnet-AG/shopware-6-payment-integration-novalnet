@@ -103,8 +103,8 @@ For more information about the integration, please get in touch with us at sales
 
 Novalnet AG<br>
 Zahlungsinstitut (ZAG)<br>
-Feringastr. 4<br>
-85774 Unterföhring<br>
+Gutenbergstraße 7<br>
+D-85748 Garching<br>
 Deutschland<br>
 Website: <a href= "https://www.novalnet.de/"> www.novalnet.de </a>
 
