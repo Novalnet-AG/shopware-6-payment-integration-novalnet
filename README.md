@@ -42,8 +42,8 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	Direct Debit SEPA
 - 	Direct Debit ACH
 -	Credit/Debit Cards
-- 	Apple Pay
-- 	Google Pay
+- Apple Pay
+- Google Pay
 -	Invoice
 -	Prepayment
 -	Invoice with payment guarantee
@@ -62,12 +62,12 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	PostFinance E-Finance
 -	Bancontact
 -	Multibanco
-- 	Online bank transfer
+- Online bank transfer
 -	Alipay
-- 	WeChat Pay
-- 	Trustly
-- 	Blik
-- 	Payconiq
+- WeChat Pay
+- Trustly
+- Blik
+- Payconiq
 
 ## Installation via Composer
 
@@ -106,7 +106,9 @@ Zahlungsinstitut (ZAG)<br>
 Gutenbergstraße 7<br>
 D-85748 Garching<br>
 Deutschland<br>
-Website: <a href= "https://www.novalnet.de/"> www.novalnet.de </a>
+E-mail: sales@novalnet.de<br>
+Tel: +49 89 9230683-20<br>
+Web: www.novalnet.de
 
 ## Licenses
 
