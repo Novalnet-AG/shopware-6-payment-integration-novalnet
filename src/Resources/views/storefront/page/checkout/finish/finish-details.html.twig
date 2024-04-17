@@ -1,0 +1,55 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{% set paymentMethodResponse = context|cashPaymentResponse(page.order.orderNumber) %}
+
+{% block page_checkout_finish_order_payment_method %}
+		
+		{% set paymentMethod = '' %}
+		
+		{% for transaction in page.order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+			{% set paymentMethod = transaction.paymentMethod.customFields.novalnet_payment_method_name ?? transaction.paymentMethod.handlerIdentifier|split('\\')|last|lower %}
+		{% endfor %}
+		
+		{% if paymentMethod == 'novalnetinvoiceguarantee' %}
+			<p>
+                <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+                {{"NovalnetPayment.text.invoiceLabel"|trans}}
+            </p>
+		{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+			<p>
+                <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+                {{"NovalnetPayment.text.sepaLabel"|trans}}
+            </p>
+		{% else %}
+			{{ parent() }}
+		{% endif %}
+		
+		{% if paymentMethodResponse != '' && paymentMethodResponse.payment_type == 'CASHPAYMENT' %}	
+			<p class="panel--body is--align-center">
+				{% if paymentMethodResponse.checkout_token %}
+					<button class="bz-checkout-btn nn-btn" id="novalnet_button" >{{ "NovalnetPayment.text.barzahlen"|trans|sw_sanitize }}</button>
+					<style>
+					  .nn-btn {
+						display:inline-block !important;
+						float:none !important;
+						margin: 0px !important;
+					}
+					</style>
+				{% endif %}
+			</p>
+			{% if paymentMethodResponse.checkout_token %}
+				<script src="{{ paymentMethodResponse.checkout_js }}" class="bz-checkout" data-token="{{ paymentMethodResponse.checkout_token }}" data-auto-display="true"></script>
+				<style type="text/css">
+					iframe#bz-checkout-modal {
+					position: fixed !important; }
+				</style>
+			{% endif %}
+		{% endif %}
+    
+		<p>
+			{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+				<strong>{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}</strong>
+				{{ page.order.transactions.last.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+			{% endif %}
+        </p>
+{% endblock %}

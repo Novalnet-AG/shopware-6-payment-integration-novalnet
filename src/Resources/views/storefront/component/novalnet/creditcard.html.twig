@@ -1,0 +1,152 @@
+<input type="hidden" value="{{paymentMethod}}" class="novalnet-payment-name">
+
+{% set tokens = context|getTokens(paymentMethod) %}
+
+{% set billingAddress = context.customer.activeBillingAddress %}
+
+{% if subscriptionForm is not empty %}
+	{% set formName = "form = novalnetchangePaymentForm" %}
+{% else %}
+	{% set formName = "form = confirmOrderForm" %}
+{% endif %}
+
+{% set authAmount = (( page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice ) * 100) |round %}
+	<div class="novalnetcreditcard-payment"
+		id="novalnetcreditcard-payment"
+		data-novalnetcreditcard-payment
+		data-novalnetcreditcard-payment-config="{{
+		 {
+			 'iframe': {
+				'id' : 'novalnetCreditcardIframe',
+				'inline' : config('NovalnetPayment.settings.creditcardInline')|abs,
+				'skip_auth' : 0,
+				'style' : {
+					'container': config('NovalnetPayment.settings.creditcardCss'),
+					'input': config('NovalnetPayment.settings.creditcardInput'),
+					'label': config('NovalnetPayment.settings.creditcardLabel'),
+				  },
+				  'text': {
+					'lang': context.context|getLocaleCodeFromContext,
+				  },
+			  },
+			  'customer': {
+				'first_name': context.customer.activeBillingAddress.firstName,
+				'last_name': context.customer.activeBillingAddress.lastName,
+				'email': context.customer.email,
+				'billing': {
+					'street': context.customer.activeBillingAddress.street,
+					'city': context.customer.activeBillingAddress.city,
+					'zip': context.customer.activeBillingAddress.zipcode,
+					'country_code': context.customer.activeBillingAddress.country.iso,
+				},
+			  },
+			  transaction: {
+				'amount': authAmount,
+				'currency': context.currency.isoCode,
+				'test_mode': config('NovalnetPayment.settings.creditcardTestMode')|abs,
+				'enforce_3d': config('NovalnetPayment.settings.creditcardEnforcecc3D')|abs,
+			 },
+			 custom: {
+				'lang': context.context|getLocaleCodeFromContext,
+			 },
+			 'clientKey': config('NovalnetPayment.settings.clientKey')
+		 }|jsonEncode()|escape('html_attr')}}">
+	
+		<div class="form-group col-md-12 novalnet-input-field-container">
+			<div id="novalnetcreditcard-error-container" class="error-container nnhide">
+				<div role="alert" class="alert alert-danger alert-has-icon">
+					{% sw_icon 'blocked' %}
+					<div class="alert-content-container">
+						<div class="alert-content"></div>
+					</div>
+				</div>
+			</div>
+		</div>                    
+
+		{% if tokens is not empty and config('NovalnetPayment.settings.creditcardOneclick') is not empty %}
+			<div>
+				{% set isAlreadyExists = [] %}
+				<ul class="novalnetcreditcard-SavedPaymentMethods novalnet-SavedPaymentMethods" data-count="{{tokens|length}}">
+					{% for token in tokens %}
+						{% if token.token != '' and token.subscription == 0 %}
+							{% set isChecked = '' %}
+							{% if loop.index == '1' %}
+								{% set isChecked = 'checked' %}
+							{% endif %}
+							{% if token.accountData not in isAlreadyExists %}
+								{% set isAlreadyExists = isAlreadyExists|merge([token.accountData]) %}
+								<li class="novalnetcreditcard-SavedPaymentMethods-token novalnet-SavedPaymentMethods-token">
+									<div class="row">
+										<div class="col-sm-12 px-0">
+											<label for="novalnetcreditcard-payment-token-{{ token.token }}" style="float:left;min-width: 275px;"><input id="novalnetcreditcard-payment-token-{{ token.token }}" type="radio" {{ formName }} name="novalnetcreditcardFormData[paymentToken]" value="{{ token.token }}" style="width:auto;" class="novalnetcreditcard-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput" {{isChecked}}/>
+											{% if token.type != '' %}
+												{% if token.type == 'VISA' %}
+													<img src="{{ asset("storefront/assets/img/visa.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'MASTERCARD' %}
+													<img src="{{ asset("storefront/assets/img/mastercard.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'AMEX' %}
+													<img src="{{ asset("storefront/assets/img/amex.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'MAESTRO' %}
+													<img src="{{ asset("storefront/assets/img/maestro.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'DINERS' %}
+													<img src="{{ asset("storefront/assets/img/diners.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'DISCOVER' %}
+													<img src="{{ asset("storefront/assets/img/discover.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% elseif token.type == 'JCB' %}
+													<img src="{{ asset("storefront/assets/img/jcb.png", '@NovalnetPayment') }}" alt="NovalnetPayment logo"/>
+												{% else %}
+													{{token.type}}
+												{% endif %}
+											{% endif %}
+											{{ "NovalnetPayment.text.endingIn"|trans }} {{ token.accountData }} ({{ "NovalnetPayment.text.expires"|trans }} {{token.expiryDate}})&nbsp;</label>
+											<div style="float:left;">
+												<a class="remove_cc_card_details" data-value="{{ token.token }}" style="cursor:pointer" {{ formName }}>{% sw_icon 'trash' style {'size': 'xs','color': 'danger'} %}</a>
+											</div>
+										</div>
+									</div>
+								</li>
+						{% endif %}
+						{% endif %}
+					{% endfor %}
+					{% if isAlreadyExists is not empty %}
+					<li class="novalnetcreditcard-SavedPaymentMethods-new novalnet-SavedPaymentMethods-new">
+						<div class="row">
+							<div class="col-sm-12 px-0">
+								<label for="novalnetcreditcard-payment-new"><input id="novalnetcreditcard-payment-new" type="radio" {{ formName }} name="novalnetcreditcardFormData[paymentToken]" value="new" style="width:auto;" class="novalnetcreditcard-SavedPaymentMethods-tokenInput novalnet-SavedPaymentMethods-tokenInput"/>
+								{{ "NovalnetPayment.text.useCCPayment"|trans }}</label>
+							</div>
+						</div>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endif %}
+	
+		<div class="novalnetcreditcard-payment-form" id="novalnetcreditcard-payment-form" >
+			<div class="card">
+				<div class="form-group col-md-12 novalnet-input-field-container">
+					{% set novalnetIframeStyle = '' %}
+					{% set novalnetConfiguration = ( page.cart.extensions.novalnetConfiguration ? page.cart.extensions.novalnetConfiguration : page.order.extensions.novalnetSubscription) %}
+					{% if config('NovalnetPayment.settings.creditcardInline') is empty %}
+						{% set novalnetIframeStyle = 'style=min-height:200px' %}
+					{% endif %}
+					<iframe id="novalnetCreditcardIframe" title="Novalnet" style="border: 0px;overflow: hidden;" width="100%" {{novalnetIframeStyle}}></iframe>
+					{% if config('NovalnetPayment.settings.creditcardOneclick') is not empty and context.customer.guest is empty and novalnetConfiguration is null %}
+						<div class="custom-control custom-checkbox form-check">
+							<input class="custom-control-input form-check-input" {{ formName }} id="novalnetcreditcard-save-data" name="novalnetcreditcardFormData[saveData]" type="checkbox" checked="checked">
+							<label class="custom-control-label" for="novalnetcreditcard-save-data">
+								{{ "NovalnetPayment.text.saveCCPaymentData"|trans }}
+							</label>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<input type="hidden" value="{{ authAmount }}" name="novalnetcreditcardFormData[authAmount]" id="novalnetcreditcard-authAmount" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[panhash]" id="novalnetcreditcard-panhash" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[uniqueid]" id="novalnetcreditcard-uniqueid" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[doRedirect]" id="novalnetcreditcard-doRedirect" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[expiryDate]" id="novalnetcreditcard-expiry-date" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[accountData]" id="novalnetcreditcard-masked-card-no" {{formName}}>
+		<input type="hidden" value="" name="novalnetcreditcardFormData[type]" id="novalnetcreditcard-card-type">
+	</div>
