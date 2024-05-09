@@ -1,11 +1,5 @@
 *** Changelog ***
 
-= 13.4.2      - 2024.05.09 =
-* Fix	      -  Adjusted the payment plugin to support the DooFinder plugin
-* Enhanced   - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
-* Enhanced   - Optimized the Callback/Webhook process for fetching Dynamic IP
-* Enhanced   - Novalnet Order confirmation email templates now support attachments and customized headers and footers
-
 = 13.4.1   - 2024.02.15 =
 * Fix 	   - Adjusted webhook to handle multiple transactions on the same order
 * Fix      - Removed session handling during API and Administration processes
