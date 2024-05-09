@@ -74,7 +74,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 #### Follow the below steps and run each command in your terminal from the shop root directory
  ##### 1. Run the below command to upload the payment plugin
  ```
- composer require novalnet/shopware6-payment:13.4.2
+ composer require novalnet/shopware6-payment:13.4.1
  ```
  ##### 2. Run the below command to refresh the payment plugin
  ```
