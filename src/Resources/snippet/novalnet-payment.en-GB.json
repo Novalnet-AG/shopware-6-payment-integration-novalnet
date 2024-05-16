@@ -16,7 +16,7 @@
 			"sepaBic": "BIC",
 			"bic": "BIC: %s",
 			"paymentReferenceNote": "Please use any of the following payment references when transferring the amount. This is necessary to match it with your corresponding order",
-			"paymentReference": "Payment Reference: %s",
+			"paymentReference": "Payment Reference %s: %s",
 			"paymentEntityReference": "Entity: %s",
 			"commentsHeader": "Comments:",
 			"paymentError": "Payment was not successful. An error occurred",
