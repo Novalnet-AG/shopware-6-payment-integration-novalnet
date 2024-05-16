@@ -16,7 +16,7 @@
 			"sepaBic": "BIC",
 			"bic": "BIC: %s",
 			"paymentReferenceNote": "Bitte verwenden Sie einen der unten angegebenen Verwendungszwecke für die Überweisung. Nur so kann Ihr Geldeingang Ihrer Bestellung zugeordnet werden",
-			"paymentReference": "Verwendungszweck: %s",
+			"paymentReference": "Verwendungszweck %s: %s",
 			"paymentEntityReference": "Entität: %s",
 			"commentsHeader": "Kommentare:",
 			"paymentError": "Die Zahlung war nicht erfolgreich. Ein Fehler trat auf.",
