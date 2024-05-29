@@ -69,7 +69,7 @@
 				"amountTitle": "Refund amount",
 				"zeroAmountTitle": "Transaction booking amount",
 				"refundDescription": "Please enter the refund amount (in minimum unit of currency. E.g. enter 100 which is equal to 1.00)",
-				"refundReference": "Refund reference",
+				"refundReference": "Refund / Cancellation Reason",
 				"confirmLabel": "Confirm",
 				"cancelLabel": "Cancel",
 				"Managetitle": "Manage Transaction",
