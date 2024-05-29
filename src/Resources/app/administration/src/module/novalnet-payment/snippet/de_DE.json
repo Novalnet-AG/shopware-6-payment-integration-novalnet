@@ -68,7 +68,7 @@
 				"refundButton": "Rückerstattung",
 				"amountTitle": "Rückerstattungsbetrag",
 				"refundDescription": "Geben Sie bitte den erstatteten Betrag ein (in der kleinsten Währungseinheit, z.B. 100 Cent = entsprechen 1.00 EUR)",
-				"refundReference": "Referenz für die Rückerstattung",
+				"refundReference": "Grund der Rückerstattung/Stornierung",
 				"confirmLabel": "Bestätigen",
 				"cancelLabel": "Stornieren",
 				"cancelAllCycleMessage": "Sind Sie sicher, dass Sie alle Ratenzahlungen stornieren wollen?",
