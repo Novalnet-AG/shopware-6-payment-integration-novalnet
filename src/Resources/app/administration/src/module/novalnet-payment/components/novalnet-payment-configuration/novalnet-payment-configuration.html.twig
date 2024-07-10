@@ -1,0 +1,2693 @@
+{% block novalnet_payment_content_card_channel_config_payment %}
+<sw-card-view style="position: relative;">
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_sepa_container %}
+            <sw-container>
+                <sw-collapse>
+
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.sepa.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+
+                    <div slot="content">
+                        {% block novalnet_payment_content_card_channel_config_payment_card_sepa_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_sepa %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaTestMode"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')" 
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaOneclick']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaOneclick']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaOneclick"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaDueDate']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepaDueDate')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.sepaDueDate')" 
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.sepa.dueDate.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.sepa.dueDate.tooltipText')">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.sepaDueDate"
+                                                             numberType="int"
+                                                             :min="2"
+                                                             :max="14"
+                                                             :mapInheritance="props"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :isInherited="props.isInherited"
+                                                             :value="props.currentValue"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaOnHold']"
+							                            :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepaOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.sepaOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')"
+                                                        >
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.sepaOnHold"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="onHoldZeroOptions"
+                                                              :mapInheritance="props"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :isInherited="props.isInherited"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaOnHoldAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaOnHoldAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.sepaOnHoldAmount"
+                                                             numberType="int"
+                                                             :mapInheritance="props"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+                                                             :value="props.currentValue == 0 ? null : props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaNotify']"
+                                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaNotify']"
+												:customInheritationCheckFunction="checkTextFieldInheritance"
+                                                        >
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.sepaNotify"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+    
+     <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_directdebitach_container %}
+            <sw-container>
+                <sw-collapse>
+
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.directdebitach.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+
+                    <div slot="content">
+                        {% block novalnet_payment_content_card_channel_config_payment_card_sepa_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_directdebitach %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.directdebitachTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.directdebitachTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.directdebitachTestMode"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')" 
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.directdebitachOneclick']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.directdebitachOneclick']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.directdebitachOneclick"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.directdebitachOnHold']"
+							                            :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.directdebitachOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.directdebitachOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')"
+                                                        >
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.directdebitachOnHold"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="onCaptureZeroOptions"
+                                                              :mapInheritance="props"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :isInherited="props.isInherited"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.directdebitacNotify']"
+                                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.directdebitacNotify']"
+												:customInheritationCheckFunction="checkTextFieldInheritance"
+                                                        >
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.directdebitacNotify"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_sepaguarantee_container %}
+            <sw-container>
+                <sw-collapse>
+
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.sepaguarantee.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+
+                    <div slot="content">
+                        {% block novalnet_payment_content_card_channel_config_payment_card_sepaguarantee_container_settings %}
+                            <div class="guarantee_conditions">
+                                <p class="guarantee_condtions_headings">{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.title') }}<p/>
+                                    <p>
+                                        <ul class="guarantee_condtions_list">
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.country') }}</li>
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.b2b') }}</li>
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.currency') }}</li>
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.amount') }}</li>
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.age') }}</li>
+                                            <li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.address') }}</li>
+                                        </ul>
+                                    </p>
+                            </div>
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_sepaguarantee %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaguaranteeTestMode"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeOneclick']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeOneclick']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaguaranteeOneclick"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.tooltipText')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeMinimumOrderAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeMinimumOrderAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.sepaguaranteeMinimumOrderAmount"
+                                                           :mapInheritance="props"
+                                                           :min="999"
+                                                           :allowEmpty="false"
+                                                           numberType="integer"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeOnHold']"
+											:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepaguaranteeOnHold')"
+											:inheritedValue="getInheritValue('NovalnetPayment.settings.sepaguaranteeOnHold')"
+											:label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+											:helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')"
+											>
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.sepaguaranteeOnHold"
+												  labelProperty="name"
+												  valueProperty="id"
+												  :options="onholdOptions"
+												  :mapInheritance="props"
+												  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+												  :isInherited="props.isInherited"
+												  :value="props.currentValue == null ? selected : props.currentValue"
+												  @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    
+                                     <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeOnHoldAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeOnHoldAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.sepaguaranteeOnHoldAmount"
+                                                             numberType="int"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue == 0 ? null : props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeForceGuarantee']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeForceGuarantee']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaguaranteeForceGuarantee"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <div class="novalnet_payment_force_guarantee_enable_condtion">{{ $tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.sepacondition') }}</div>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeAllowB2B']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeAllowB2B']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.sepaguaranteeAllowB2B"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :isInherited="props.isInherited"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepaguaranteeNotify']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepaguaranteeNotify']"
+												        :customInheritationCheckFunction="checkTextFieldInheritance"
+                                                        >
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.sepaguaranteeNotify"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :isInherited="props.isInherited"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_container %}
+            <sw-container>
+                <sw-collapse>
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.creditcard.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+                    <div slot="content">
+
+                        {% block novalnet_payment_content_card_channel_config_payment_card_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_creditcard %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.creditcardTestMode"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardOneclick']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardOneclick']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.creditcardOneclick"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardInline']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardInline']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.creditcardInline"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.inline.label')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.inline.tooltipText')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardEnforcecc3D']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardEnforcecc3D']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.creditcardEnforcecc3D"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.enforcecc3D.label')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.enforcecc3D.tooltipText')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardOnHold']"
+												:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.creditcardOnHold')"
+												:inheritedValue="getInheritValue('NovalnetPayment.settings.creditcardOnHold')"
+												:label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+                                                :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.creditcardOnHold"
+															  :mapInheritance="props"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="onHoldZeroOptions"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                   <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardOnHoldAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardOnHoldAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.creditcardOnHoldAmount"
+                                                             :mapInheritance="props"
+                                                             numberType="int"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue == 0 ? null : props.currentValue"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardNotify']"
+                                                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardNotify']"
+												>
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.creditcardNotify"
+                                                           :mapInheritance="props"
+                                                           :isInherited="props.isInherited"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+
+                        <div class="novalnet_payment_css_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.creditcard.css.cardTitle') }}
+                        </div>
+
+                        {% block novalnet_payment_content_card_channel_config_payment_card_css_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_creditcard_css %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardLabel']"
+                                                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardLabel']"
+												>
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.creditcardLabel"
+                                                           :mapInheritance="props"
+                                                           :inheritedValue="getInheritValue('NovalnetPayment.settings.creditcardLabel')"
+												           :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.css.label')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardInput']"
+                                                :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardInput']"
+												>
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.creditcardInput"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.css.input')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.creditcardCss']"
+                                                       :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.creditcardCss']"
+												>
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.creditcardCss"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.css.css')">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_applepay_container %}
+            <sw-container>
+                <sw-collapse>
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.applepay.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+
+                    <div slot="content">
+                        {% block novalnet_payment_content_card_channel_config_payment_card_applepay_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_applepay %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.applepayTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.applepayTestMode"
+                                                           :mapInheritance="props"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayOnHold']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.applepayOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.applepayOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.applepayOnHold"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :mapInheritance="props"
+                                                              :options="onHoldZeroOptions"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayOnHoldAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.applepayOnHoldAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.applepayOnHoldAmount"
+                                                             numberType="int"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue == 0 ? null : props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepaySellerName']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.applepaySellerName']"
+                                                        :customInheritationCheckFunction="checkTextFieldInheritance">
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.applepaySellerName"
+                                                           :mapInheritance="props"  
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.sellerName.label')" 
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.applepay.sellerName.tooltipText')"
+                                                           :placeholder="sellerNamePlaceHolder"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                     <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayNotify']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.applepayNotify']"
+                                                        :customInheritationCheckFunction="checkTextFieldInheritance">
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.applepayNotify"
+                                                           :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+
+                                    <div class="novalnet_payment_applepay">{{ $tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonTitle') }}</div>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayButtonType']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.applepayButtonType')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.applepayButtonType')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonTypeLabel')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.applepayButtonType"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :mapInheritance="props"
+                                                              :options="buttonTypeOptions"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayButtonTheme']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.applepayButtonTheme')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.applepayButtonTheme')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonTheme.label')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.applepayButtonTheme"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="buttonThemeOptions"
+                                                              :mapInheritance="props"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayButtonHeight']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.applepayButtonHeight')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.applepayButtonHeight')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonHeight.label')" 
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonHeight.tooltipText')">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.applepayButtonHeight"
+                                                             numberType="int" 
+                                                             :step="null" 
+                                                             :min="30" 
+                                                             :max="64"
+                                                             :mapInheritance="props"
+                                                             :value="props.currentValue"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayButtonRadius']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.applepayButtonRadius']"
+                                                        :customInheritationCheckFunction="checkTextFieldInheritance">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.applepayButtonRadius"
+                                                             numberType="int" 
+                                                             :step="null" 
+                                                             :min="0" 
+                                                             :max="10"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonRadius.label')" 
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.applepay.buttonRadius.tooltipText')"
+                                                             :value="props.currentValue"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.applepayDisplayFields']"
+                                                    :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.applepayDisplayFields')"
+                                                    :inheritedValue="getInheritValue('NovalnetPayment.settings.applepayDisplayFields')"
+                                                    :label="$tc('novalnet-payment.settingForm.paymentSettings.applepay.displayFields.label')"
+                                                    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.applepay.displayFields.tooltipText')">
+                                        <template #content="props">
+                                            <sw-multi-select name="NovalnetPayment.settings.applepayDisplayFields"
+                                                     :placeholder="$tc('novalnet-payment.settingForm.paymentSettings.applepay.displayFields.emptyText')"
+                                                     :mapInheritance="props"
+                                                     labelProperty="name"
+                                                     valueProperty="id"
+                                                     :options="displayFieldOptions"
+                                                     :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                     :value="props.currentValue"
+                                                     @change="props.updateCurrentValue">
+                                            </sw-multi-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_googlepay_container %}
+            <sw-container>
+                <sw-collapse>
+                    <div slot="header">
+                        <div class="novalnet_payment_card_title">
+                                {{ $tc('novalnet-payment.settingForm.paymentSettings.googlepay.cardTitle') }}
+                        </div>
+                        <div class="novalnet_payment_card_head_down_bar">
+                            <sw-icon name="regular-chevron-down" small="true">
+                            </sw-icon>
+                        </div>
+                        </div>
+
+                    <div slot="content">
+                        {% block novalnet_payment_content_card_channel_config_payment_card_googlepay_container_settings %}
+                            <div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+                                {% block novalnet_payment_content_card_channel_config_payment_card_container_settings_googlepay %}
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayTestMode']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepayTestMode']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.googlepayTestMode"
+                                                           :mapInheritance="props"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayOnHold']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.googlepayOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.googlepayOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.googlepayOnHold"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="onHoldZeroOptions"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayOnHoldAmount']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepayOnHoldAmount']">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.googlepayOnHoldAmount"
+                                                             numberType="int"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue == 0 ? null : props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepaySellerName']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepaySellerName']"
+                                                        :customInheritationCheckFunction="checkTextFieldInheritance">
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.googlepaySellerName"
+                                                           :mapInheritance="props"  
+                                                           :label="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.sellerName.label')" 
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.sellerName.tooltipText')"
+                                                           :placeholder="sellerNamePlaceHolder"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayMerchantId']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepayMerchantId']"
+                                                        :customInheritationCheckFunction="checkTextFieldInheritance">
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.googlepayMerchantId"
+                                                           :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.merchantId.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.merchantId.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayEnforcecc3D']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepayEnforcecc3D']"
+                                                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                                        <template #content="props">
+                                            <sw-switch-field name="NovalnetPayment.settings.googlepayEnforcecc3D"
+                                                             :mapInheritance="props"
+                                                             :label="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.enforcecc3D.label')"
+                                                             :helpText="$tc('novalnet-payment.settingForm.paymentSettings.creditcard.enforcecc3D.tooltipText')"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             :value="props.currentValue"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-switch-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayNotify']"
+                                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.googlepayNotify']"
+                                                        >
+                                        <template #content="props">
+                                            <sw-text-field name="NovalnetPayment.settings.googlepayNotify"
+                                                           :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" 
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+                                                           :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                           :value="props.currentValue"
+                                                           @change="props.updateCurrentValue">
+                                            </sw-text-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <div class="novalnet_payment_googlepay">{{ $tc('novalnet-payment.settingForm.paymentSettings.googlepay.buttonTitle') }}</div>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayButtonType']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.googlepayButtonType')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.googlepayButtonType')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.buttonTypeLabel')">
+                                        <template #content="props">
+                                            <sw-single-select name="NovalnetPayment.settings.googlepayButtonType"
+                                                              labelProperty="name"
+                                                              valueProperty="id"
+                                                              :options="buttonGpayTypeOptions"
+                                                              :mapInheritance="props"
+                                                              :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                              :value="props.currentValue == null ? selected : props.currentValue"
+                                                              @change="props.updateCurrentValue">
+                                            </sw-single-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayButtonHeight']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.googlepayButtonHeight')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.googlepayButtonHeight')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.buttonHeight.label')" 
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.buttonHeight.tooltipText')">
+                                        <template #content="props">
+                                            <sw-number-field name="NovalnetPayment.settings.googlepayButtonHeight"
+                                                             numberType="int" 
+                                                             :step="null" 
+                                                             :min="40" 
+                                                             :max="100"
+                                                             :mapInheritance="props"
+                                                             :value="props.currentValue"
+                                                             :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                             @change="props.updateCurrentValue">
+                                            </sw-number-field>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                    <sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.googlepayDisplayFields']"
+                                                        :has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.googlepayDisplayFields')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.googlepayDisplayFields')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.displayFields.label')"
+                                                        :helpText="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.displayFields.tooltipText')">
+                                        <template #content="props">
+                                            <sw-multi-select name="NovalnetPayment.settings.googlepayDisplayFields"
+                                                     :placeholder="$tc('novalnet-payment.settingForm.paymentSettings.googlepay.displayFields.emptyText')"
+                                                     labelProperty="name"
+                                                     valueProperty="id"
+                                                     :mapInheritance="props"
+                                                     :options="displayFieldOptions"
+                                                     :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+                                                     :value="props.currentValue"
+                                                     @change="props.updateCurrentValue">
+                                            </sw-multi-select>
+                                        </template>
+                                    </sw-inherit-wrapper>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                </sw-collapse>
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_invoice_container %}
+			<sw-container>
+				<sw-collapse>
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.invoice.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_invoice_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_invoice %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceTestMode"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceDueDate']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceDueDate')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceDueDate')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.invoice.dueDate.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.invoice.dueDate.tooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoiceDueDate"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :min="7"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+															 @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceOnHold']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+										<template #content="props">
+											<sw-single-select name="NovalnetPayment.settings.invoiceOnHold"
+															  labelProperty="name"
+															  valueProperty="id"
+															  :options="onholdOptions"
+															  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															  :value="props.currentValue == null ? selected : props.currentValue"
+															  @change="props.updateCurrentValue">
+											</sw-single-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceOnHoldAmount']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceOnHoldAmount']">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoice.invoiceOnHoldAmount"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+															 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceNotify']"
+                                                        >
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.invoiceNotify"
+														   :mapInheritance="props"  
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" 
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_invoiceguarantee_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.invoiceguarantee.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_invoiceguarantee_container_settings %}
+							<div class="guarantee_conditions">
+								<p class="guarantee_condtions_headings">{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.title') }}<p/>
+									<p>
+										<ul class="guarantee_condtions_list">
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.country') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.b2b') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.currency') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.amount') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.age') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.address') }}</li>
+										</ul>
+									</p>
+							</div>
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_invoiceguarantee %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceguaranteeTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceguaranteeTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeMinimumOrderAmount']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceguaranteeMinimumOrderAmount')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceguaranteeMinimumOrderAmount')" 
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.label')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.tooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoiceguaranteeMinimumOrderAmount"
+														   :mapInheritance="props"
+														   :min="999"
+														   :allowEmpty="false"
+														   numberType="integer"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeOnHold']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceguaranteeOnHold')"
+                                                        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceguaranteeOnHold')"
+                                                        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+										<template #content="props">
+											<sw-single-select name="NovalnetPayment.settings.invoiceguaranteeOnHold"
+															  labelProperty="name"
+															  valueProperty="id"
+															  :options="onholdOptions"
+															  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															  :value="props.currentValue == null ? selected : props.currentValue"
+															  @change="props.updateCurrentValue">
+											</sw-single-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeOnHoldAmount']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceguaranteeOnHoldAmount']">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoiceguaranteeOnHoldAmount"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+															 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeForceGuarantee']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceguaranteeForceGuarantee']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceguaranteeForceGuarantee"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<div class="novalnet_payment_force_guarantee_enable_condtion">{{ $tc('novalnet-payment.settingForm.paymentSettings.forceGuarantee.invoicecondition') }}</div>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeAllowB2B']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceguaranteeAllowB2B']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceguaranteeAllowB2B"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceguaranteeNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceguaranteeNotify']"
+                                                        >
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.invoiceguaranteeNotify"
+														   :mapInheritance="props"  
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" 
+                                                           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_prepayment_container %}
+			<sw-container>
+
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.prepayment.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_prepayment_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_prepayment %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.prepaymentTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.prepaymentTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.prepaymentTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.prepaymentDueDate']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.prepaymentDueDate')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.prepaymentDueDate')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.prepayment.dueDate.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.prepayment.dueDate.tooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.prepaymentDueDate"
+															 numberType="int"
+															 :min="7"
+															 :max="28"
+															 :mapInheritance="props"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+															 @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.prepaymentNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.prepaymentNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.prepaymentNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_ideal_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.ideal.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_ideal_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_ideal %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.idealTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.idealTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.idealTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.idealNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.idealNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.idealNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_sofort_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.sofort.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_sofort_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_sofort %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sofortTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sofortTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.sofortTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sofortNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sofortNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.sofortNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_onlinebanktransfer_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.onlinebanktransfer.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_onlinebanktransfer_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_onlinebanktransfer %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.onlinebanktransferTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.onlinebanktransferTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.onlinebanktransferTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.onlinebanktransferNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.onlinebanktransferNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.onlinebanktransferNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_giropay_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.giropay.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_giropay_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_giropay %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.giropayTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.giropayTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.giropayTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.giropayNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.giropayNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.giropayNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_cashpayment_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.cashpayment.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_cashpayment_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_cashpayment %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.cashpaymentTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.cashpaymentTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.cashpaymentTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.cashpaymentDueDate']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.cashpaymentDueDate')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.cashpaymentDueDate')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.cashpayment.dueDate.label')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.cashpayment.dueDate.tooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.cashpaymentDueDate"
+															 numberType="int"
+															 :min="1"
+															 :mapInheritance="props"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue"
+															 @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.cashpaymentNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.cashpaymentNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.cashpaymentNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_przelewy24_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.przelewy24.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_przelewy24_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_przelewy24 %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.przelewy24TestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.przelewy24TestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.przelewy24TestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.przelewy24Notify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.przelewy24Notify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.przelewy24Notify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_eps_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.eps.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_eps_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_eps %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.epsTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.epsTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.epsTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.epsNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.epsNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.epsNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_invoiceinstalment_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.invoiceinstalment.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_invoiceinstalment_container_settings %}
+							<div class="guarantee_conditions">
+								<p class="guarantee_condtions_headings">{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.title') }}<p/>
+									<p>
+										<ul class="guarantee_condtions_list">
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.country') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.b2b') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.currency') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.instalmentAmount') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.instalmentCycleAmount') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.age') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.address') }}</li>
+										</ul>
+									</p>
+							</div>
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_invoiceinstalment %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceinstalmentTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceinstalmentTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentMinimumOrderAmount']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceinstalmentMinimumOrderAmount')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceinstalmentMinimumOrderAmount')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.instalmentLabel')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.instalmentTooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoiceinstalmentMinimumOrderAmount"
+														   :mapInheritance="props"
+														   :min="1998"
+														   :allowEmpty="false"
+														   numberType="integer"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentOnHold']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceinstalmentOnHold')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceinstalmentOnHold')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+										<template #content="props">
+											<sw-single-select name="NovalnetPayment.settings.invoiceinstalmentOnHold"
+															  labelProperty="name"
+															  valueProperty="id"
+															  :options="onholdOptions"
+															  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															  :value="props.currentValue == null ? selected : props.currentValue"
+															  @change="props.updateCurrentValue">
+											</sw-single-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentOnHoldAmount']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentOnHoldAmount']">
+												        >
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.invoiceinstalmentOnHoldAmount"
+											                 :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+														     :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentProductPageInfo']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceinstalmentProductPageInfo']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceinstalmentProductPageInfo"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.productPageInfo.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.productPageInfo.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentCycles']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.invoiceinstalmentCycles')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.invoiceinstalmentCycles')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.instalmentCycleInfo.label')"
+													 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.instalmentCycleInfo.tooltipText')">
+										<template #content="props">
+											<sw-multi-select name="NovalnetPayment.settings.invoiceinstalmentCycles"
+													 labelProperty="name"
+													 valueProperty="id"
+													 :options="instalmentOptions"
+													 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+													 :isInherited="props.isInherited"
+													 :value="props.currentValue"
+													 @change="props.updateCurrentValue">
+											</sw-multi-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentAllowB2B']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.invoiceinstalmentAllowB2B']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.invoiceinstalmentAllowB2B"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.invoiceinstalmentNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentNotify']"
+												        >
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.invoiceinstalmentNotify"
+															:label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" 
+												           :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :mapInheritance="props"  
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+
+        {% block novalnet_payment_content_card_channel_config_payment_card_sepainstalment_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.sepainstalment.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_sepainstalment_container_settings %}
+							<div class="guarantee_conditions">
+								<p class="guarantee_condtions_headings">{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.title') }}<p/>
+									<p>
+										<ul class="guarantee_condtions_list">
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.country') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.b2b') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.currency') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.instalmentAmount') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.instalmentCycleAmount') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.age') }}</li>
+											<li>{{ $tc('novalnet-payment.settingForm.paymentSettings.guaranteeCondition.address') }}</li>
+										</ul>
+									</p>
+							</div>
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_sepainstalment %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.sepainstalmentTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentMinimumOrderAmount']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepainstalmentMinimumOrderAmount')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.sepainstalmentMinimumOrderAmount')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.instalmentLabel')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.guaranteeMinimumOrderAmount.instalmentTooltipText')">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.sepainstalmentMinimumOrderAmount"
+														   :mapInheritance="props"
+														   :min="1998"
+														   :allowEmpty="false"
+														   numberType="integer"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentOneclick']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentOneclick']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.sepainstalmentOneclick"
+															 :mapInheritance="props"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :label="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.label')"
+															 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.oneclick.tooltipText')"
+															 :value="props.currentValue"
+															 @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentOnHold']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepainstalmentOnHold')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.sepainstalmentOnHold')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+														:helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+										<template #content="props">
+											<sw-single-select name="NovalnetPayment.settings.sepainstalmentOnHold"
+															  labelProperty="name"
+															  valueProperty="id"
+															  :options="onholdOptions"
+															  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															  :value="props.currentValue == null ? selected : props.currentValue"
+															  @change="props.updateCurrentValue">
+											</sw-single-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentOnHoldAmount']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentOnHoldAmount']">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.sepainstalmentOnHoldAmount"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+															 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentProductPageInfo']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentProductPageInfo']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.sepainstalmentProductPageInfo"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.productPageInfo.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.productPageInfo.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentCycles']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.sepainstalmentCycles')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.sepainstalmentCycles')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.instalmentCycleInfo.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.instalmentCycleInfo.tooltipText')">
+										<template #content="props">
+											<sw-multi-select name="NovalnetPayment.settings.sepainstalmentCycles"
+													 labelProperty="name"
+													 valueProperty="id"
+													 :options="instalmentOptions"
+													 :isInherited="props.isInherited"
+													 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+													 :value="props.currentValue"
+													 @change="props.updateCurrentValue">
+											</sw-multi-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentAllowB2B']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentAllowB2B']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.sepainstalmentAllowB2B"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.allowB2B.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.sepainstalmentNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.sepainstalmentNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.sepainstalmentNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_paypal_container %}
+			<sw-container>
+				<sw-collapse>
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.paypal.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_paypal_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_paypal %}
+                                    <div v-html="paypalInformation" class="novalnet_payment-settings-paypal-project">
+                                    </div>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.paypalTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.paypalTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.paypalTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<div class="novalnet_payment_paypal_condition">{{ $tc('novalnet-payment.settingForm.paymentSettings.paypal.condition') }}</div>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.paypalOnHold']"
+														:has-parent="selectedSalesChannelId != null && getInheritValue('NovalnetPayment.settings.paypalOnHold')"
+												        :inheritedValue="getInheritValue('NovalnetPayment.settings.paypalOnHold')"
+												        :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.label')"
+													    :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.tooltipText')">
+										<template #content="props">
+											<sw-single-select name="NovalnetPayment.settings.paypalOnHold"
+															  labelProperty="name"
+															  valueProperty="id"
+															  :options="onholdOptions"
+															  :mapInheritance="props"
+															  :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															  :value="props.currentValue == null ? selected : props.currentValue"
+															  @change="props.updateCurrentValue">
+											</sw-single-select>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.paypalOnHoldAmount']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.paypalOnHoldAmount']">
+										<template #content="props">
+											<sw-number-field name="NovalnetPayment.settings.paypalOnHoldAmount"
+															 numberType="int"
+															 :mapInheritance="props"
+															 :label="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountLabel')"
+															 :helpText="$tc('novalnet-payment.settingForm.paymentSettings.onHold.amountTooltip')"
+															 :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+															 :value="props.currentValue == 0 ? null : props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-number-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.paypalNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.paypalNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.paypalNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+     <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_postfinancecard_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.postfinancecard.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_postfinancecard_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_postfinancecard %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.postfinancecardTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.postfinancecardTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.postfinancecardTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.postfinancecardNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.postfinancecardNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.postfinancecardNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_postfinance_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.postfinance.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_postfinance_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_postfinance %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.postfinanceTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.postfinanceTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.postfinanceTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.postfinanceNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.postfinanceNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.postfinanceNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_bancontact_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.bancontact.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_bancontact_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_bancontact %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.bancontactTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.bancontactTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.bancontactTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.bancontactNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.bancontactNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.bancontactNotify"
+														   :mapInheritance="props"  :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')" :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_multibanco_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.multibanco.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_multibanco_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_multibanco %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.multibancoTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.multibancoTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.multibancoTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.multibancoNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.multibancoNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.multibancoNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_alipay_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.alipay.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_alipay_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_alipay %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.alipayTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.alipayTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.alipayTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.alipayNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.alipayNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.alipayNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_wechatpay_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.wechatpay.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_wechatpay_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_wechatpay %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.wechatpayTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.wechatpayTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.wechatpayTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.wechatpayNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.wechatpayNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.wechatpayNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_trustly_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.trustly.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_trustly_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_trustly %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.trustlyTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.trustlyTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.trustlyTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.trustlyNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.trustlyNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.trustlyNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_payconiq_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.payconiq.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_payconiq_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_payconiq %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.payconiqTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.payconiqTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.payconiqTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.payconiqNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.payconiqNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.payconiqNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_blik_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.blik.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_blik_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_blik %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.blikTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.blikTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.blikTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.blikNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.blikNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.blikNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_mbway_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.mbway.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_mbway_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_mbway %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.mbwayTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.mbwayTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.mbwayTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.mbwayNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.mbwayNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.mbwayNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+    
+    <sw-card class="sw-card--grid">
+        {% block novalnet_payment_content_card_channel_config_payment_card_twint_container %}
+			<sw-container>
+				<sw-collapse>
+
+					<div slot="header">
+						<div class="novalnet_payment_card_title">
+								{{ $tc('novalnet-payment.settingForm.paymentSettings.twint.cardTitle') }}
+						</div>
+						<div class="novalnet_payment_card_head_down_bar">
+							<sw-icon name="regular-chevron-down" small="true">
+							</sw-icon>
+						</div>
+						</div>
+
+					<div slot="content">
+						{% block novalnet_payment_content_card_channel_config_payment_card_twint_container_settings %}
+							<div v-if="actualConfigData" class="novalnet_payment-settings-credentials">
+								{% block novalnet_payment_content_card_channel_config_payment_card_container_settings_twint %}
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.twintTestMode']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.twintTestMode']"
+														:customInheritationCheckFunction="checkBoolFieldInheritance">
+										<template #content="props">
+											<sw-switch-field name="NovalnetPayment.settings.twintTestMode"
+														   :mapInheritance="props"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.testmode.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.testmode.tooltipText')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-switch-field>
+										</template>
+									</sw-inherit-wrapper>
+									<sw-inherit-wrapper v-model="actualConfigData['NovalnetPayment.settings.twintNotify']"
+														:inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['NovalnetPayment.settings.twintNotify']"
+														>
+										<template #content="props">
+											<sw-text-field name="NovalnetPayment.settings.twintNotify"
+														   :mapInheritance="props"
+														   :label="$tc('novalnet-payment.settingForm.paymentSettings.notification.label')"
+														   :helpText="$tc('novalnet-payment.settingForm.paymentSettings.notification.tooltipText')"
+														   :disabled="props.isInherited || !acl.can('novalnet_payment.editor')"
+														   :value="props.currentValue"
+														   @change="props.updateCurrentValue">
+											</sw-text-field>
+										</template>
+									</sw-inherit-wrapper>
+								{% endblock %}
+							</div>
+						{% endblock %}
+					</div>
+				</sw-collapse>
+			</sw-container>
+        {% endblock %}
+    </sw-card>
+
+</sw-card-view>
+{% endblock %}
