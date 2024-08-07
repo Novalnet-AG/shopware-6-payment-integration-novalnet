@@ -1,9 +1,7 @@
 # Novalnet payment plugin for Shopware 6
-
 Novalnet payment plugin for Shopware 6 simplifies your daily work by automating the entire payment process, from checkout till collection. The Shopware 6 payment plugin is designed to help you increase your sales by offering various international and local payment methods.
 
 ## Why Shopware 6 with Novalnet? 
-
 Shopware 6 is the next generation shop system based on advanced hook system. With the open source and commercial versions, users can easily create Shopware 6 storefronts based on Twig and Bootstrap technologies. Novalnet’s Shopware 6 payment plugin supports international and local payments including payment guarantee and cash payment particularly for Shopware. We encrypt our end customer data (strong encryption) to free you from data protection concerns and from payment related licenses.
 
 ## Advantages of Shopware 6 Payment plugin
@@ -31,8 +29,7 @@ Shopware 6 is the next generation shop system based on advanced hook system. Wit
 
 ## Compatibility
 Shopware 6 payment plugin is compatible with below technical capabilities. 
-
-- [x]	Shopware versions 6.6.0.0 - 6.6.4.1
+- [x]	Shopware versions 6.6.0.0 - 6.6.5.0
 - [x]	Linux based OS with Apache 2.2 or 2.4
 - [x]	PHP 7.2.0 or higher
 - [x]	MySQL 5.7 or higher
@@ -40,10 +37,10 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Supported payment methods
 
 -	Direct Debit SEPA
-- 	Direct Debit ACH
+- Direct Debit ACH
 -	Credit/Debit Cards
-- 	Apple Pay
-- 	Google Pay
+- Apple Pay
+- Google Pay
 -	Invoice
 -	Prepayment
 -	Invoice with payment guarantee
@@ -57,17 +54,17 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	Przelewy24
 -	eps
 -	PayPal
-- 	MB Way
+- MB Way
 -	PostFinance Card
 -	PostFinance E-Finance
 -	Bancontact
 -	Multibanco
-- 	Online bank transfer
+- Online bank transfer
 -	Alipay
-- 	WeChat Pay
-- 	Trustly
-- 	Blik
-- 	Payconiq
+- WeChat Pay
+- Trustly
+- Blik
+- Payconiq
 
 ## Installation via Composer
 
