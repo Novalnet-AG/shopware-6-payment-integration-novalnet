@@ -1,7 +1,7 @@
 {
     "name": "novalnet/novalnet-payment",
     "description": "PCI Compliant, seamless integration with the various types of payment and payment-related services integrated into one unique platform",
-    "version": "v13.5.2",
+    "version": "v13.5.3",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [

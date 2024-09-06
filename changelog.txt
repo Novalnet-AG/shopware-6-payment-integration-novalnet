@@ -1,5 +1,8 @@
 *** Changelog ***
 
+= 13.5.3   - 2024.08.28 =
+* Enhanced - Novalnet payment plugin has been optimized for new testcase
+
 = 13.5.2   - 2024.05.10 =
 * Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
 * Enhanced - Novalnet payment plugin has been optimized for new testcase
