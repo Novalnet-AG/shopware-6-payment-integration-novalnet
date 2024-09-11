@@ -32,7 +32,7 @@ Shopware 6 is the next generation shop system based on advanced hook system. Wit
 ## Compatibility
 Shopware 6 payment plugin is compatible with below technical capabilities. 
 
-- [x]	Shopware versions 6.5.0.0 - 6.5.8.13
+- [x]	Shopware versions 6.5.0.0 - 6.5.8.14
 - [x]	Linux based OS with Apache 2.2 or 2.4
 - [x]	PHP 7.2.0 or higher
 - [x]	MySQL 5.7 or higher
@@ -87,7 +87,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 ## Quick Installation via plugin upload
 Follow the below steps to install the payment plugin for Shopware 6 in the shop system.
 
-1. **Download** the plugin from <a href="https://store.shopware.com/en/noval29035660349f/novalnet-payments-plugin.html"> here</a> or <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
+1. **Download** the latest plugin from <a href="https://store.shopware.com/en/noval29035660349f/novalnet-payments-plugin.html"> here</a> or <a href="https://www.novalnet.de/kontakt/sales"> contact us</a>.
 
 2. **Login** to shop backend, move to:
    - Extensions
