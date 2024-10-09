@@ -1,0 +1,19 @@
+{% sw_extends '@Framework/documents/storno.html.twig' %}
+
+
+{% set paymentMethod = order.transactions.last.paymentMethod.handlerIdentifier|split('\\') %}
+
+{% block document_payment %}
+
+	{% if paymentMethod|last == 'NovalnetPayment'  %}
+		{% set paymentName = context|getPaymentName(order.ordernumber) %}
+		
+		{% if paymentName is not empty  %}
+			 {{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': paymentName})|sw_sanitize }}<br>
+		{% else %}  
+			{{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': order.transactions.last.paymentMethod.name})|sw_sanitize }}<br>
+		{% endif %}
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}

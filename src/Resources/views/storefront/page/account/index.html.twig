@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/page/account/index.html.twig' %}
+
+{% set paymentMethod = context.customer.defaultPaymentMethod.handlerIdentifier|split('\\') %}
+
+{% block page_account_overview_payment_content %}
+
+	{% if paymentMethod|last == 'NovalnetPayment'  %}
+		{% set paymentName = context|getPaymentDetails(context.customer.customerNumber) %}
+		{% if paymentName is not empty %}
+			<strong>{{ paymentName.paymentName }}</strong>
+			<p>{{ paymentName.paymentDescription }}</p>
+		{% else %}
+			{{ parent() }}
+		{% endif %}
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+	
+{% endblock %}
