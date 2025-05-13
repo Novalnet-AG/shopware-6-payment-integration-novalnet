@@ -1,0 +1,158 @@
+*** Changelog ***
+
+= 13.5.6   - 2025.05.13 =
+* Enhanced - Notification message will be displayed on the checkout page when Novalnet payment methods are not available
+* Enhanced - All activated payment methods will now be displayed on the 'My Account' page for easy payment selection
+
+= 13.5.5   - 2025.02.28 =
+* Enhanced - Payment status updated during credit process when chargeback is received
+* Enhanced - Partial refund status handled when processing partial refund 
+
+= 13.5.4   - 2024.10.03 =
+* Enhanced - Dynamically displays the payment name in place of Novalnet Payment on the Admin customer details page and on the shop overview page
+* Enhanced - Dynamically displays the payment name in the language of your order for the Credit note, Delivery note, and Cancellation note
+* Enhanced - Dynamically displays the payment name and description in the Shop Order Confirmation Email
+* Enhanced - Adjusted Novalnet Payment plugin to update status for subscription chargeback orders
+
+= 13.5.3   - 2024.08.28 =
+* Enhanced - Novalnet payment plugin has been optimized for new testcase
+
+= 13.5.2   - 2024.05.10 =
+* Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
+* Enhanced - Novalnet payment plugin has been optimized for new testcase
+
+= 13.5.1   - 2024.04.24 =
+* Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
+* Enhanced - Optimized the Callback/Webhook process for fetching Dynamic IP 
+
+= 13.5.0   - 2024.04.11 =
+* Fix      - Compatibility for Shopware 6.6
+* Enhanced - Novalnet Order confirmation email templates now support attachments and customized headers and footers
+
+= 13.4.1   - 2024.02.15 =
+* Fix 	   - Adjusted webhook to handle multiple transactions on the same order
+* Fix      - Removed session handling during API and Administration processes
+* Fix      - Dynamically displays the payment name in the language of your order for both the Invoice PDF and the Shop Order Confirmation Email
+* Fix      - Handled credit/debit card payments seamlessly in case of communication failures during the subscription free trial product purchase
+* Fix      - Multiple submit buttons are now supported in the checkout process 
+
+= 13.4.0   - 2023.12.12 =
+* New 	   - Implemented configuration options for On-hold and Completion payment statuses
+* New 	   - Implemented Zero amount authorization for Apple Pay, Google Pay and Direct Debit ACH payments
+* Fix 	   - Order update emails will dynamically display payment method name associated with an order
+* Fix      - Console error when an undefined payment variable is processed during iFrame initialization 
+
+= 13.3.0   - 2023.11.09 =
+* New 	   - Implemented MB Way payment
+* Fix 	   - Callback/webhook optimized to execute without order number
+* Fix 	   - Appropriate theme name fetched from the shop theme object for checkout page loading
+
+= 13.2.0   - 2023.09.08 =
+* Fix 	   - Payment Plugin build executed for proper installation
+* Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
+
+= 13.0.0   - 2023.08.25 =
+* Major version release: We've improved the seamless customer experience and brand configurations in the Novalnet Merchant Admin Portal to make it easier to preview and customise the checkout page
+
+= 12.5.7   - 2023.07.21 =
+* Enhanced - Additional payment statuses 'Authorized' and 'Paid partially' are handled for payment specific transactions
+
+= 12.5.6   - 2023.06.21 =
+* Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
+
+= 12.5.5   - 2023.06.09 =
+* Fix 	   - Compatibility for Shopware 6.5.0.0
+* Enhanced - For IBAN-specific countries, the BIC field required for the Gibraltar country for the payments like Direct Debit SEPA, Direct Debit SEPA with payment guarantee and Instalment by Direct Debit SEPA
+
+= 12.5.4   - 2023.05.23 =
+* Fix 	   - Supported payment methods are now listed in the My Account section
+* Enhanced - Optimised Novalnet Payment plugin to support Novalnet subscription plugin features
+
+= 12.5.3   - 2023.05.09 =
+* Fix 	   - Invoice PDF gets updated with the recent transaction details during PDF generation
+
+= 12.5.2   - 2023.02.09 =
+* New 	   - Added ACL feature for Novalnet payment plugin
+* Fix 	   - Adjusted E-mail template as per the Shopware standard
+* Fix      - Callback/webhook comments are handled based on the initial transaction language
+* Removed  - Google Pay button theme configuration 
+
+= 12.5.1   - 2022.11.15 = 
+* Fix	   - No custom payment logo replacement during the plugin update
+* Enhanced - Adjusted novalnet payment plugin to support Multibanco payment for the Novalnet subscription plugin
+* Removed  - Status based Capture, Void and Refund actions
+
+= 12.5.0   - 2022.10.21 = 
+* New      - Implemented Google pay, Trustly, WeChat and Alipay payments
+* New      - Implemented Zero amount authorization for the payments Credit/Debit card and Direct Debit SEPA
+* New 	   - Updated cart details to PayPal
+* Enhanced - Invoice payment name is updated for German translation
+* Enhanced - Callback/Webhook events has been optimized as per the new testcase
+* Removed  - One-click shopping for PayPal payment
+
+= 12.4.0   - 2022.07.26 = 
+* New	   - Implemented Online bank transfer payment
+* New      - Implemented Apple pay payment
+* Fix 	   - Novalnet payment plugin adjusted to support for Amazon pay during activation
+* Enhanced - For IBAN-specific countries, the BIC field displayed for payments like Direct Debit SEPA, Direct Debit SEPA with payment guarantee & Instalment by Direct Debit SEPA
+
+= 12.3.0   - 2022.05.10 = 
+* New 	   - Order creation process handled from the shop admin panel for the Invoice, Prepayment, Barzahlen/viacash & Multibanco
+* New 	   - Added "state" parameter in the payment request
+* Fix      - Compatibility for Shopware 6.4.10.1
+* Fix      - Credit/Debit Cards error message and Checkout button
+* Enhanced - Updated payment logo for sofort payment
+
+= 12.2.2   - 2022.02.25 = 
+* Fix      - Adjusted payment plugin to translate Novalnet transaction details with the same language updated in the domain URL
+* Fix      - Refund API request is restricted for multiple transactions with the same order number
+   
+= 12.2.1   - 2022.02.03 =
+* Fix      - Compatibility for Shopware 6.3 using Promotion code
+
+= 12.2.0   - 2021.11.17 =
+* Fix      - Compatibility for PHP version 8.0
+* New      - Configuration to send order confirmation email to end-customer
+* Enhance  - Payment plugin installation via composer 
+
+= 12.1.2   - 2021.08.13 =
+* Fix      - Order confirmation email sent to end customers for the newly created domain URLs
+
+= 12.1.1   - 2021.07.26 =
+* Fix      - Compatibility for Shopware 6.4 series
+* Fix      - Callback has been optimized as per the new testcase 
+
+= 12.1.0   - 2021.05.19 =
+* New      - Implemented instalment payments for Direct Debit SEPA and Invoice
+* Fix      - Saved card/account information can be deleted in Safari and Firefox browsers 
+* Fix      - Placed the saved card/account details view above change payment method button
+* Fix      - Webhook: Follow up transaction call restricted for on-hold payments
+* Enhanced - Vendor script has been optimized
+
+= 12.0.0   - 2021.04.01 =
+Major version release: Entire restructure & optimization of older version with usability, additional features and customizations
+
+= 1.0.5    - 2021.02.05 =
+* Fix      - Orders get confined while adding multiple order comments into the same order
+* Fix 	   - Adjusted payment plugin to display error message for guarantee payments when Force Non-Guarantee payment option was disabled
+
+= 1.0.4    - 2021.01.05 =
+* Fix      - Date of birth validation regulated on checkout page
+* Fix 	   - Adjusted the redirect payment methods to support Sales channels
+* Enhanced - Barzahlen payment name and logo
+
+= 1.0.3    - 2020.12.05 =
+* Fix      - Adjusted JavaScript for displaying the "Submit" button on the checkout page
+* Fix      - Adjusted JavaScript for throwing error message on the checkout page for Invalid Credit Card details
+* Fix      - Mailer configuration is not mandatory now for order success page 
+
+= 1.0.2    - 2020.11.11 =
+* Fix      -  Added Datepicker by adjusting Javascript for macOS Safari browser 
+
+= 1.0.1    - 2020.10.06 =
+* Fix      - Sitemap XML tag issue 
+* Fix      - Adjusted the redirect payment methods to support Sales channels
+* Enhanced - Barzahlen payment name and logo
+
+= 1.0.0    - 2021.01.05 =
+	   - New release
