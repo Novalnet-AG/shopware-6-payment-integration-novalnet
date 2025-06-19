@@ -1,0 +1,16 @@
+
+{% block sw_order_create_options_payment_method %}
+        <sw-entity-single-select
+            v-model:value="context.paymentMethodId"
+            entity="payment_method"
+            label-property="distinguishableName"
+            class="sw-order-create-options__payment-method"
+            :criteria="paymentMethodCriteria"
+            :label="$tc('sw-order.createBase.labelPaymentMethod')"
+            :placeholder="$tc('sw-order.createBase.placeholderPaymentMethod')"
+            show-clearable-button
+        />
+{% endblock %}
+
+      
+
