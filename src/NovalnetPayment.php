@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * Novalnet payment plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to Novalnet End User License Agreement
+ *
+ * DISCLAIMER
+ *
+ * If you wish to customize Novalnet payment extension for your needs,
+ * please contact technic@novalnet.de for more information.
+ *
+ * @category    Novalnet
+ * @package     NovalnetPayment
+ * @copyright   Copyright (c) Novalnet
+ * @license     https://www.novalnet.de/payment-plugins/kostenlos/lizenz
+ */
+
+declare(strict_types=1);
+
+namespace Novalnet\NovalnetPayment;
+
+use Novalnet\NovalnetPayment\Installer\PaymentMethodInstaller;
+use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Plugin\Context\ActivateContext;
+use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
+use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+
+/**
+ * NovalnetPayment Class.
+ */
+class NovalnetPayment extends Plugin
+{
+    /**
+     * Plugin installation process
+     *
+     * @param InstallContext $installContext
+     */
+    public function install(InstallContext $installContext): void
+    {
+        (new PaymentMethodInstaller($this->container, $installContext->getContext()))->install();
+        parent::install($installContext);
+    }
+
+    /**
+     * Plugin update process
+     *
+     * @param UpdateContext $updateContext
+     */
+    public function update(UpdateContext $updateContext): void
+    {
+        (new PaymentMethodInstaller($this->container, $updateContext->getContext()))->update();
+        parent::update($updateContext);
+    }
+
+    /**
+     * Plugin uninstall process
+     *
+     * @param UninstallContext $uninstallContext
+     */
+    public function uninstall(UninstallContext $uninstallContext): void
+    {
+        $uninstaller = new PaymentMethodInstaller($this->container, $uninstallContext->getContext());
+        $uninstaller->uninstall();
+
+
+        if (!$uninstallContext->keepUserData()) {
+            $uninstaller->removeConfiguration();
+            $uninstaller->deleteMailSettings();
+        }
+        parent::uninstall($uninstallContext);
+    }
+
+    /**
+     * Plugin activate process
+     *
+     * @param ActivateContext $activateContext
+     */
+    public function activate(ActivateContext $activateContext): void
+    {
+        (new PaymentMethodInstaller($this->container, $activateContext->getContext()))->activate();
+        parent::activate($activateContext);
+    }
+
+    /**
+     * Plugin deactivate process
+     *
+     * @param DeactivateContext $deactivateContext
+     */
+    public function deactivate(DeactivateContext $deactivateContext): void
+    {
+        (new PaymentMethodInstaller($this->container, $deactivateContext->getContext()))->deactivate();
+        parent::deactivate($deactivateContext);
+    }
+}

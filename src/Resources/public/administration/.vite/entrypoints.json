@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/novalnetpayment/administration/",
+  "entryPoints": {
+    "novalnet-payment": {
+      "css": [
+        "/bundles/novalnetpayment/administration/assets/novalnet-payment-BX76s58H.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/novalnetpayment/administration/assets/novalnet-payment-CZiVICOz.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

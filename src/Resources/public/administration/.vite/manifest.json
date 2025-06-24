@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/novalnet-payment-CZiVICOz.js",
+    "name": "novalnet-payment",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/novalnet-payment-BX76s58H.css"
+    ]
+  }
+}
