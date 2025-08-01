@@ -29,7 +29,7 @@ Shopware 6 is the next generation shop system based on advanced hook system. Wit
 
 ## Compatibility
 Shopware 6 payment plugin is compatible with below technical capabilities. 
-- [x]	Shopware versions 6.6.0.0 - 6.6.10.5
+- [x]	Shopware versions 6.6.0.0 - 6.6.10.6
 - [x]	Linux based OS with Apache 2.2 or 2.4
 - [x]	PHP 7.2.0 or higher
 - [x]	MySQL 5.7 or higher
@@ -72,7 +72,7 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 #### Follow the below steps and run each command in your terminal from the shop root directory
  ##### 1. Run the below command to upload the payment plugin
  ```
- composer require novalnet/shopware6-payment
+ composer require novalnet/shopware6-payment:13.5.6
  ```
  ##### 2. Run the below command to refresh the payment plugin
  ```
