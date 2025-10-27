@@ -1,0 +1,50 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
+
+	 {% block component_payment_method_field %}
+		{% set authAmount = ( page.cart.price.totalPrice ? page.cart.price.totalPrice : page.order.price.totalPrice ) * 100 %}
+		{% set novalnetPaymentHandler = payment.handlerIdentifier|split('\\') %}
+                {% set novalnetConfiguration = ( page.cart.extensions.novalnetConfiguration.all ? page.cart.extensions.novalnetConfiguration.all : (page.order.extensions.novalnetSubscription.id or page.order.extensions.subsOrders.id or page.abo.id)) %}
+
+        {% if subscriptionForm is not empty %}
+			{% set formName = "form = novalnetchangePaymentForm" %}
+		{% else %}
+			{% set formName = "form = confirmOrderForm" %}
+		{% endif %}
+		
+		{% if novalnetPaymentHandler|last == 'NovalnetPayment' %}
+			{% if config('NovalnetPayment.settings.clientId') is not empty or config('NovalnetPayment.settings.tariff') is not empty  %}
+				{% set novalnetpay = (novalnetConfiguration is not empty || app.request.get('_route') == 'frontend.novalnet.subscription.orders.detail') ? context|novalnetPayment(page, 'SUBSCRIPTION') : context|novalnetPayment(page) %}
+				<input type="hidden" value="{{ payment.id }}" name="novalnetId" id="novalnetId">
+				<input type="hidden" value="" id="novalnet-paymentdata" {{ formName }} name="novalnetpaymentFormData[paymentData]">
+				<input type="hidden" value="{{ path('frontend.novalnet.storeCustomerData') }}" name="storeCustomerDataUrl" id="storeCustomerDataUrl">
+				<input type="hidden" value="{{ "NovalnetPayment.text.noPaymentMethodErrorMsg"|trans }}" name="iframeErrorMessage" id="iframeErrorMessage">
+				<div style ="display:none"> {% block component_payment_method_input %} {{ parent()}} {% endblock %}</div>
+
+				{% set articleData = [] %}
+
+				{% set cart = page.cart ? page.cart : page.order %}
+				
+				{% for lineItem in cart.lineItems %}
+					{% set articleData = articleData|merge([{ label: lineItem.label ~ " (" ~ lineItem.quantity ~ " x " ~ lineItem.price.unitPrice|currency(context.currency.isoCode) ~ ")", type: 'SUBTOTAL', amount: (lineItem.price.totalPrice * 100)|round }]) %}
+				{% endfor %}
+
+				{% for delivery in cart.deliveries %}
+					{% set articleData = articleData|merge([{ label: delivery.shippingMethod.translated.name ~ " (" ~ delivery.shippingCosts.quantity ~ " x " ~ delivery.shippingCosts.unitPrice|currency(context.currency.isoCode) ~ ")", type: 'SUBTOTAL', amount: (delivery.shippingCosts.totalPrice * 100)|round }]) %}
+				{% endfor %}
+						
+				{% for tax in cart.price.calculatedTaxes %}
+					{% set articleData = articleData|merge([{ label: "NovalnetPayment.text.vatLabel"|trans({'%vat%': tax.taxRate|trans|sw_sanitize})|sw_sanitize, type: 'SUBTOTAL', amount: (tax.tax * 100)|round }]) %}
+				{% endfor %}
+				{% if novalnetpay != ''  %}
+					<div  id="novalnet-payment-script" data-lineItems="{{ articleData|json_encode() }}" >
+						<iframe id="novalnetPaymentIframe" title="Novalnet Payment Form" width="100%" src="{{ novalnetpay }}" allow="payment" referrerPolicy="origin" style="overflow: hidden;border: 0px;"></iframe>
+					</div>
+				{% endif %}
+			{% endif %}
+		{% else %}	
+			{{ parent()}}
+		{% endif %}
+			
+    {% endblock %}
+	
+	
