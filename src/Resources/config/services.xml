@@ -1,0 +1,345 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Novalnet\NovalnetPayment\Components\NovalnetPaymentTokenRepository">
+            <argument type="service" id="novalnet_payment_token.repository" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Content\PaymentToken\NovalnetPaymentTokenDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Content\PaymentTransaction\NovalnetPaymentTransactionDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Subscriber\Administration\OrderEventSubscriber">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentProcessor"/>
+            <argument type="service" id="router.default"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+         <service id="Novalnet\NovalnetPayment\Subscriber\Storefront\ProductPageSubscriber">
+			 <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Twig\Filter\NovalnetFilter">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
+            <tag name="twig.extension" priority="-100" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Controller\Storefront\WebhookController" public="true">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Controller\Storefront\FrontendController" public="true">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetCartHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentProcessor"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\SetPaymentOrderRoute"/>
+            <argument type="service" id="Shopware\Core\System\NumberRange\ValueGenerator\NumberRangeValueGeneratorInterface"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetHelper">
+            <argument type="service" id="Novalnet\NovalnetPayment\Components\NovalnetPaymentTokenRepository"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="router.default"/>
+            <argument>%kernel.shopware_version%</argument>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetCartHelper">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="novalnet_transaction_details.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService" />
+            <argument type="service" id="mail_template.repository"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetValidator">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Controller\Administration\AdminController" public="true">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="novalnet_payment_token.repository" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Installer\MediaProvider" public="true">
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="service_container"/>
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetApplePay">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetGooglePay">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetCreditCard">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepa">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepaGuarantee">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetSepaInstalment">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetDirectDebitACH">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoice">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoiceGuarantee">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetInvoiceInstalment">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPaypal">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetOnlineBankTransfer">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetBlik">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetIdeal">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetTrustly">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetAliPay">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetMbway">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPayconiq">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetWeChatPay">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetEps">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPrzelewy24">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPostfinance">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPostfinanceCard">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetBancontact">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetMultibanco">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPrepayment">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetTwint">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetValidator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method" />
+        </service>
+    </services>
+</container>

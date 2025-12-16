@@ -1,0 +1,88 @@
+{% sw_extends '@Storefront/storefront/page/account/novalnet-subscription/changepayment-modal.html.twig' %}
+
+
+{% block page_checkout_change_payment_form_submit %}
+	{% for payment in page.paymentMethods[visiblePaymentMethodsLimit:] %}
+		{% if 'NovalnetGooglePay' in payment.handlerIdentifier %}
+			<div id="novalnetgooglepay-payment"
+			     class="nn-google-pay-changePayment"
+				 data-wallet-payments="true"
+				 data-page-type="changePayment"
+				 data-paymentMethodId="{{ payment.id }}"
+				 data-success-url="{{ path('frontend.novalnet.successOrder') }}"
+				 data-payment-config="{{
+						{
+						'clientKey': config('NovalnetPayment.settings.clientKey'),
+						merchant: {
+							'countryCode': context.customer.activeBillingAddress.country.iso,
+							'partnerId': config('NovalnetPayment.settings.googlepayMerchantId')
+						},
+						transaction: {
+							'amount': 0,
+							'currency': context.currency.isoCode,
+							'paymentMethod': "GOOGLEPAY",
+							'enforce3d': config('NovalnetPayment.settings.googlepayEnforcecc3D'),
+							'environment': config("NovalnetPayment.settings.googlepayTestMode") ? "SANDBOX" : "PRODUCTION"
+						},
+						order: {
+							'merchantName': config("NovalnetPayment.settings.googlepaySellerName") is not empty ? config("NovalnetPayment.settings.googlepaySellerName") : context.salesChannel.translated.name,
+							'lineItems': ''
+						},
+						custom: {
+							'lang': context.context|getLocaleCodeFromContext("true")
+						},
+						button: {
+							'type': config("NovalnetPayment.settings.googlepayButtonType"),
+							'style': config("NovalnetPayment.settings.googlepayButtonTheme"),
+							'locale': context.context|getLocaleCodeFromContext("true"),
+							'boxSizing': 'fill',
+							'dimensions': {
+								'height': config("NovalnetPayment.settings.googlepayButtonHeight")
+							}
+						}
+					 }|jsonEncode()|escape('html_attr')}}">
+			</div>
+		{% elseif 'NovalnetApplePay' in payment.handlerIdentifier %}
+			<div id="novalnetapplepay-payment"
+			     class="nn-apple-pay-changePayment"
+				 data-wallet-payments="true"
+				 data-page-type="changePayment"
+				 data-paymentMethodId="{{ payment.id }}"
+				 data-success-url="{{ path('frontend.novalnet.successOrder') }}"
+				 data-payment-config="{{
+						{
+						'clientKey': config('NovalnetPayment.settings.clientKey'),
+						merchant: {
+							'countryCode': context.customer.activeBillingAddress.country.iso
+						},
+						transaction: {
+							'amount': 0,
+							'currency': context.currency.isoCode,
+							'paymentMethod': "APPLEPAY",
+							'environment': config("NovalnetPayment.settings.applepayTestMode") ? "SANDBOX" : "PRODUCTION"
+						},
+						order: {
+							'merchantName': config("NovalnetPayment.settings.applepaySellerName") is not empty ? config("NovalnetPayment.settings.applepaySellerName") : context.salesChannel.translated.name,
+							'lineItems': ''
+						},
+						custom: {
+							'lang': context.context|getLocaleCodeFromContext("true")
+						},
+						button: {
+							'type': config("NovalnetPayment.settings.applepayButtonType"),
+							'style': config("NovalnetPayment.settings.applepayButtonTheme"),
+							'locale': context.context|getLocaleCodeFromContext("true"),
+							'boxSizing': 'fill',
+							'dimensions': {
+								'height': config("NovalnetPayment.settings.applepayButtonHeight"),
+								'cornerRadius': config('NovalnetPayment.settings.applepayButtonRadius')
+							}
+						}
+					 }|jsonEncode()|escape('html_attr')}}">
+			</div>
+		{% endif %}
+	{% endfor %}
+	{{ parent() }}
+{% endblock %}
+										
+										
