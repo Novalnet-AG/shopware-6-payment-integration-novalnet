@@ -1,0 +1,87 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-detail.html.twig' %}
+
+{% block page_account_order_item_detail_payment_method_value %}
+	{% set paymentMethod = '' %}
+	{% for transaction in order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+		{% set paymentMethod = transaction.paymentMethod.customFields.novalnet_payment_method_name ?? transaction.paymentMethod.handlerIdentifier|split('\\')|last|lower %}
+	{% endfor %}
+	
+	<dd class="col-6 col-md-7 order-item-detail-labels-value">
+		{% if paymentMethod == 'novalnetinvoiceguarantee' %}
+			{{"NovalnetPayment.text.invoiceLabel"|trans}}
+		{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+			{{"NovalnetPayment.text.sepaLabel"|trans}}
+		{% else %}
+			{{ order.transactions|last.paymentMethod.translated.name }}
+		{% endif %}
+    </dd>
+{% endblock %}
+
+{% block page_account_order_item_detail_table_footer%}
+	{{ parent() }}
+	{% for transaction in order.transactions|sort((a, b) => b.createdAt <=> a.createdAt) %}
+		{% set paymentMethod = transaction.paymentMethod.customFields.novalnet_payment_method_name ?? transaction.paymentMethod.handlerIdentifier|split('\\')|last|lower %}
+        {% if 'novalnet' in paymentMethod and transaction.getCustomFields()['novalnet_comments'] != '' %}
+			{% block page_account_order_item_detail_comments%}
+				{% block page_account_order_item_detail_comments_label %}
+					<dl class="nn-comments-title">
+						<dt class="col-md-5 nn-comments">{{"NovalnetPayment.text.commentsHeader"|trans}}</dt>
+					</dl>
+				{% endblock %}
+			
+				{% block page_account_order_item_detail_comments_value %}
+					{% set qrCodeImage = context.context|getQrImage(order.orderNumber) %}
+						<dl>
+							<dd class="col-md-7 nn-comments order-item-detail-labels-value">
+								{{ transaction.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+								{% if qrCodeImage is not empty and loop.index == 1 %}
+									<br /><br />
+									<div class="qr-code-text">
+										{{ "NovalnetPayment.text.epcQrCodeDesc"|trans|sw_sanitize }}
+									</div>
+									<div class="qr-code-image">
+										<img src="{{ qrCodeImage }}" alt="QR Code" title="QR Code" />
+									</div>
+								{% endif %}
+							</dd>
+						<dl>
+				{% endblock %}
+				
+				{% if paymentMethod in ['novalnetinvoiceinstalment', 'novalnetsepainstalment'] %}
+					{% set instalmentInfo = context|getNovalnetInstalmentInfo(order.ordernumber) %}
+					{% if instalmentInfo is not empty %}
+						<table class="table table-striped novalnetinstalment-table">
+							<thead style="font-weight: bold;">
+									<tr>
+											<th>{{"NovalnetPayment.text.sno"|trans}}</th>
+											<th>{{"NovalnetPayment.text.tid"|trans}}</th>
+											<th>{{"NovalnetPayment.text.amount"|trans}}</th>
+											<th>{{"NovalnetPayment.text.date"|trans}}</th>
+											<th>{{"NovalnetPayment.text.status"|trans}}</th>
+										<tr>
+								</thead>
+								<tbody>
+									{% for info in instalmentInfo %}
+										{%set amount = info.amount/100 %}
+										<tr>
+											<td>{{ loop.index }}</td>
+											<td>{{ info.reference ? info.reference : '-' }}</td>
+											<td>{{ amount ? amount|currency(order.currency.isoCode): '-' }}</td>
+											{% if instalmentInfo[loop.index + 1] is defined %} 
+												<td>{{ instalmentInfo[loop.index + 1].cycleDate ? instalmentInfo[loop.index + 1].cycleDate|date("Y-m-d") : "-" }}</td>
+											{% else %}
+												<td>{{ "-" }}</td>
+											{% endif %}
+											<td>{{ info.status }}</td>
+										<tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						
+					{% endif %}
+				{% endif %}
+				
+			{% endblock %}
+		{% endif %}
+    {% endfor %}
+{% endblock %}

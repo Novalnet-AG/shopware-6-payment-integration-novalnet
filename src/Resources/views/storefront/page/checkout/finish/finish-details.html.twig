@@ -1,0 +1,56 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{% block page_checkout_finish_order %}
+	{{ parent() }}
+	{% set qrCodeImage = context.context|getQrImage(page.order.orderNumber) %}
+
+	{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+		<div class="row finish-info">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card checkout-card">
+						<div class="card-body">
+							<div class="card-title">
+								{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}
+							</div>
+							<div class="col-sm-6 float-start">
+								{{ page.order.transactions.last.getCustomFields()['novalnet_comments']|replace({'/ ': "<br>"}) | raw }}
+							</div>
+							{% if qrCodeImage is not empty %}
+								<div class="col-sm-6 float-start text-center">
+									<div class="qr-code-text">
+										{{ "NovalnetPayment.text.epcQrCodeDesc"|trans|sw_sanitize }}
+									</div>
+									<div class="qr-code-image">
+										<img src="{{ qrCodeImage }}" alt="QR Code" title="QR Code" />
+									</div>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_order_payment_method %}
+    {% set paymentMethod = '' %}
+    {% for transaction in page.order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+        {% set paymentMethod = transaction.paymentMethod.customFields.novalnet_payment_method_name ?? transaction.paymentMethod.handlerIdentifier|split('\\')|last|lower %}
+    {% endfor %}
+    
+    {% if paymentMethod == 'novalnetinvoiceguarantee' %}
+        <p>
+            <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+            {{"NovalnetPayment.text.invoiceLabel"|trans}}
+        </p>
+    {% elseif paymentMethod == 'novalnetsepaguarantee' %}
+        <p>
+            <strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+            {{"NovalnetPayment.text.sepaLabel"|trans}}
+        </p>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,172 @@
+.nnhide {
+   display: none !important;
+}
+
+div[class^="nn-apple-pay-button"], div[class^="nn-google-pay-button"] {
+	margin-top: 0.25rem;
+}
+
+div[class^="nn-apple-pay-button"] > button {
+	width: 100%
+}
+
+#novalnetgooglepay-payment, #novalnetapplepay-payment {
+	width: 20%
+}
+
+.instalmentBannerTitle {
+	border-bottom: 1px solid #dadae5; 
+	padding: .625rem .625rem .625rem 0rem;
+}
+
+#novalnetsepa-payment, #novalnetsepaguarantee-payment, #novalnetcreditcard-payment, #novalnetpaypal-payment, #novalnetinvoiceguarantee-payment, #novalnetinvoiceinstalment-payment, #novalnetsepainstalment-payment, #novalnetgooglepay-payment, #novalnetapplepay-payment, #novalnetdirectdebitach-payment, #novalnetmbway-payment {
+	display: none;
+}
+
+#novalnetsepaZeroAmountNotify, #novalnetcreditcardZeroAmountNotify, #novalnetgooglepayZeroAmountNotify, #novalnetapplepayZeroAmountNotify, #novalnetdirectdebitachZeroAmountNotify {
+	display: none;
+}
+
+.instalmentBannerInfo {
+	margin-top: 1rem;
+}
+
+.nn-zero-amount-notification {
+	color:red;
+	font-weight:bold;
+	margin-bottom: 10px;
+	position: relative;
+	width: 100%;
+	padding-right: 20px;
+	padding-left: 20px;
+}
+
+.nn-comments {
+	position: relative;
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+.nn-comments-title {
+	margin-bottom : 1rem
+}
+
+.novalnet-test-mode {
+	position: relative;
+	background-color: #0080c9;
+	color: #fff;
+	padding: 10px 20px;
+	font-size: 10px;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	line-height: 0.8px;
+	border-radius: 0px 0px 5px 5px;
+	transition: transform 0.5s ease 0.5s;
+	animation: novalnet-test-mode-blinker 2s linear infinite;
+	font-weight: bold;
+	float:right;
+}
+
+#novalnetSepaMandate:hover {
+	cursor: pointer; 
+	text-decoration: underline;
+}
+
+@keyframes novalnet-test-mode-blinker {
+	50% {
+		opacity: 0;
+	}
+}
+
+.novalnet-input-field-container {
+	width: 100%;
+	padding-left: 20px;
+}
+
+.nn-payment-notification {
+	width: 70%;
+    padding-left: 20px;
+}
+
+#sepa_mandate_toggle {
+	cursor: pointer;
+	color: #5f7285;
+}
+
+#sepa_mandate_toggle:hover {
+	text-decoration: underline;
+}
+
+#sepa_mandate {
+	cursor: pointer;
+	color: #5f7285;
+}
+
+#sepa_mandate:hover {
+	text-decoration: underline;
+}
+
+.novalnet-challenge-window-overlay {
+	position: fixed ! important;
+	width: 100% ! important;
+	height: 100% ! important;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.5);
+	z-index: 2;
+	cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+  #nnIframe {
+    width: 100%;
+  }
+}
+
+.novalnet-SavedPaymentMethods {
+	list-style: none outside;
+	margin: 0;
+	padding-inline-start: 40px;
+	.novalnet-SavedPaymentMethods-token,
+	.novalnet-SavedPaymentMethods-new {
+		margin: 0 0 0.825em;
+		label {
+			cursor: pointer;
+		}
+	}
+	.novalnet-SavedPaymentMethods-tokenInput {
+		vertical-align: middle;
+		margin: -3px 1em 0 0;
+		position: relative;
+	}
+}
+
+.novalnetInstalmentInfo {
+    cursor: pointer;
+    text-decoration: none;
+    background-color: transparent;
+    width: fit-content;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.novalnetinstalment-table {
+	border: 1px solid;
+    border-color: #bcc1c7;
+    text-align: center;
+}
+
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+
+
