@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+		<service id="Novalnet\NovalnetPayment\Content\PaymentTransaction\NovalnetPaymentTransactionDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Novalnet\NovalnetPayment\Helper\NovalnetHelper">
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+            <argument type="service" id="service_container"/>
+			<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+			<argument type="service" id="request_stack" />
+			<argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
+            <argument>%kernel.shopware_version%</argument>
+        </service>
+      
+        <service id="Novalnet\NovalnetPayment\Controller\Administration\AdminController" public="true">
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />          
+            <argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper" />          
+           <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Service\NovalnetPayment">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+ 			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>	
+			<tag name="shopware.payment.method" />
+		</service>
+
+		<service id="Novalnet\NovalnetPayment\Twig\Filter\NovalnetFilter">
+ 			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+            <tag name="twig.extension" priority="-5000"/>
+        </service>
+	
+		<service id="Novalnet\NovalnetPayment\Resources\snippet\de_DE\SnippetFile_de_DE" public="true">
+			<tag name="shopware.snippet.file"/>
+		</service>
+
+		<service id="Novalnet\NovalnetPayment\Resources\snippet\en_GB\SnippetFile_en_GB" public="true">
+			<tag name="shopware.snippet.file"/>
+		</service>
+
+		<service id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+			<argument type="service" id="order.repository"/>
+			<argument type="service" id="order_transaction.repository"/>
+			<argument type="service" id="service_container"/>
+			<argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+			<argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+			<argument type="service" id="logger"/>
+		</service>
+
+		<service id="Novalnet\NovalnetPayment\Subscriber\Storefront\PaymentEventSubscriber">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="request_stack" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
+		<service id="Novalnet\NovalnetPayment\Subscriber\Storefront\StorefrontRenderEventSubscriber">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
+		<service id="Novalnet\NovalnetPayment\Controller\Storefront\FrontendController" public="true">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+			<call method="setContainer">
+			<argument type="service" id="service_container"/>
+			</call>
+        </service>
+
+		<service id="Novalnet\NovalnetPayment\Controller\Storefront\WebhookController" public="true">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetOrderTransactionHelper"/>
+			<argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface"/>
+			<argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+			<argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+			<argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+			<call method="setContainer">
+			  <argument type="service" id="service_container"/>
+			</call>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Subscriber\Administration\OrderEventSubscriber">
+			<argument type="service" id="Novalnet\NovalnetPayment\Helper\NovalnetHelper"/>
+			<argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+			<argument type="service" id="Shopware\Core\Checkout\Payment\PaymentProcessor"/>
+			<argument type="service" id="router.default"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
+        <service id="Novalnet\NovalnetPayment\Installer\MediaProvider" public="true">
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="service_container"/>
+        </service>
+    </services>
+</container>

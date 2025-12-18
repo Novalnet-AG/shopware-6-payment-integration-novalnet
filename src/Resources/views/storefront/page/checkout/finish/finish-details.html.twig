@@ -1,0 +1,49 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{% set paymentMethod = page.order.transactions|last.paymentMethod.handlerIdentifier|split('\\') %}
+
+{% block page_checkout_finish_order %}
+	{{ parent() }}
+	{% set qrCodeImage = context.context|getQrImage(page.order.orderNumber) %}
+	{% if page.order.transactions.last.getCustomFields()['novalnet_comments'] is not empty %}
+		<div class="row finish-info">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="card checkout-card">
+						<div class="card-body">
+							<div class="card-title">
+								{{ "NovalnetPayment.text.commentsHeader"|trans|sw_sanitize }}
+							</div>
+							<div class="col-sm-6 float-start">
+								{% set novalnetFinishComments = page.order.transactions.last.getCustomFields()['novalnet_comments']| split('&&') %}
+								{{ novalnetFinishComments|first|replace({'/ ': "<br>"}) | raw }}
+							</div>
+							{% if qrCodeImage is not empty %}
+								<div class="col-sm-6 float-start text-center">
+									<div class="qr-code-text">
+										{{ "NovalnetPayment.text.epcQrCodeDesc"|trans|sw_sanitize }}
+									</div>
+									<div class="qr-code-image">
+										<img src="{{ qrCodeImage }}" alt="QR Code" title="QR Code" />
+									</div>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_order_payment_method %}
+	{% if paymentMethod|last == 'NovalnetPayment' %}
+		{% set paymentName = context.context|getPaymentName(page.order.orderNumber) %}
+		<p>
+			<strong>{{ "checkout.finishInfoPayment"|trans|sw_sanitize }}</strong>
+			{{ paymentName }}
+		</p>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}

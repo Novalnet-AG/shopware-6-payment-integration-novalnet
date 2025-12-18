@@ -1,0 +1,26 @@
+{% block sw_order_create_details_payment %}
+    {% parent() %}
+
+    {% block sw_order_create_details_payment_novalnet_seaction %}
+        <template v-if="novalnetPayment">
+            <mt-card
+                rows="2"
+                :isLoading="isLoading"
+                :title="$tc('novalnet-payment.module.title')"
+            >
+                <div>
+                    <iframe
+                        v-if="loaded"
+                        id="adminnovalnetPaymentiframe"
+                        width="100%"
+                        referrerPolicy="origin"
+                        title="Novalnet Payment Form"
+                        style="border: 0px;"
+                        :src="iframe.src"
+                    >
+					</iframe>
+                </div>
+            </mt-card>
+        </template>
+    {% endblock %}
+{% endblock %}
