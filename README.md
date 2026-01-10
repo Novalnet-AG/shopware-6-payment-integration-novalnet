@@ -21,15 +21,15 @@ Shopware 6 is the next generation shop system based on advanced hook system. Wit
 -	Secure SSL- encoded gateways
 -	Seamless checkout Iframe integration
 -	One click shopping supported Credit/Debit Cards & Direct Debit SEPA 
-- 	Zero amount authorization supported for Credit/Debit Cards, Direct Debit SEPA, Direct Debit ACH, Apple Pay & Google Pay payments
+- Zero amount authorization supported for Credit/Debit Cards, Direct Debit SEPA, Direct Debit ACH, Apple Pay & Google Pay payments
 -	Easy way of confirmation and cancellation of on-hold transactions for Direct Debit SEPA, Direct Debit SEPA with payment guarantee, Instalment payment for Direct Debit SEPA, Credit/Debit Cards, Invoice, Invoice with payment guarantee, Instalment payment for Invoice, Prepayment, PayPal, Apple Pay & Google Pay
--	Refund option for Credit/Debit Cards, Direct Debit SEPA, Direct Debit ACH, Direct Debit SEPA with payment guarantee, Instalment by Direct Debit SEPA, Invoice, Invoice with payment guarantee, Instalment by Invoice, Prepayment, Barzahlen/viacash, Sofort, iDEAL, eps, giropay, PayPal, MB Way, Przelewy24, PostFinance Card, PostFinance E-Finance, Bancontact, Apple Pay, Google Pay, Online bank transfer, Alipay, WeChat pay, Trustly, Blik, Payconiq & TWINT
--	Order creation process handled for shop admin for the Direct Debit SEPA, Invoice, Prepayment, Barzahlen/viacash & Multibanco
+-	Refund option for Credit/Debit Cards, Direct Debit SEPA, Direct Debit ACH, Direct Debit SEPA with payment guarantee, Instalment by Direct Debit SEPA, Invoice, Invoice with payment guarantee, Instalment by Invoice, Prepayment, iDEAL, eps, PayPal, MB Way, Przelewy24, PostFinance Card, PostFinance E-Finance, Bancontact, Apple Pay, Google Pay, Online bank transfer, Alipay, WeChat pay, Trustly, Blik, Payconiq & TWINT
+-	Order creation process handled for shop admin for the Direct Debit SEPA, Invoice, Prepayment & Multibanco
 -	Responsive templates
 
 ## Compatibility
 Shopware 6 payment plugin is compatible with below technical capabilities. 
-- [x]	Shopware versions 6.6.0.0 - 6.6.10.9
+- [x]	Shopware versions 6.6.0.0 - 6.6.10.10
 - [x]	Linux based OS with Apache 2.2 or 2.4
 - [x]	PHP 7.2.0 or higher
 - [x]	MySQL 5.7 or higher
@@ -48,9 +48,6 @@ Shopware 6 payment plugin is compatible with below technical capabilities.
 -	Instalment by Invoice
 -	Instalment by Direct Debit SEPA
 -	iDEAL
--	Sofort
--	giropay
--	Barzahlen/viacash
 -	Przelewy24
 -	eps
 -	PayPal
