@@ -1,0 +1,47 @@
+{% sw_extends '@Framework/documents/invoice.html.twig' %}
+
+{% block document_payment_shipping_inner %}
+    {{ parent() }}
+    {% set comments = '' %}
+    
+    {% for transaction in order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+        {% if transaction.customFields.novalnet_comments != '' %}
+            {% set comments = transaction.customFields.novalnet_comments %}
+        {% endif %}
+        
+        {% if 'Novalnet' not in transaction.paymentMethod.handlerIdentifier %}
+            {% set comments = '' %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if comments != '' %}
+        <br><strong>{{"NovalnetPayment.text.commentsHeader"|trans}}</strong><br>
+        {{ comments|replace({'/ ': "<br>"}) | raw }}
+        {% set qrCodeImage = context.context|getQrImage(order.orderNumber) %}
+        {% if qrCodeImage is not empty %}
+            <br />
+            <div class="qr-code-text">
+				{{ "NovalnetPayment.text.epcQrCodeDesc"|trans|sw_sanitize }}
+			</div>
+			<div class="qr-code-image">
+				<img src="{{ qrCodeImage }}" alt="QR Code" title="QR Code" />
+			</div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block document_payment %}
+    {% set paymentMethod = '' %}
+	{% for transaction in order.transactions|sort((a, b) => a.createdAt <=> b.createdAt) %}
+		{% set paymentMethod = transaction.paymentMethod.customFields.novalnet_payment_method_name ?? transaction.paymentMethod.handlerIdentifier|split('\\')|last|lower %}
+	{% endfor %}
+    
+    {% if paymentMethod == 'novalnetinvoiceguarantee' %}
+		{{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': "NovalnetPayment.text.invoiceLabel"|trans})|sw_sanitize }}<br>
+	{% elseif paymentMethod == 'novalnetsepaguarantee' %}
+		{{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': "NovalnetPayment.text.sepaLabel"|trans})|sw_sanitize }}<br>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}

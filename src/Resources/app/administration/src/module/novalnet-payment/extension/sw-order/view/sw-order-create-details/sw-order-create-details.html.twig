@@ -1,0 +1,44 @@
+  {% block sw_order_create_details_payment %}
+    <mt-card
+        class="sw-order-create-details__payment"
+        position-identifier="sw-order-create-details-payment"
+        :title="$tc('sw-order.createBase.detailsTab.labelTransactionCard')"
+    >
+        <sw-container
+            class="sw_order_create-details__payment-container"
+            gap="0px 30px"
+            columns="1fr 1fr"
+        >
+            <sw-order-customer-address-select
+                v-model:value="context.billingAddressId"
+                :label="$tc('sw-order.createBase.labelBillingAddress')"
+                :placeholder="$tc('sw-order.createBase.placeholderBillingAddress')"
+                :same-address-value="context.shippingAddressId"
+                :customer="customer"
+            />
+
+            <sw-entity-single-select
+                v-model:value="context.paymentMethodId"
+                entity="payment_method"
+                label-property="distinguishableName"
+                class="sw_order_create-details__payment-method"
+                :criteria="paymentMethodCriteria"
+                :label="$tc('sw-order.createBase.labelPaymentMethod')"
+                :placeholder="$tc('sw-order.createBase.placeholderPaymentMethod')"
+                show-clearable-button
+                required
+            />
+
+            <sw-entity-single-select
+                v-model:value="context.currencyId"
+                class="sw_order_create-details__currency"
+                entity="currency"
+                :criteria="currencyCriteria"
+                :label="$tc('sw-order.createBase.labelCurrency')"
+                :placeholder="$tc('sw-order.createBase.placeholderCurrency')"
+                show-clearable-button
+                required
+            />
+        </sw-container>
+    </mt-card>
+    {% endblock %}

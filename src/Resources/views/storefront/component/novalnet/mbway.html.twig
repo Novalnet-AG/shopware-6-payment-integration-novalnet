@@ -1,0 +1,33 @@
+<input type="hidden" value="{{paymentMethod}}" class="novalnet-payment-name">
+
+<div class="{{paymentMethod}}-payment"
+     id="{{paymentMethod}}-payment"
+     data-{{paymentMethod}}-payment
+     data-{{paymentMethod}}-payment-config="{{
+     {
+        'text' : {
+            'mobileEmpty' : "NovalnetPayment.text.mobileEmpty"|trans
+        }
+     }|jsonEncode()|escape('html_attr')}}">       
+       <link rel="stylesheet" href="{{ asset("storefront/assets/css/intlTelInput.css", '@NovalnetPayment') }}">
+       <script src="{{ asset("storefront/assets/js/intelTel/intlTelInput.min.js", '@NovalnetPayment') }}"></script>
+    <div class="{{paymentMethod}}-payment-form" id="{{paymentMethod}}-payment-form">
+        <div class="card">
+            <div class="form-group col-md-12 novalnet-input-field-container">
+                <div class="form-group col-md-12 novalnet-input-field-container" id="{{paymentMethod}}MobileField">
+                    <div id="{{paymentMethod}}-error-container" class="error-container nnhide">
+                        <div role="alert" class="alert alert-danger d-flex align-items-center">
+                            {% sw_icon 'blocked' %}
+                            <div class="alert-content-container">
+                                <div class="alert-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="form-label" for="{{paymentMethod}}Mobile">{{ "NovalnetPayment.text.mobile" | trans }}</label></br>
+                    <input type ="number" class="form-control" form="confirmOrderForm" id="{{paymentMethod}}MobileNo" name="{{paymentMethod}}FormData[mbway_mobile_no]" value="" autocomplete="OFF"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" value="" name="{{paymentMethod}}FormData[mbway_mobile_dialcode]" id="{{paymentMethod}}MobileDialcode" form="confirmOrderForm">
+</div>
