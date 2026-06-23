@@ -4,7 +4,6 @@
 * Enhanced - iDEAL payment logo and title to iDEAL | Wero
 * Removed  - Payconiq payment
 
-
 = 12.9.1   - 2025.12.16 =
 * New	   - EPC/SPC QR code implemented for Prepayment, Invoice, Invoice with payment guarantee, and Instalment by Invoice payments
 * New	   - Implemented Account Holder field for Direct Debit SEPA, Direct Debit SEPA with Payment Guarantee, and Instalment by Direct Debit SEPA, in compliance with Verification of Payee (VoP) regulations
