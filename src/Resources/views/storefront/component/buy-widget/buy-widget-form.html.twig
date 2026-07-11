@@ -1,0 +1,83 @@
+{% sw_extends '@Storefront/storefront/component/buy-widget/buy-widget-form.html.twig' %}
+
+{% block buy_widget_buy_form_inner %}
+    {{ parent() }}
+    
+	{% for paymentMethod in page.salesChannelPaymentMethods %}
+		{% set paymentName = paymentMethod.customFields.novalnet_payment_method_name|replace({'novalnet': ""}) %}
+		
+		{% set articleData = [] %}
+		{% set articleData = articleData|merge([{ label: product.translated.name ~ " (" ~ 1 ~ " x " ~ product.calculatedPrice.unitPrice|currency(context.currency.isoCode) ~ ")", type: 'SUBTOTAL', amount: (product.calculatedPrice.totalPrice * 100)|round }]) %}
+		
+		{% if 'NovalnetApplePay' in paymentMethod.handlerIdentifier or 'NovalnetGooglePay' in paymentMethod.handlerIdentifier %}
+			
+			{% if config('NovalnetPayment.settings.accessKey') is not empty and config('NovalnetPayment.settings.clientId') is not empty and 'productDetailPage' in config("NovalnetPayment.settings." ~ paymentName ~ "DisplayFields") %}
+			
+				{% if 'NovalnetApplePay' in paymentMethod.handlerIdentifier %}
+					{% set class = 'nn-apple-pay-button' %}
+				{% else %}
+					{% set class = 'nn-google-pay-button' %}
+				{% endif %}
+				{% set country = page.countries.first %}
+				
+				{% if country is empty %}
+					{% set country = context.salesChannel.countryId|getCountry(context.context) %}
+				{% endif %}
+				
+			    <div class="{{ class }}-{{ product.id }}"
+					 data-wallet-payments="true"
+					 data-paymentMethodId="{{ paymentMethod.id }}"
+					 data-page-type="productDetailPage"
+					 data-addToCartUrl="{{ path('frontend.novalnet.addToCart') }}"
+					 data-shipping-url="{{ path('frontend.novalnet.loadShipping') }}"
+					 data-shippingUpdate-url="{{ path('frontend.novalnet.updateShipping') }}"
+					 data-couponCodeUpdate-url="{{ path('frontend.novalnet.couponCodeUpdate') }}"
+					 data-success-url="{{ path('frontend.novalnet.successOrder') }}"
+					 data-payment-config="{{
+							{
+							'clientKey': config('NovalnetPayment.settings.clientKey'),
+							merchant: {
+								'countryCode': country.iso ?? 'DE',
+								'partnerId': 'NovalnetGooglePay' in paymentMethod.handlerIdentifier ? config('NovalnetPayment.settings.googlepayMerchantId') : ''
+							},
+							transaction: {
+								'amount': (product.calculatedPrice.totalPrice * 100)|round,
+								'currency': context.currency.isoCode,
+								'paymentMethod': 'NovalnetApplePay' in paymentMethod.handlerIdentifier ? "APPLEPAY" : "GOOGLEPAY",
+								'enforce3d': 'NovalnetGooglePay' in paymentMethod.handlerIdentifier ? config('NovalnetPayment.settings.googlepayEnforcecc3D') : '',
+								'environment': config("NovalnetPayment.settings." ~ paymentName ~ "TestMode") ? "SANDBOX" : "LIVE"
+							},
+							order: {
+								'paymentDataPresent': "false",
+								'merchantName': config("NovalnetPayment.settings." ~ paymentName ~ "SellerName") is not empty ? config("NovalnetPayment.settings." ~ paymentName ~ "SellerName") : context.salesChannel.translated.name,
+								'lineItems': articleData,
+								'billing': {
+									'requiredFields': ["postalAddress", "phone", "email"]
+								},
+								'shipping': {
+									'requiredFields': 'NovalnetApplePay' in paymentMethod.handlerIdentifier ? ["postalAddress", "phone", "email"] : ["postalAddress", "phone"],
+									'methodsUpdatedLater': "true"
+								},
+								'couponOptionRequired': "true",
+							},
+							custom: {
+								'lang': context.context|getLocaleCodeFromContext("true")
+							},
+							button: {
+								'type': config("NovalnetPayment.settings." ~ paymentName ~ "ButtonType"),
+								'style': config("NovalnetPayment.settings." ~ paymentName ~ "ButtonTheme"),
+								'locale': context.context|getLocaleCodeFromContext("true"),
+								'boxSizing': 'NovalnetApplePay' in paymentMethod.handlerIdentifier ? 'border-box' : 'fill',
+								'dimensions': {
+									'height': config("NovalnetPayment.settings." ~ paymentName ~ "ButtonHeight"),
+									'cornerRadius': 'NovalnetApplePay' in paymentMethod.handlerIdentifier ? config('NovalnetPayment.settings.applepayButtonRadius') : ''
+								}
+							}
+						 }|jsonEncode()|escape('html_attr')}}">
+					
+					<input type="hidden" id="productId" name="productId" value="{{ product.id }}" />
+				  </div>
+			{% endif %}
+		{% endif %}
+    {% endfor %}
+{% endblock %}
