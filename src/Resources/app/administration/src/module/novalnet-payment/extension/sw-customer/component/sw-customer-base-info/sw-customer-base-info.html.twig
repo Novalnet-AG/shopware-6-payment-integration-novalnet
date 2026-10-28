@@ -1,0 +1,8 @@
+{% block sw_customer_base_metadata_default_payment_content %}
+    <dd
+        v-if="!customerEditMode"
+        class="sw-customer-base__label-default-payment-method"
+    >       
+            {{ paymentMethod }}
+    </dd>
+{% endblock %}

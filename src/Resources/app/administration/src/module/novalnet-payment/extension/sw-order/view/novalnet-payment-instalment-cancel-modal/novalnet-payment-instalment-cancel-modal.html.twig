@@ -1,0 +1,43 @@
+{% block novalnet_payment_order_cancel_modal %}
+    <sw-modal
+        :title="$tc('novalnet-payment.settingForm.extension.instalmentCancelLabel')"
+        @modal-close="closeModal"
+    >
+        {% block novalnet_payment_order_cancel_modal_content %}
+        <template #default>
+            {% block novalnet_payment_order_cancel_modal_content_info_text %}
+            <sw-container
+                columns="1fr"
+                gap="0px 30px"
+            >
+                <div v-if="cancelType == 'CANCEL_ALL_CYCLES' ">
+                    {{ $tc('novalnet-payment.settingForm.extension.cancelAllCycleMessage') }}
+                </div>
+                <div v-if="cancelType == 'CANCEL_REMAINING_CYCLES' ">
+                    {{ $tc('novalnet-payment.settingForm.extension.cancelRemainingCycleMessage') }}
+                </div>
+            </sw-container>
+            {% endblock %}
+        </template>
+        {% endblock %}
+
+			{% block novalnet_payment_order_cancel_modal_actions %}
+        <template #modal-footer>
+            {% block novalnet_payment_order_cancel_modal_confirm %}
+            <mt-button
+                secondary
+                slim
+                variant="primary"
+                :disabled="disable"
+                :square="false"
+                :block="false"
+                :isLoading="false"
+                @click="novalnetInstalmentCancel"
+            >
+                {{ $tc('novalnet-payment.settingForm.extension.confirmLabel') }}
+            </mt-button>
+            {% endblock %}
+        </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}
